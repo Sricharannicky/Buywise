@@ -1,0 +1,2002 @@
+     1→     1→# AI-POWERED E-COMMERCE PLATFORM
+     2→     2→
+     3→     3→## Complete A–Z Product, UX, AI, Backend & Implementation Master Prompt
+     4→     4→
+     5→     5→---
+     6→     6→
+     7→     7→# 1. PROJECT ROLE
+     8→     8→
+     9→     9→You are a senior full-stack architect, UI/UX designer, AI systems engineer, database architect, security engineer, QA engineer, and DevOps engineer.
+    10→    10→
+    11→    11→Your task is to design and build a **complete, production-quality AI-powered e-commerce platform** from the ground up.
+    12→    12→
+    13→    13→Do not create a static demo.
+    14→    14→
+    15→    15→Do not create mock buttons that do nothing.
+    16→    16→
+    17→    17→Do not create disconnected pages.
+    18→    18→
+    19→    19→Every important UI element must connect to a real application flow, API, database operation, or clearly defined service.
+    20→    20→
+    21→    21→The final application must behave like a professional modern e-commerce platform.
+    22→    22→
+    23→    23→---
+    24→    24→
+    25→    25→# 2. CORE PRODUCT VISION
+    26→    26→
+    27→    27→Build a modern e-commerce website with a familiar shopping experience similar in usability and information architecture to established platforms such as Bagisto-based storefronts.
+    28→    28→
+    29→    29→The website must look and behave like a normal e-commerce website.
+    30→    30→
+    31→    31→The major differentiator is a single integrated:
+    32→    32→
+    33→    33→# "AI SHOPPING PARTNER"
+    34→    34→
+    35→    35→The user must not need to understand individual AI agents.
+    36→    36→
+    37→    37→Internally, the system may use multiple specialized AI capabilities, but externally the user interacts with **one unified AI assistant**.
+    38→    38→
+    39→    39→The AI Shopping Partner should help users:
+    40→    40→
+    41→    41→* Discover products
+    42→    42→* Search naturally
+    43→    43→* Understand products
+    44→    44→* Compare products
+    45→    45→* Create shopping goals
+    46→    46→* Analyze spending patterns
+    47→    47→* Understand affordability
+    48→    48→* Plan purchases
+    49→    49→* Predict future needs
+    50→    50→* Optimize carts
+    51→    51→* Find alternatives
+    52→    52→* Track prices
+    53→    53→* Manage wishlists
+    54→    54→* Organize group shopping
+    55→    55→* Plan gifts
+    56→    56→* Track recurring purchases
+    57→    57→* Understand post-purchase needs
+    58→    58→* Make better purchasing decisions
+    59→    59→
+    60→    60→The AI must not simply encourage users to spend more.
+    61→    61→
+    62→    62→It should sometimes recommend:
+    63→    63→
+    64→    64→> "You may want to wait."
+    65→    65→
+    66→    66→> "This purchase is outside your current planned budget."
+    67→    67→
+    68→    68→> "You already own a similar product."
+    69→    69→
+    70→    70→> "A lower-cost alternative may satisfy your requirement."
+    71→    71→
+    72→    72→The AI should behave like a **trusted shopping partner**, not an advertising engine.
+    73→    73→
+    74→    74→---
+    75→    75→
+    76→    76→# 3. PRIMARY PRODUCT PRINCIPLE
+    77→    77→
+    78→    78→The application has two layers.
+    79→    79→
+    80→    80→## Layer 1 — Normal E-Commerce
+    81→    81→
+    82→    82→Users can use the entire website without interacting with AI.
+    83→    83→
+    84→    84→Standard flow:
+    85→    85→
+    86→    86→Home
+    87→    87→→ Categories
+    88→    88→→ Search
+    89→    89→→ Product Listing
+    90→    90→→ Product Details
+    91→    91→→ Wishlist
+    92→    92→→ Cart
+    93→    93→→ Checkout
+    94→    94→→ Payment
+    95→    95→→ Order
+    96→    96→→ Delivery
+    97→    97→→ Post-Purchase
+    98→    98→
+    99→    99→## Layer 2 — AI Intelligence
+   100→   100→
+   101→   101→The AI operates throughout the shopping journey.
+   102→   102→
+   103→   103→User
+   104→   104→→ Understand
+   105→   105→→ Plan
+   106→   106→→ Search
+   107→   107→→ Compare
+   108→   108→→ Decide
+   109→   109→→ Purchase
+   110→   110→→ Use
+   111→   111→→ Maintain
+   112→   112→→ Replace
+   113→   113→→ Plan next purchase
+   114→   114→
+   115→   115→The AI should enhance the normal e-commerce experience rather than replace it.
+   116→   116→
+   117→   117→---
+   118→   118→
+   119→   119→# 4. USER EXPERIENCE PRINCIPLE
+   120→   120→
+   121→   121→Never make the website feel like an AI dashboard.
+   122→   122→
+   123→   123→The primary interface must remain an attractive, simple, familiar e-commerce storefront.
+   124→   124→
+   125→   125→AI should appear naturally through:
+   126→   126→
+   127→   127→* AI Shopping Partner button
+   128→   128→* Personalized recommendations
+   129→   129→* AI insights
+   130→   130→* Smart search
+   131→   131→* Smart cart suggestions
+   132→   132→* Goal suggestions
+   133→   133→* Price alerts
+   134→   134→* Personalized notifications
+   135→   135→* Contextual product insights
+   136→   136→
+   137→   137→The user should always be able to ignore AI and continue normal shopping.
+   138→   138→
+   139→   139→---
+   140→   140→
+   141→   141→# 5. COMPLETE APPLICATION FLOW
+   142→   142→
+   143→   143→Implement this complete flow:
+   144→   144→
+   145→   145→## STEP 1 — Landing Page
+   146→   146→
+   147→   147→User opens the website.
+   148→   148→
+   149→   149→Show:
+   150→   150→
+   151→   151→* Header
+   152→   152→* Logo
+   153→   153→* Search
+   154→   154→* Categories
+   155→   155→* Login/Register
+   156→   156→* Wishlist
+   157→   157→* Cart
+   158→   158→* Hero banner
+   159→   159→* Featured categories
+   160→   160→* Trending products
+   161→   161→* New arrivals
+   162→   162→* Deals
+   163→   163→* Personalized products if logged in
+   164→   164→* AI Shopping Partner entry point
+   165→   165→* Footer
+   166→   166→
+   167→   167→---
+   168→   168→
+   169→   169→# 6. AUTHENTICATION
+   170→   170→
+   171→   171→Create a professional authentication system.
+   172→   172→
+   173→   173→## Registration
+   174→   174→
+   175→   175→Fields:
+   176→   176→
+   177→   177→* First name
+   178→   178→* Last name
+   179→   179→* Email
+   180→   180→* Phone
+   181→   181→* Password
+   182→   182→* Confirm password
+   183→   183→
+   184→   184→Optional:
+   185→   185→
+   186→   186→* Date of birth
+   187→   187→* Preferred language
+   188→   188→* Location
+   189→   189→* Shopping preferences
+   190→   190→
+   191→   191→Do not require financial information during registration.
+   192→   192→
+   193→   193→Financial information must always be optional.
+   194→   194→
+   195→   195→## Login
+   196→   196→
+   197→   197→Support:
+   198→   198→
+   199→   199→* Email + password
+   200→   200→* Optional phone OTP
+   201→   201→* Optional Google authentication
+   202→   202→* Remember session
+   203→   203→* Logout
+   204→   204→* Forgot password
+   205→   205→* Reset password
+   206→   206→
+   207→   207→## Security
+   208→   208→
+   209→   209→Implement:
+   210→   210→
+   211→   211→* Password hashing
+   212→   212→* Secure sessions/JWT where appropriate
+   213→   213→* Refresh token handling
+   214→   214→* Authentication middleware
+   215→   215→* Rate limiting
+   216→   216→* Input validation
+   217→   217→* CSRF protection where applicable
+   218→   218→* Secure cookies where applicable
+   219→   219→* Session expiration
+   220→   220→* Logout invalidation
+   221→   221→
+   222→   222→Never store plain-text passwords.
+   223→   223→
+   224→   224→---
+   225→   225→
+   226→   226→# 7. FIRST-TIME USER ONBOARDING
+   227→   227→
+   228→   228→After registration, show a short optional onboarding flow.
+   229→   229→
+   230→   230→Do not overwhelm the user.
+   231→   231→
+   232→   232→Ask useful questions such as:
+   233→   233→
+   234→   234→### Shopping preferences
+   235→   235→
+   236→   236→* Favorite categories
+   237→   237→* Preferred brands
+   238→   238→* Typical budget range
+   239→   239→* Sizes where applicable
+   240→   240→* Preferred colors
+   241→   241→* Preferred price range
+   242→   242→
+   243→   243→### Optional financial intelligence
+   244→   244→
+   245→   245→Allow the user to choose:
+   246→   246→
+   247→   247→> "Would you like your AI Shopping Partner to help you plan purchases based on your income and budget?"
+   248→   248→
+   249→   249→Options:
+   250→   250→
+   251→   251→* Yes
+   252→   252→* Not now
+   253→   253→
+   254→   254→Never force financial information.
+   255→   255→
+   256→   256→---
+   257→   257→
+   258→   258→# 8. USER PROFILE
+   259→   259→
+   260→   260→Create a complete profile system.
+   261→   261→
+   262→   262→Store:
+   263→   263→
+   264→   264→* Name
+   265→   265→* Email
+   266→   266→* Phone
+   267→   267→* Address
+   268→   268→* Preferences
+   269→   269→* Wishlist
+   270→   270→* Purchase history
+   271→   271→* Search history where permitted
+   272→   272→* Cart
+   273→   273→* Goals
+   274→   274→* Shopping preferences
+   275→   275→* AI preferences
+   276→   276→* Notification preferences
+   277→   277→
+   278→   278→Allow users to edit and delete their data.
+   279→   279→
+   280→   280→---
+   281→   281→
+   282→   282→# 9. HOME PAGE
+   283→   283→
+   284→   284→Design a premium modern e-commerce homepage.
+   285→   285→
+   286→   286→Sections:
+   287→   287→
+   288→   288→1. Header
+   289→   289→2. Search
+   290→   290→3. Categories
+   291→   291→4. Hero banner
+   292→   292→5. Featured categories
+   293→   293→6. Trending products
+   294→   294→7. New arrivals
+   295→   295→8. Personalized recommendations
+   296→   296→9. AI Shopping Partner
+   297→   297→10. Deals
+   298→   298→11. Recently viewed
+   299→   299→12. Recommended for goals
+   300→   300→13. Footer
+   301→   301→
+   302→   302→For logged-in users, dynamically personalize sections.
+   303→   303→
+   304→   304→Example:
+   305→   305→
+   306→   306→### "Picked for you"
+   307→   307→
+   308→   308→### "You may need soon"
+   309→   309→
+   310→   310→### "Based on your goals"
+   311→   311→
+   312→   312→### "Because you bought..."
+   313→   313→
+   314→   314→Do not display all sections blindly.
+   315→   315→
+   316→   316→The recommendation engine should determine relevance.
+   317→   317→
+   318→   318→---
+   319→   319→
+   320→   320→# 10. HEADER
+   321→   321→
+   322→   322→Create a responsive header.
+   323→   323→
+   324→   324→Desktop:
+   325→   325→
+   326→   326→* Logo
+   327→   327→* Categories
+   328→   328→* Search
+   329→   329→* AI Shopping Partner
+   330→   330→* Account
+   331→   331→* Wishlist
+   332→   332→* Cart
+   333→   333→
+   334→   334→Mobile:
+   335→   335→
+   336→   336→* Hamburger
+   337→   337→* Logo
+   338→   338→* Search
+   339→   339→* AI
+   340→   340→* Cart
+   341→   341→* Account
+   342→   342→
+   343→   343→Keep navigation simple.
+   344→   344→
+   345→   345→---
+   346→   346→
+   347→   347→# 11. PRODUCT CATALOG
+   348→   348→
+   349→   349→Build a complete catalog system.
+   350→   350→
+   351→   351→Product fields may include:
+   352→   352→
+   353→   353→* Product ID
+   354→   354→* SKU
+   355→   355→* Name
+   356→   356→* Slug
+   357→   357→* Description
+   358→   358→* Short description
+   359→   359→* Brand
+   360→   360→* Category
+   361→   361→* Subcategory
+   362→   362→* Images
+   363→   363→* Videos where supported
+   364→   364→* Price
+   365→   365→* Discount
+   366→   366→* Tax
+   367→   367→* Stock
+   368→   368→* Weight
+   369→   369→* Dimensions
+   370→   370→* Attributes
+   371→   371→* Variants
+   372→   372→* Ratings
+   373→   373→* Reviews
+   374→   374→* Tags
+   375→   375→* Specifications
+   376→   376→* Seller
+   377→   377→* Warranty
+   378→   378→* Shipping information
+   379→   379→* Created date
+   380→   380→* Updated date
+   381→   381→
+   382→   382→---
+   383→   383→
+   384→   384→# 12. PRODUCT VARIANTS
+   385→   385→
+   386→   386→Support products with variants.
+   387→   387→
+   388→   388→Examples:
+   389→   389→
+   390→   390→* Size
+   391→   391→* Color
+   392→   392→* Storage
+   393→   393→* RAM
+   394→   394→* Capacity
+   395→   395→* Pack size
+   396→   396→
+   397→   397→Variant selection must dynamically update:
+   398→   398→
+   399→   399→* Price
+   400→   400→* Stock
+   401→   401→* SKU
+   402→   402→* Images
+   403→   403→* Availability
+   404→   404→
+   405→   405→---
+   406→   406→
+   407→   407→# 13. CATEGORY SYSTEM
+   408→   408→
+   409→   409→Support:
+   410→   410→
+   411→   411→* Categories
+   412→   412→* Subcategories
+   413→   413→* Nested categories
+   414→   414→* Category images
+   415→   415→* Category descriptions
+   416→   416→* Category SEO data
+   417→   417→
+   418→   418→Example:
+   419→   419→
+   420→   420→Electronics
+   421→   421→→ Computers
+   422→   422→→ Laptops
+   423→   423→→ Gaming Laptops
+   424→   424→
+   425→   425→---
+   426→   426→
+   427→   427→# 14. PRODUCT SEARCH
+   428→   428→
+   429→   429→Implement powerful search.
+   430→   430→
+   431→   431→Normal search:
+   432→   432→
+   433→   433→> "Laptop"
+   434→   434→
+   435→   435→AI/natural-language search:
+   436→   436→
+   437→   437→> "I need a laptop under ₹70,000 for programming and gaming."
+   438→   438→
+   439→   439→The system should understand:
+   440→   440→
+   441→   441→* Product type
+   442→   442→* Budget
+   443→   443→* Use case
+   444→   444→* Preferences
+   445→   445→* Requirements
+   446→   446→
+   447→   447→Then convert natural language into structured filters.
+   448→   448→
+   449→   449→Example:
+   450→   450→
+   451→   451→```text
+   452→   452→category = laptop
+   453→   453→max_price = 70000
+   454→   454→use_cases = programming,gaming
+   455→   455→```
+   456→   456→
+   457→   457→---
+   458→   458→
+   459→   459→# 15. FILTERING
+   460→   460→
+   461→   461→Support:
+   462→   462→
+   463→   463→* Price
+   464→   464→* Brand
+   465→   465→* Rating
+   466→   466→* Category
+   467→   467→* Availability
+   468→   468→* Attributes
+   469→   469→* Discount
+   470→   470→* Seller
+   471→   471→* Specifications
+   472→   472→
+   473→   473→Filters must work with real database queries.
+   474→   474→
+   475→   475→---
+   476→   476→
+   477→   477→# 16. SORTING
+   478→   478→
+   479→   479→Support:
+   480→   480→
+   481→   481→* Relevance
+   482→   482→* Price low to high
+   483→   483→* Price high to low
+   484→   484→* Rating
+   485→   485→* Newest
+   486→   486→* Popularity
+   487→   487→* Discount
+   488→   488→
+   489→   489→---
+   490→   490→
+   491→   491→# 17. PRODUCT DETAILS PAGE
+   492→   492→
+   493→   493→Create a professional product page.
+   494→   494→
+   495→   495→Include:
+   496→   496→
+   497→   497→* Product gallery
+   498→   498→* Product title
+   499→   499→* Rating
+   500→   500→* Reviews
+   501→   501→* Price
+   502→   502→* Discount
+   503→   503→* Variant selector
+   504→   504→* Quantity
+   505→   505→* Stock status
+   506→   506→* Delivery estimate
+   507→   507→* Add to cart
+   508→   508→* Buy now
+   509→   509→* Wishlist
+   510→   510→* Product description
+   511→   511→* Specifications
+   512→   512→* Seller information
+   513→   513→* Warranty
+   514→   514→* Reviews
+   515→   515→* Related products
+   516→   516→
+   517→   517→Add:
+   518→   518→
+   519→   519→# "AI Insight"
+   520→   520→
+   521→   521→Example:
+   522→   522→
+   523→   523→> Why this may be suitable for you
+   524→   524→
+   525→   525→* Fits your budget
+   526→   526→* Matches your saved preferences
+   527→   527→* Similar to products you previously viewed
+   528→   528→* Compatible with your existing products
+   529→   529→
+   530→   530→---
+   531→   531→
+   532→   532→# 18. AI SHOPPING PARTNER
+   533→   533→
+   534→   534→Create one unified AI interface.
+   535→   535→
+   536→   536→The user should be able to open it from anywhere.
+   537→   537→
+   538→   538→Possible UI:
+   539→   539→
+   540→   540→Floating button:
+   541→   541→
+   542→   542→# ✨ Shopping Partner
+   543→   543→
+   544→   544→When opened:
+   545→   545→
+   546→   546→* Conversational chat
+   547→   547→* Suggested prompts
+   548→   548→* Product cards
+   549→   549→* Comparison cards
+   550→   550→* Goal cards
+   551→   551→* Cart actions
+   552→   552→* Budget insights
+   553→   553→* Search results
+   554→   554→
+   555→   555→The assistant should understand conversational context.
+   556→   556→
+   557→   557→Example:
+   558→   558→
+   559→   559→User:
+   560→   560→
+   561→   561→> "I need a laptop."
+   562→   562→
+   563→   563→AI:
+   564→   564→
+   565→   565→> "Sure. What is your approximate budget?"
+   566→   566→
+   567→   567→User:
+   568→   568→
+   569→   569→> "70k."
+   570→   570→
+   571→   571→AI:
+   572→   572→
+   573→   573→> "What will you mainly use it for?"
+   574→   574→
+   575→   575→User:
+   576→   576→
+   577→   577→> "Programming and gaming."
+   578→   578→
+   579→   579→AI should remember the conversation and continue naturally.
+   580→   580→
+   581→   581→---
+   582→   582→
+   583→   583→# 19. AI ORCHESTRATION
+   584→   584→
+   585→   585→Internally, use a unified AI orchestration layer.
+   586→   586→
+   587→   587→Possible internal capabilities:
+   588→   588→
+   589→   589→### Personal Intelligence
+   590→   590→
+   591→   591→Understands:
+   592→   592→
+   593→   593→* Preferences
+   594→   594→* History
+   595→   595→* Behavior
+   596→   596→
+   597→   597→### Financial Intelligence
+   598→   598→
+   599→   599→Analyzes:
+   600→   600→
+   601→   601→* Income
+   602→   602→* Expenses
+   603→   603→* Spending patterns
+   604→   604→* Budget
+   605→   605→
+   606→   606→### Goal Intelligence
+   607→   607→
+   608→   608→Manages:
+   609→   609→
+   610→   610→* Goals
+   611→   611→* Targets
+   612→   612→* Deadlines
+   613→   613→* Progress
+   614→   614→
+   615→   615→### Shopping Intelligence
+   616→   616→
+   617→   617→Handles:
+   618→   618→
+   619→   619→* Search
+   620→   620→* Discovery
+   621→   621→* Comparison
+   622→   622→* Recommendations
+   623→   623→
+   624→   624→### Prediction Intelligence
+   625→   625→
+   626→   626→Handles:
+   627→   627→
+   628→   628→* Future needs
+   629→   629→* Refills
+   630→   630→* Replacement
+   631→   631→* Seasonal requirements
+   632→   632→
+   633→   633→### Cart Intelligence
+   634→   634→
+   635→   635→Handles:
+   636→   636→
+   637→   637→* Cart optimization
+   638→   638→* Alternatives
+   639→   639→* Duplicate detection
+   640→   640→* Budget impact
+   641→   641→
+   642→   642→### Price Intelligence
+   643→   643→
+   644→   644→Handles:
+   645→   645→
+   646→   646→* Price tracking
+   647→   647→* Price alerts
+   648→   648→* Deal analysis
+   649→   649→
+   650→   650→### Social Shopping Intelligence
+   651→   651→
+   652→   652→Handles:
+   653→   653→
+   654→   654→* Group rooms
+   655→   655→* Voting
+   656→   656→* Shared carts
+   657→   657→
+   658→   658→### Post-Purchase Intelligence
+   659→   659→
+   660→   660→Handles:
+   661→   661→
+   662→   662→* Setup
+   663→   663→* Maintenance
+   664→   664→* Usage
+   665→   665→* Replacement
+   666→   666→
+   667→   667→These are internal capabilities.
+   668→   668→
+   669→   669→Do not expose them as separate agents to the user.
+   670→   670→
+   671→   671→---
+   672→   672→
+   673→   673→# 20. AI MEMORY
+   674→   674→
+   675→   675→Create controlled AI memory.
+   676→   676→
+   677→   677→The AI may remember:
+   678→   678→
+   679→   679→* User preferences
+   680→   680→* Favorite categories
+   681→   681→* Preferred brands
+   682→   682→* Product preferences
+   683→   683→* Shopping goals
+   684→   684→* Saved products
+   685→   685→* Purchase history
+   686→   686→* Explicitly provided information
+   687→   687→* Interaction preferences
+   688→   688→
+   689→   689→The AI must distinguish between:
+   690→   690→
+   691→   691→### Explicit information
+   692→   692→
+   693→   693→User directly said it.
+   694→   694→
+   695→   695→### Inferred information
+   696→   696→
+   697→   697→System inferred it.
+   698→   698→
+   699→   699→Never present uncertain inference as fact.
+   700→   700→
+   701→   701→Allow users to view, edit, and delete stored AI preferences/memories.
+   702→   702→
+   703→   703→---
+   704→   704→
+   705→   705→# 21. SALARY / INCOME INTELLIGENCE
+   706→   706→
+   707→   707→Create an optional financial profile.
+   708→   708→
+   709→   709→Fields:
+   710→   710→
+   711→   711→* Monthly income
+   712→   712→* Income frequency
+   713→   713→* Fixed expenses
+   714→   714→* Rent
+   715→   715→* EMI
+   716→   716→* Savings target
+   717→   717→* Monthly shopping budget
+   718→   718→* Other optional commitments
+   719→   719→
+   720→   720→Never require users to provide salary information.
+   721→   721→
+   722→   722→---
+   723→   723→
+   724→   724→# 22. SPENDING PATTERN ANALYSIS
+   725→   725→
+   726→   726→Analyze user purchases only with appropriate consent.
+   727→   727→
+   728→   728→Possible metrics:
+   729→   729→
+   730→   730→* Average monthly shopping
+   731→   731→* Category spending
+   732→   732→* Average order value
+   733→   733→* Purchase frequency
+   734→   734→* Recurring purchases
+   735→   735→* Discretionary purchases
+   736→   736→* Goal-related spending
+   737→   737→
+   738→   738→Example:
+   739→   739→
+   740→   740→> "Your average monthly shopping spend has been around ₹6,500."
+   741→   741→
+   742→   742→Use historical data carefully.
+   743→   743→
+   744→   744→Do not make unsupported financial claims.
+   745→   745→
+   746→   746→---
+   747→   747→
+   748→   748→# 23. AFFORDABILITY INTELLIGENCE
+   749→   749→
+   750→   750→When the user asks:
+   751→   751→
+   752→   752→> "Can I afford this?"
+   753→   753→
+   754→   754→The AI should consider:
+   755→   755→
+   756→   756→* Available budget
+   757→   757→* Planned spending
+   758→   758→* Existing goals
+   759→   759→* Purchase price
+   760→   760→* Optional user-provided income/expenses
+   761→   761→
+   762→   762→Return understandable guidance.
+   763→   763→
+   764→   764→Example:
+   765→   765→
+   766→   766→> "This purchase fits within your current shopping budget, but it would reduce your remaining monthly budget by approximately 30%."
+   767→   767→
+   768→   768→Never present this as professional financial advice.
+   769→   769→
+   770→   770→---
+   771→   771→
+   772→   772→# 24. GOAL SYSTEM
+   773→   773→
+   774→   774→Allow users to create goals.
+   775→   775→
+   776→   776→Example:
+   777→   777→
+   778→   778→### Goal
+   779→   779→
+   780→   780→MacBook
+   781→   781→
+   782→   782→Target:
+   783→   783→
+   784→   784→₹120,000
+   785→   785→
+   786→   786→Current progress:
+   787→   787→
+   788→   788→₹45,000
+   789→   789→
+   790→   790→Remaining:
+   791→   791→
+   792→   792→₹75,000
+   793→   793→
+   794→   794→Optional target date:
+   795→   795→
+   796→   796→December 2026
+   797→   797→
+   798→   798→The AI can help users:
+   799→   799→
+   800→   800→* Create goals
+   801→   801→* Add products to goals
+   802→   802→* Set target budgets
+   803→   803→* Track progress
+   804→   804→* Recommend saving plans
+   805→   805→* Suggest alternatives
+   806→   806→* Detect relevant products
+   807→   807→
+   808→   808→---
+   809→   809→
+   810→   810→# 25. NEED VS WANT INTELLIGENCE
+   811→   811→
+   812→   812→Before checkout, optionally classify products:
+   813→   813→
+   814→   814→### NEED
+   815→   815→
+   816→   816→Essential/high priority.
+   817→   817→
+   818→   818→### USEFUL
+   819→   819→
+   820→   820→Useful but not urgent.
+   821→   821→
+   822→   822→### WANT
+   823→   823→
+   824→   824→Optional purchase.
+   825→   825→
+   826→   826→Never force the classification.
+   827→   827→
+   828→   828→Allow:
+   829→   829→
+   830→   830→* Buy now
+   831→   831→* Save for later
+   832→   832→* Remove
+   833→   833→
+   834→   834→---
+   835→   835→
+   836→   836→# 26. FUTURE NEED PREDICTION
+   837→   837→
+   838→   838→Use historical behavior to estimate possible future purchases.
+   839→   839→
+   840→   840→Examples:
+   841→   841→
+   842→   842→* Refill products
+   843→   843→* Replacement products
+   844→   844→* Seasonal purchases
+   845→   845→* Recurring purchases
+   846→   846→
+   847→   847→Example:
+   848→   848→
+   849→   849→> "Based on your previous purchase interval, you may need this product again soon."
+   850→   850→
+   851→   851→Clearly label predictions as estimates.
+   852→   852→
+   853→   853→---
+   854→   854→
+   855→   855→# 27. SMART CART OPTIMIZER
+   856→   856→
+   857→   857→Add:
+   858→   858→
+   859→   859→# "Optimize My Cart"
+   860→   860→
+   861→   861→The AI analyzes:
+   862→   862→
+   863→   863→* Total cost
+   864→   864→* Duplicate products
+   865→   865→* Alternatives
+   866→   866→* Discounts
+   867→   867→* Coupons
+   868→   868→* Compatibility
+   869→   869→* User goals
+   870→   870→* Budget
+   871→   871→* Delivery cost
+   872→   872→
+   873→   873→Example:
+   874→   874→
+   875→   875→> "I found 3 ways to reduce your cart by approximately ₹1,250."
+   876→   876→
+   877→   877→Actions:
+   878→   878→
+   879→   879→* Replace
+   880→   880→* Remove
+   881→   881→* Save for later
+   882→   882→* Apply coupon
+   883→   883→* Continue
+   884→   884→
+   885→   885→Never modify the cart without user confirmation.
+   886→   886→
+   887→   887→---
+   888→   888→
+   889→   889→# 28. PRODUCT COMPATIBILITY
+   890→   890→
+   891→   891→The AI should understand product relationships.
+   892→   892→
+   893→   893→Example:
+   894→   894→
+   895→   895→Laptop
+   896→   896→→ Charger
+   897→   897→→ Dock
+   898→   898→→ Monitor
+   899→   899→→ Mouse
+   900→   900→→ Keyboard
+   901→   901→→ Bag
+   902→   902→
+   903→   903→If the user already owns an accessory:
+   904→   904→
+   905→   905→> "You already have a compatible USB-C mouse. You may not need another one."
+   906→   906→
+   907→   907→---
+   908→   908→
+   909→   909→# 29. PRODUCT COMPARISON
+   910→   910→
+   911→   911→Allow users to compare multiple products.
+   912→   912→
+   913→   913→AI comparison should consider:
+   914→   914→
+   915→   915→* Price
+   916→   916→* Features
+   917→   917→* Specifications
+   918→   918→* Reviews
+   919→   919→* User requirements
+   920→   920→* Budget
+   921→   921→* Compatibility
+   922→   922→
+   923→   923→Example:
+   924→   924→
+   925→   925→> "For your stated requirement, Product B offers the better balance of performance and price."
+   926→   926→
+   927→   927→---
+   928→   928→
+   929→   929→# 30. ALTERNATIVE PRODUCT ENGINE
+   930→   930→
+   931→   931→If a product is too expensive:
+   932→   932→
+   933→   933→Recommend:
+   934→   934→
+   935→   935→* Similar products
+   936→   936→* Lower-priced alternatives
+   937→   937→* Better-value products
+   938→   938→* Different brands
+   939→   939→
+   940→   940→Explain the trade-offs.
+   941→   941→
+   942→   942→Never claim two products are identical when they are not.
+   943→   943→
+   944→   944→---
+   945→   945→
+   946→   946→# 31. PRICE WATCH
+   947→   947→
+   948→   948→Allow users to watch products.
+   949→   949→
+   950→   950→User:
+   951→   951→
+   952→   952→> "Notify me if this falls below ₹25,000."
+   953→   953→
+   954→   954→Store:
+   955→   955→
+   956→   956→* Product
+   957→   957→* Target price
+   958→   958→* User
+   959→   959→* Notification preference
+   960→   960→
+   961→   961→When the condition is met:
+   962→   962→
+   963→   963→> "The product you're watching has reached ₹24,799."
+   964→   964→
+   965→   965→---
+   966→   966→
+   967→   967→# 32. DEAL INTELLIGENCE
+   968→   968→
+   969→   969→Do not treat every discount as a good deal.
+   970→   970→
+   971→   971→Consider:
+   972→   972→
+   973→   973→* Current price
+   974→   974→* Previous prices where available
+   975→   975→* Discount
+   976→   976→* User's target price
+   977→   977→* Product alternatives
+   978→   978→
+   979→   979→Return transparent explanations.
+   980→   980→
+   981→   981→---
+   982→   982→
+   983→   983→# 33. WISHLIST INTELLIGENCE
+   984→   984→
+   985→   985→Normal wishlist functionality plus AI intelligence.
+   986→   986→
+   987→   987→AI can identify:
+   988→   988→
+   989→   989→* Price drops
+   990→   990→* Duplicate products
+   991→   991→* Products relevant to goals
+   992→   992→* Products that may no longer be relevant
+   993→   993→
+   994→   994→Do not automatically delete anything.
+   995→   995→
+   996→   996→---
+   997→   997→
+   998→   998→# 34. GROUP SHOPPING
+   999→   999→
+  1000→  1000→Create:
+  1001→  1001→
+  1002→  1002→# Shopping Rooms
+  1003→  1003→
+  1004→  1004→Users can create a shared shopping room.
+  1005→  1005→
+  1006→  1006→Example:
+  1007→  1007→
+  1008→  1008→### New Apartment Shopping
+  1009→  1009→
+  1010→  1010→Members:
+  1011→  1011→
+  1012→  1012→* User A
+  1013→  1013→* User B
+  1014→  1014→* User C
+  1015→  1015→
+  1016→  1016→Features:
+  1017→  1017→
+  1018→  1018→* Invite members
+  1019→  1019→* Shared product list
+  1020→  1020→* Shared cart
+  1021→  1021→* Comments
+  1022→  1022→* Voting
+  1023→  1023→* Product comparison
+  1024→  1024→* Budget
+  1025→  1025→* Assign items
+  1026→  1026→* AI recommendations
+  1027→  1027→
+  1028→  1028→AI can summarize:
+  1029→  1029→
+  1030→  1030→> "Most members prefer Product B and it is within the group's budget."
+  1031→  1031→
+  1032→  1032→---
+  1033→  1033→
+  1034→  1034→# 35. GIFT PLANNER
+  1035→  1035→
+  1036→  1036→Allow users to create gift plans.
+  1037→  1037→
+  1038→  1038→Example:
+  1039→  1039→
+  1040→  1040→> "I need a birthday gift under ₹5,000."
+  1041→  1041→
+  1042→  1042→AI can recommend:
+  1043→  1043→
+  1044→  1044→* Main gift
+  1045→  1045→* Supporting items
+  1046→  1046→* Personalized options
+  1047→  1047→* Packaging
+  1048→  1048→* Budget allocation
+  1049→  1049→
+  1050→  1050→Keep this optional.
+  1051→  1051→
+  1052→  1052→---
+  1053→  1053→
+  1054→  1054→# 36. RECURRING PURCHASE INTELLIGENCE
+  1055→  1055→
+  1056→  1056→For recurring products:
+  1057→  1057→
+  1058→  1058→* Estimate consumption interval
+  1059→  1059→* Suggest reorder
+  1060→  1060→* Allow subscription
+  1061→  1061→* Allow reminder
+  1062→  1062→
+  1063→  1063→Example:
+  1064→  1064→
+  1065→  1065→> "You may be running low based on your previous purchase pattern."
+  1066→  1066→
+  1067→  1067→---
+  1068→  1068→
+  1069→  1069→# 37. OCCASION INTELLIGENCE
+  1070→  1070→
+  1071→  1071→Users can optionally add events:
+  1072→  1072→
+  1073→  1073→* Birthday
+  1074→  1074→* Anniversary
+  1075→  1075→* Festival
+  1076→  1076→* Travel
+  1077→  1077→* Wedding
+  1078→  1078→* Housewarming
+  1079→  1079→
+  1080→  1080→AI can prepare shopping recommendations.
+  1081→  1081→
+  1082→  1082→Do not infer sensitive personal events without appropriate user input.
+  1083→  1083→
+  1084→  1084→---
+  1085→  1085→
+  1086→  1086→# 38. POST-PURCHASE AI
+  1087→  1087→
+  1088→  1088→After purchase, the AI remains available.
+  1089→  1089→
+  1090→  1090→Examples:
+  1091→  1091→
+  1092→  1092→> "Would you like help setting up your new monitor?"
+  1093→  1093→
+  1094→  1094→> "Here are compatible accessories."
+  1095→  1095→
+  1096→  1096→> "Your warranty expires soon."
+  1097→  1097→
+  1098→  1098→> "This product may be approaching its typical replacement period."
+  1099→  1099→
+  1100→  1100→---
+  1101→  1101→
+  1102→  1102→# 39. PRODUCT LIFECYCLE
+  1103→  1103→
+  1104→  1104→Model the lifecycle:
+  1105→  1105→
+  1106→  1106→Discover
+  1107→  1107→→ Compare
+  1108→  1108→→ Purchase
+  1109→  1109→→ Delivery
+  1110→  1110→→ Setup
+  1111→  1111→→ Use
+  1112→  1112→→ Maintain
+  1113→  1113→→ Replace
+  1114→  1114→→ Upgrade
+  1115→  1115→
+  1116→  1116→The AI should support the user across this lifecycle.
+  1117→  1117→
+  1118→  1118→---
+  1119→  1119→
+  1120→  1120→# 40. CART
+  1121→  1121→
+  1122→  1122→Cart must be fully functional.
+  1123→  1123→
+  1124→  1124→Each cart item:
+  1125→  1125→
+  1126→  1126→* Product
+  1127→  1127→* Variant
+  1128→  1128→* Quantity
+  1129→  1129→* Price
+  1130→  1130→* Discount
+  1131→  1131→* Tax
+  1132→  1132→* Subtotal
+  1133→  1133→* Availability
+  1134→  1134→
+  1135→  1135→Actions:
+  1136→  1136→
+  1137→  1137→* Increase quantity
+  1138→  1138→* Decrease quantity
+  1139→  1139→* Remove
+  1140→  1140→* Save for later
+  1141→  1141→* Apply coupon
+  1142→  1142→
+  1143→  1143→All cart operations must persist.
+  1144→  1144→
+  1145→  1145→---
+  1146→  1146→
+  1147→  1147→# 41. CHECKOUT
+  1148→  1148→
+  1149→  1149→Create professional checkout.
+  1150→  1150→
+  1151→  1151→Steps:
+  1152→  1152→
+  1153→  1153→1. Address
+  1154→  1154→2. Delivery
+  1155→  1155→3. Order summary
+  1156→  1156→4. Coupon
+  1157→  1157→5. Payment
+  1158→  1158→6. Confirmation
+  1159→  1159→
+  1160→  1160→Calculate correctly:
+  1161→  1161→
+  1162→  1162→Subtotal
+  1163→  1163→
+  1164→  1164→* Tax
+  1165→  1165→* Shipping
+  1166→  1166→
+  1167→  1167→- Discount
+  1168→  1168→  = Final total
+  1169→  1169→
+  1170→  1170→Never trust prices supplied only by the frontend.
+  1171→  1171→
+  1172→  1172→Recalculate totals on the backend.
+  1173→  1173→
+  1174→  1174→---
+  1175→  1175→
+  1176→  1176→# 42. PAYMENT
+  1177→  1177→
+  1178→  1178→Build a payment abstraction layer.
+  1179→  1179→
+  1180→  1180→Do not hard-code payment provider logic throughout the application.
+  1181→  1181→
+  1182→  1182→Support a provider such as:
+  1183→  1183→
+  1184→  1184→* Stripe
+  1185→  1185→* Razorpay
+  1186→  1186→* Other appropriate gateway
+  1187→  1187→
+  1188→  1188→Use environment variables for keys.
+  1189→  1189→
+  1190→  1190→Handle:
+  1191→  1191→
+  1192→  1192→* Payment success
+  1193→  1193→* Payment failure
+  1194→  1194→* Pending
+  1195→  1195→* Cancellation
+  1196→  1196→* Webhooks
+  1197→  1197→* Duplicate webhook protection
+  1198→  1198→
+  1199→  1199→Never mark an order paid based only on frontend response.
+  1200→  1200→
+  1201→  1201→---
+  1202→  1202→
+  1203→  1203→# 43. ORDERS
+  1204→  1204→
+  1205→  1205→Create complete order management.
+  1206→  1206→
+  1207→  1207→Order states:
+  1208→  1208→
+  1209→  1209→Pending
+  1210→  1210→→ Confirmed
+  1211→  1211→→ Processing
+  1212→  1212→→ Shipped
+  1213→  1213→→ Delivered
+  1214→  1214→
+  1215→  1215→Additional states:
+  1216→  1216→
+  1217→  1217→Cancelled
+  1218→  1218→Refunded
+  1219→  1219→Payment Failed
+  1220→  1220→
+  1221→  1221→Store complete order snapshots.
+  1222→  1222→
+  1223→  1223→Do not rely only on current product data because product prices/details can change later.
+  1224→  1224→
+  1225→  1225→---
+  1226→  1226→
+  1227→  1227→# 44. ORDER HISTORY
+  1228→  1228→
+  1229→  1229→User can view:
+  1230→  1230→
+  1231→  1231→* Order ID
+  1232→  1232→* Date
+  1233→  1233→* Items
+  1234→  1234→* Quantity
+  1235→  1235→* Total
+  1236→  1236→* Payment status
+  1237→  1237→* Delivery status
+  1238→  1238→* Shipping address
+  1239→  1239→* Invoice
+  1240→  1240→* Reorder
+  1241→  1241→
+  1242→  1242→---
+  1243→  1243→
+  1244→  1244→# 45. REORDER
+  1245→  1245→
+  1246→  1246→Allow:
+  1247→  1247→
+  1248→  1248→> Buy Again
+  1249→  1249→
+  1250→  1250→AI can additionally identify products frequently reordered.
+  1251→  1251→
+  1252→  1252→---
+  1253→  1253→
+  1254→  1254→# 46. REVIEWS
+  1255→  1255→
+  1256→  1256→Support:
+  1257→  1257→
+  1258→  1258→* Star rating
+  1259→  1259→* Written review
+  1260→  1260→* Product review
+  1261→  1261→* Optional images
+  1262→  1262→* Verified purchase indicator
+  1263→  1263→
+  1264→  1264→Admin moderation must be available.
+  1265→  1265→
+  1266→  1266→---
+  1267→  1267→
+  1268→  1268→# 47. NOTIFICATIONS
+  1269→  1269→
+  1270→  1270→Create notification infrastructure.
+  1271→  1271→
+  1272→  1272→Types:
+  1273→  1273→
+  1274→  1274→* Order updates
+  1275→  1275→* Price alerts
+  1276→  1276→* Goal updates
+  1277→  1277→* Shopping reminders
+  1278→  1278→* Refill predictions
+  1279→  1279→* Wishlist alerts
+  1280→  1280→* Group shopping updates
+  1281→  1281→* AI recommendations
+  1282→  1282→
+  1283→  1283→Channels can include:
+  1284→  1284→
+  1285→  1285→* In-app
+  1286→  1286→* Email
+  1287→  1287→* Push notifications
+  1288→  1288→
+  1289→  1289→Respect user preferences.
+  1290→  1290→
+  1291→  1291→---
+  1292→  1292→
+  1293→  1293→# 48. USER "MY SHOPPING LIFE"
+  1294→  1294→
+  1295→  1295→Create a personalized customer dashboard.
+  1296→  1296→
+  1297→  1297→Sections:
+  1298→  1298→
+  1299→  1299→### My Orders
+  1300→  1300→
+  1301→  1301→### My Goals
+  1302→  1302→
+  1303→  1303→### My Wishlist
+  1304→  1304→
+  1305→  1305→### Price Watch
+  1306→  1306→
+  1307→  1307→### Shopping Insights
+  1308→  1308→
+  1309→  1309→### Upcoming Needs
+  1310→  1310→
+  1311→  1311→### Saved Products
+  1312→  1312→
+  1313→  1313→### Shopping Rooms
+  1314→  1314→
+  1315→  1315→### AI Preferences
+  1316→  1316→
+  1317→  1317→### Budget
+  1318→  1318→
+  1319→  1319→### AI Shopping Partner
+  1320→  1320→
+  1321→  1321→This dashboard should feel useful, not like a complicated analytics system.
+  1322→  1322→
+  1323→  1323→---
+  1324→  1324→
+  1325→  1325→# 49. AI PERSONALIZED HOMEPAGE
+  1326→  1326→
+  1327→  1327→For logged-in users:
+  1328→  1328→
+  1329→  1329→Show contextual sections such as:
+  1330→  1330→
+  1331→  1331→### Good morning 👋
+  1332→  1332→
+  1333→  1333→### Your Goals
+  1334→  1334→
+  1335→  1335→### You May Need Soon
+  1336→  1336→
+  1337→  1337→### Price Drops
+  1338→  1338→
+  1339→  1339→### Recommended For You
+  1340→  1340→
+  1341→  1341→### Continue Shopping
+  1342→  1342→
+  1343→  1343→### Your Cart
+  1344→  1344→
+  1345→  1345→### Smart Savings
+  1346→  1346→
+  1347→  1347→Do not overwhelm the user.
+  1348→  1348→
+  1349→  1349→Prioritize the most relevant information.
+  1350→  1350→
+  1351→  1351→---
+  1352→  1352→
+  1353→  1353→# 50. ADMIN PANEL
+  1354→  1354→
+  1355→  1355→Create a professional admin dashboard.
+  1356→  1356→
+  1357→  1357→Admin modules:
+  1358→  1358→
+  1359→  1359→* Dashboard
+  1360→  1360→* Users
+  1361→  1361→* Products
+  1362→  1362→* Categories
+  1363→  1363→* Brands
+  1364→  1364→* Inventory
+  1365→  1365→* Orders
+  1366→  1366→* Payments
+  1367→  1367→* Coupons
+  1368→  1368→* Discounts
+  1369→  1369→* Reviews
+  1370→  1370→* Shipping
+  1371→  1371→* Customers
+  1372→  1372→* AI analytics
+  1373→  1373→* Recommendations
+  1374→  1374→* Shopping rooms
+  1375→  1375→* Notifications
+  1376→  1376→* System settings
+  1377→  1377→
+  1378→  1378→---
+  1379→  1379→
+  1380→  1380→# 51. ADMIN PRODUCT MANAGEMENT
+  1381→  1381→
+  1382→  1382→Admin can:
+  1383→  1383→
+  1384→  1384→* Create product
+  1385→  1385→* Edit product
+  1386→  1386→* Delete/deactivate product
+  1387→  1387→* Upload images
+  1388→  1388→* Add variants
+  1389→  1389→* Manage inventory
+  1390→  1390→* Set pricing
+  1391→  1391→* Add discounts
+  1392→  1392→* Manage specifications
+  1393→  1393→* Assign category
+  1394→  1394→* Assign brand
+  1395→  1395→
+  1396→  1396→---
+  1397→  1397→
+  1398→  1398→# 52. INVENTORY
+  1399→  1399→
+  1400→  1400→Track:
+  1401→  1401→
+  1402→  1402→* SKU
+  1403→  1403→* Stock quantity
+  1404→  1404→* Reserved quantity
+  1405→  1405→* Available quantity
+  1406→  1406→* Low-stock threshold
+  1407→  1407→
+  1408→  1408→Prevent overselling.
+  1409→  1409→
+  1410→  1410→Use transactions/locking where required.
+  1411→  1411→
+  1412→  1412→---
+  1413→  1413→
+  1414→  1414→# 53. COUPONS
+  1415→  1415→
+  1416→  1416→Support:
+  1417→  1417→
+  1418→  1418→* Percentage discount
+  1419→  1419→* Fixed discount
+  1420→  1420→* Minimum order value
+  1421→  1421→* Maximum discount
+  1422→  1422→* Expiry
+  1423→  1423→* Usage limits
+  1424→  1424→* User restrictions
+  1425→  1425→
+  1426→  1426→Validate coupons server-side.
+  1427→  1427→
+  1428→  1428→---
+  1429→  1429→
+  1430→  1430→# 54. DATABASE ARCHITECTURE
+  1431→  1431→
+  1432→  1432→Create normalized database structures.
+  1433→  1433→
+  1434→  1434→Core entities may include:
+  1435→  1435→
+  1436→  1436→Users
+  1437→  1437→Addresses
+  1438→  1438→UserPreferences
+  1439→  1439→AIMemories
+  1440→  1440→Categories
+  1441→  1441→Brands
+  1442→  1442→Products
+  1443→  1443→ProductVariants
+  1444→  1444→ProductImages
+  1445→  1445→Inventory
+  1446→  1446→Prices
+  1447→  1447→Reviews
+  1448→  1448→Wishlists
+  1449→  1449→WishlistItems
+  1450→  1450→Carts
+  1451→  1451→CartItems
+  1452→  1452→Orders
+  1453→  1453→OrderItems
+  1454→  1454→Payments
+  1455→  1455→Shipments
+  1456→  1456→Coupons
+  1457→  1457→Goals
+  1458→  1458→GoalItems
+  1459→  1459→FinancialProfiles
+  1460→  1460→SpendingRecords
+  1461→  1461→ShoppingRooms
+  1462→  1462→ShoppingRoomMembers
+  1463→  1463→ShoppingRoomItems
+  1464→  1464→ShoppingRoomVotes
+  1465→  1465→PriceWatches
+  1466→  1466→Notifications
+  1467→  1467→AIConversations
+  1468→  1468→AIConversationMessages
+  1469→  1469→Recommendations
+  1470→  1470→ProductInteractions
+  1471→  1471→RecurringPurchases
+  1472→  1472→
+  1473→  1473→Use proper relationships, indexes, constraints, and timestamps.
+  1474→  1474→
+  1475→  1475→---
+  1476→  1476→
+  1477→  1477→# 55. DATA SYNCHRONIZATION
+  1478→  1478→
+  1479→  1479→Every frontend operation must synchronize with the backend.
+  1480→  1480→
+  1481→  1481→Example:
+  1482→  1482→
+  1483→  1483→User adds product to cart.
+  1484→  1484→
+  1485→  1485→Frontend:
+  1486→  1486→
+  1487→  1487→Add item
+  1488→  1488→
+  1489→  1489→↓
+  1490→  1490→
+  1491→  1491→API request
+  1492→  1492→
+  1493→  1493→↓
+  1494→  1494→
+  1495→  1495→Backend validates:
+  1496→  1496→
+  1497→  1497→* User
+  1498→  1498→* Product
+  1499→  1499→* Variant
+  1500→  1500→* Stock
+  1501→  1501→* Price
+  1502→  1502→
+  1503→  1503→↓
+  1504→  1504→
+  1505→  1505→Database update
+  1506→  1506→
+  1507→  1507→↓
+  1508→  1508→
+  1509→  1509→API response
+  1510→  1510→
+  1511→  1511→↓
+  1512→  1512→
+  1513→  1513→Frontend state update
+  1514→  1514→
+  1515→  1515→↓
+  1516→  1516→
+  1517→  1517→UI reflects actual server state
+  1518→  1518→
+  1519→  1519→Do not maintain fake frontend-only state for important business data.
+  1520→  1520→
+  1521→  1521→---
+  1522→  1522→
+  1523→  1523→# 56. DATA CONSISTENCY
+  1524→  1524→
+  1525→  1525→The backend is the source of truth for:
+  1526→  1526→
+  1527→  1527→* Product price
+  1528→  1528→* Stock
+  1529→  1529→* Cart totals
+  1530→  1530→* Taxes
+  1531→  1531→* Discounts
+  1532→  1532→* Order totals
+  1533→  1533→* Payment status
+  1534→  1534→* User permissions
+  1535→  1535→
+  1536→  1536→Frontend must never be trusted for financial/business-critical calculations.
+  1537→  1537→
+  1538→  1538→---
+  1539→  1539→
+  1540→  1540→# 57. API ARCHITECTURE
+  1541→  1541→
+  1542→  1542→Use clean REST or GraphQL architecture.
+  1543→  1543→
+  1544→  1544→Example:
+  1545→  1545→
+  1546→  1546→```text
+  1547→  1547→/api/auth
+  1548→  1548→/api/users
+  1549→  1549→/api/products
+  1550→  1550→/api/categories
+  1551→  1551→/api/search
+  1552→  1552→/api/cart
+  1553→  1553→/api/wishlist
+  1554→  1554→/api/orders
+  1555→  1555→/api/payments
+  1556→  1556→/api/goals
+  1557→  1557→/api/financial
+  1558→  1558→/api/ai
+  1559→  1559→/api/recommendations
+  1560→  1560→/api/price-watch
+  1561→  1561→/api/shopping-rooms
+  1562→  1562→/api/notifications
+  1563→  1563→/api/admin
+  1564→  1564→```
+  1565→  1565→
+  1566→  1566→Use:
+  1567→  1567→
+  1568→  1568→* Validation
+  1569→  1569→* Authentication
+  1570→  1570→* Authorization
+  1571→  1571→* Consistent error responses
+  1572→  1572→* Pagination
+  1573→  1573→* Filtering
+  1574→  1574→* Sorting
+  1575→  1575→* Logging
+  1576→  1576→
+  1577→  1577→---
+  1578→  1578→
+  1579→  1579→# 58. AI API ARCHITECTURE
+  1580→  1580→
+  1581→  1581→Do not allow the frontend to directly control sensitive AI operations.
+  1582→  1582→
+  1583→  1583→Flow:
+  1584→  1584→
+  1585→  1585→Frontend
+  1586→  1586→→ Backend AI API
+  1587→  1587→→ AI Orchestrator
+  1588→  1588→→ Context Retrieval
+  1589→  1589→→ Business Tools
+  1590→  1590→→ AI Model
+  1591→  1591→→ Validation
+  1592→  1592→→ Response
+  1593→  1593→→ Frontend
+  1594→  1594→
+  1595→  1595→AI should use controlled tools for actions.
+  1596→  1596→
+  1597→  1597→For example:
+  1598→  1598→
+  1599→  1599→```text
+  1600→  1600→search_products()
+  1601→  1601→get_product()
+  1602→  1602→compare_products()
+  1603→  1603→get_cart()
+  1604→  1604→update_cart()
+  1605→  1605→create_goal()
+  1606→  1606→get_user_budget()
+  1607→  1607→get_orders()
+  1608→  1608→get_recommendations()
+  1609→  1609→create_price_watch()
+  1610→  1610→```
+  1611→  1611→
+  1612→  1612→The AI must not directly execute arbitrary database queries.
+  1613→  1613→
+  1614→  1614→---
+  1615→  1615→
+  1616→  1616→# 59. AI TOOL SAFETY
+  1617→  1617→
+  1618→  1618→Every AI action must have permissions.
+  1619→  1619→
+  1620→  1620→For example:
+  1621→  1621→
+  1622→  1622→AI may suggest:
+  1623→  1623→
+  1624→  1624→> "Remove this product."
+  1625→  1625→
+  1626→  1626→But it must ask for confirmation before modifying the cart.
+  1627→  1627→
+  1628→  1628→Likewise:
+  1629→  1629→
+  1630→  1630→AI may prepare a goal.
+  1631→  1631→
+  1632→  1632→User confirms.
+  1633→  1633→
+  1634→  1634→Then create it.
+  1635→  1635→
+  1636→  1636→Never allow an AI model to bypass authorization.
+  1637→  1637→
+  1638→  1638→---
+  1639→  1639→
+  1640→  1640→# 60. CONVERSATION CONTEXT
+  1641→  1641→
+  1642→  1642→The AI should maintain conversation context.
+  1643→  1643→
+  1644→  1644→Example:
+  1645→  1645→
+  1646→  1646→User:
+  1647→  1647→
+  1648→  1648→> "Show me laptops."
+  1649→  1649→
+  1650→  1650→AI responds.
+  1651→  1651→
+  1652→  1652→User:
+  1653→  1653→
+  1654→  1654→> "Under 70k."
+  1655→  1655→
+  1656→  1656→AI understands that "under 70k" refers to laptops.
+  1657→  1657→
+  1658→  1658→User:
+  1659→  1659→
+  1660→  1660→> "Which one is better?"
+  1661→  1661→
+  1662→  1662→AI understands which products are being discussed.
+  1663→  1663→
+  1664→  1664→---
+  1665→  1665→
+  1666→  1666→# 61. AI RESPONSE TYPES
+  1667→  1667→
+  1668→  1668→AI should not return only plain text.
+  1669→  1669→
+  1670→  1670→Support structured responses:
+  1671→  1671→
+  1672→  1672→* Product cards
+  1673→  1673→* Product comparison
+  1674→  1674→* Cart actions
+  1675→  1675→* Goal cards
+  1676→  1676→* Budget insights
+  1677→  1677→* Price alerts
+  1678→  1678→* Recommendation lists
+  1679→  1679→* Confirmation dialogs
+  1680→  1680→
+  1681→  1681→---
+  1682→  1682→
+  1683→  1683→# 62. RECOMMENDATION ENGINE
+  1684→  1684→
+  1685→  1685→Combine multiple signals:
+  1686→  1686→
+  1687→  1687→* Product popularity
+  1688→  1688→* User preferences
+  1689→  1689→* Purchase history
+  1690→  1690→* Browsing behavior
+  1691→  1691→* Wishlist
+  1692→  1692→* Goals
+  1693→  1693→* Budget
+  1694→  1694→* Similar products
+  1695→  1695→* Product similarity
+  1696→  1696→* Context
+  1697→  1697→* Seasonality
+  1698→  1698→
+  1699→  1699→Avoid excessive personalization without enough data.
+  1700→  1700→
+  1701→  1701→For new users use:
+  1702→  1702→
+  1703→  1703→* Popular products
+  1704→  1704→* Category preferences
+  1705→  1705→* Explicit onboarding preferences
+  1706→  1706→* Contextual recommendations
+  1707→  1707→
+  1708→  1708→---
+  1709→  1709→
+  1710→  1710→# 63. COLD START
+  1711→  1711→
+  1712→  1712→For new users:
+  1713→  1713→
+  1714→  1714→Do not pretend to know their preferences.
+  1715→  1715→
+  1716→  1716→Use:
+  1717→  1717→
+  1718→  1718→> "We are still learning what you like."
+  1719→  1719→
+  1720→  1720→Then gradually personalize based on legitimate signals.
+  1721→  1721→
+  1722→  1722→---
+  1723→  1723→
+  1724→  1724→# 64. EXPLAINABLE RECOMMENDATIONS
+  1725→  1725→
+  1726→  1726→Whenever practical, explain recommendations.
+  1727→  1727→
+  1728→  1728→Examples:
+  1729→  1729→
+  1730→  1730→> "Recommended because you viewed similar laptops."
+  1731→  1731→
+  1732→  1732→> "Recommended because it matches your saved ₹70,000 budget."
+  1733→  1733→
+  1734→  1734→> "Recommended because it is compatible with your selected device."
+  1735→  1735→
+  1736→  1736→Users should be able to understand why something is recommended.
+  1737→  1737→
+  1738→  1738→---
+  1739→  1739→
+  1740→  1740→# 65. PRIVACY
+  1741→  1741→
+  1742→  1742→Financial information and behavioral data are sensitive.
+  1743→  1743→
+  1744→  1744→Implement:
+  1745→  1745→
+  1746→  1746→* Explicit consent
+  1747→  1747→* Data minimization
+  1748→  1748→* Secure storage
+  1749→  1749→* Encryption where appropriate
+  1750→  1750→* Access controls
+  1751→  1751→* Data deletion
+  1752→  1752→* Export where required
+  1753→  1753→* Privacy settings
+  1754→  1754→
+  1755→  1755→Do not expose one user's information to another user.
+  1756→  1756→
+  1757→  1757→---
+  1758→  1758→
+  1759→  1759→# 66. FINANCIAL DATA RULE
+  1760→  1760→
+  1761→  1761→Financial intelligence is optional.
+  1762→  1762→
+  1763→  1763→Never require:
+  1764→  1764→
+  1765→  1765→* Salary
+  1766→  1766→* Bank credentials
+  1767→  1767→* Bank passwords
+  1768→  1768→* Card PIN
+  1769→  1769→* OTP
+  1770→  1770→* Banking login credentials
+  1771→  1771→
+  1772→  1772→Never ask users to provide sensitive authentication secrets.
+  1773→  1773→
+  1774→  1774→---
+  1775→  1775→
+  1776→  1776→# 67. AI FINANCIAL SAFETY
+  1777→  1777→
+  1778→  1778→The system is a shopping assistant, not a financial advisor.
+  1779→  1779→
+  1780→  1780→Avoid:
+  1781→  1781→
+  1782→  1782→* Guaranteed investment advice
+  1783→  1783→* Guaranteed income predictions
+  1784→  1784→* Claims of financial certainty
+  1785→  1785→* Manipulative spending recommendations
+  1786→  1786→
+  1787→  1787→Use language such as:
+  1788→  1788→
+  1789→  1789→> "Based on the information you've provided..."
+  1790→  1790→
+  1791→  1791→> "Estimated..."
+  1792→  1792→
+  1793→  1793→> "You may want to consider..."
+  1794→  1794→
+  1795→  1795→---
+  1796→  1796→
+  1797→  1797→# 68. RESPONSIVE DESIGN
+  1798→  1798→
+  1799→  1799→The entire website must work on:
+  1800→  1800→
+  1801→  1801→* Desktop
+  1802→  1802→* Laptop
+  1803→  1803→* Tablet
+  1804→  1804→* Mobile
+  1805→  1805→
+  1806→  1806→Do not simply shrink desktop UI.
+  1807→  1807→
+  1808→  1808→Create proper mobile layouts.
+  1809→  1809→
+  1810→  1810→---
+  1811→  1811→
+  1812→  1812→# 69. UI DESIGN
+  1813→  1813→
+  1814→  1814→Use a modern premium e-commerce visual language.
+  1815→  1815→
+  1816→  1816→Requirements:
+  1817→  1817→
+  1818→  1818→* Clean layout
+  1819→  1819→* Strong typography
+  1820→  1820→* Consistent spacing
+  1821→  1821→* Professional cards
+  1822→  1822→* Smooth hover effects
+  1823→  1823→* Subtle animations
+  1824→  1824→* Clear CTA buttons
+  1825→  1825→* Accessible contrast
+  1826→  1826→* Consistent iconography
+  1827→  1827→* Responsive navigation
+  1828→  1828→
+  1829→  1829→Do not make every component animated.
+  1830→  1830→
+  1831→  1831→Animations should improve usability.
+  1832→  1832→
+  1833→  1833→---
+  1834→  1834→
+  1835→  1835→# 70. AI UI DESIGN
+  1836→  1836→
+  1837→  1837→AI interface should feel integrated.
+  1838→  1838→
+  1839→  1839→Avoid a huge chatbot covering the entire screen unnecessarily.
+  1840→  1840→
+  1841→  1841→Use:
+  1842→  1842→
+  1843→  1843→* Floating assistant
+  1844→  1844→* Side panel
+  1845→  1845→* Bottom sheet on mobile
+  1846→  1846→* Contextual AI cards
+  1847→  1847→* Inline suggestions
+  1848→  1848→
+  1849→  1849→The user should always be able to return to normal shopping.
+  1850→  1850→
+  1851→  1851→---
+  1852→  1852→
+  1853→  1853→# 71. LOADING STATES
+  1854→  1854→
+  1855→  1855→Every async operation needs proper loading UI.
+  1856→  1856→
+  1857→  1857→Examples:
+  1858→  1858→
+  1859→  1859→* Product skeleton
+  1860→  1860→* Search loading
+  1861→  1861→* AI thinking indicator
+  1862→  1862→* Cart update state
+  1863→  1863→* Checkout processing
+  1864→  1864→* Payment processing
+  1865→  1865→
+  1866→  1866→Never leave users wondering whether something happened.
+  1867→  1867→
+  1868→  1868→---
+  1869→  1869→
+  1870→  1870→# 72. ERROR HANDLING
+  1871→  1871→
+  1872→  1872→Every API failure must produce a useful message.
+  1873→  1873→
+  1874→  1874→Bad:
+  1875→  1875→
+  1876→  1876→> Error 500
+  1877→  1877→
+  1878→  1878→Good:
+  1879→  1879→
+  1880→  1880→> "We couldn't update your cart. Please try again."
+  1881→  1881→
+  1882→  1882→Log technical details internally.
+  1883→  1883→
+  1884→  1884→Do not expose stack traces to users.
+  1885→  1885→
+  1886→  1886→---
+  1887→  1887→
+  1888→  1888→# 73. EMPTY STATES
+  1889→  1889→
+  1890→  1890→Design meaningful empty states.
+  1891→  1891→
+  1892→  1892→Examples:
+  1893→  1893→
+  1894→  1894→Empty cart:
+  1895→  1895→
+  1896→  1896→> "Your cart is waiting for something great."
+  1897→  1897→
+  1898→  1898→Empty wishlist:
+  1899→  1899→
+  1900→  1900→> "Save products here and we'll help you track them."
+  1901→  1901→
+  1902→  1902→No goals:
+  1903→  1903→
+  1904→  1904→> "Create your first shopping goal."
+  1905→  1905→
+  1906→  1906→No AI memory:
+  1907→  1907→
+  1908→  1908→> "As you shop, your Shopping Partner can learn your preferences."
+  1909→  1909→
+  1910→  1910→---
+  1911→  1911→
+  1912→  1912→# 74. SEARCH EXPERIENCE
+  1913→  1913→
+  1914→  1914→Support:
+  1915→  1915→
+  1916→  1916→* Search suggestions
+  1917→  1917→* Recent searches
+  1918→  1918→* Popular searches
+  1919→  1919→* Typo tolerance
+  1920→  1920→* Natural language
+  1921→  1921→* Filters
+  1922→  1922→* AI interpretation
+  1923→  1923→
+  1924→  1924→Example:
+  1925→  1925→
+  1926→  1926→> "Best headphones for travel under 5000"
+  1927→  1927→
+  1928→  1928→should produce meaningful results.
+  1929→  1929→
+  1930→  1930→---
+  1931→  1931→
+  1932→  1932→# 75. PERFORMANCE
+  1933→  1933→
+  1934→  1934→Optimize:
+  1935→  1935→
+  1936→  1936→* Images
+  1937→  1937→* API requests
+  1938→  1938→* Database queries
+  1939→  1939→* Search
+  1940→  1940→* AI calls
+  1941→  1941→* Caching
+  1942→  1942→* Lazy loading
+  1943→  1943→* Pagination
+  1944→  1944→
+  1945→  1945→Do not call AI unnecessarily.
+  1946→  1946→
+  1947→  1947→AI calls should be triggered only when useful.
+  1948→  1948→
+  1949→  1949→---
+  1950→  1950→
+  1951→  1951→# 76. AI COST CONTROL
+  1952→  1952→
+  1953→  1953→Implement:
+  1954→  1954→
+  1955→  1955→* Request limits
+  1956→  1956→* Context limits
+  1957→  1957→* Caching where appropriate
+  1958→  1958→* Model selection
+  1959→  1959→* Token control
+  1960→  1960→* Rate limiting
+  1961→  1961→* Retry handling
+  1962→  1962→* Failure fallback
+  1963→  1963→
+  1964→  1964→If AI is unavailable, normal e-commerce must continue working.
+  1965→  1965→
+  1966→  1966→---
+  1967→  1967→
+  1968→  1968→# 77. AI FAILURE FALLBACK
+  1969→  1969→
+  1970→  1970→If AI fails:
+  1971→  1971→
+  1972→  1972→Normal website must still work.
+  1973→  1973→
+  1974→  1974→Example:
+  1975→  1975→
+  1976→  1976→AI recommendation unavailable.
+  1977→  1977→
+  1978→  1978→Show:
+  1979→  1979→
+  1980→  1980→> "AI recommendations are temporarily unavailable."
+  1981→  1981→
+  1982→  1982→Continue normal product browsing.
+  1983→  1983→
+  1984→  1984→Never block checkout because AI is unavailable.
+  1985→  1985→
+  1986→  1986→---
+  1987→  1987→
+  1988→  1988→# 78. SECURITY
+  1989→  1989→
+  1990→  1990→Implement:
+  1991→  1991→
+  1992→  1992→* Authentication
+  1993→  1993→* Authorization
+  1994→  1994→* Input validation
+  1995→  1995→* SQL injection protection
+  1996→  1996→* XSS protection
+  1997→  1997→* CSRF protection where applicable
+  1998→  1998→* Rate limiting
+  1999→  1999→* Secure headers
+  2000→  2000→* Secure file upload
+
+[showing lines 1-2000 of 2002; use offset=2001 with limit to continue reading]

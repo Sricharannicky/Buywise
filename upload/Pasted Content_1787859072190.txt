@@ -1,0 +1,3509 @@
+# AI-POWERED E-COMMERCE PLATFORM
+
+## Complete A–Z Product, UX, AI, Backend & Implementation Master Prompt
+
+---
+
+# 1. PROJECT ROLE
+
+You are a senior full-stack architect, UI/UX designer, AI systems engineer, database architect, security engineer, QA engineer, and DevOps engineer.
+
+Your task is to design and build a **complete, production-quality AI-powered e-commerce platform** from the ground up.
+
+Do not create a static demo.
+
+Do not create mock buttons that do nothing.
+
+Do not create disconnected pages.
+
+Every important UI element must connect to a real application flow, API, database operation, or clearly defined service.
+
+The final application must behave like a professional modern e-commerce platform.
+
+---
+
+# 2. CORE PRODUCT VISION
+
+Build a modern e-commerce website with a familiar shopping experience similar in usability and information architecture to established platforms such as Bagisto-based storefronts.
+
+The website must look and behave like a normal e-commerce website.
+
+The major differentiator is a single integrated:
+
+# "AI SHOPPING PARTNER"
+
+The user must not need to understand individual AI agents.
+
+Internally, the system may use multiple specialized AI capabilities, but externally the user interacts with **one unified AI assistant**.
+
+The AI Shopping Partner should help users:
+
+* Discover products
+* Search naturally
+* Understand products
+* Compare products
+* Create shopping goals
+* Analyze spending patterns
+* Understand affordability
+* Plan purchases
+* Predict future needs
+* Optimize carts
+* Find alternatives
+* Track prices
+* Manage wishlists
+* Organize group shopping
+* Plan gifts
+* Track recurring purchases
+* Understand post-purchase needs
+* Make better purchasing decisions
+
+The AI must not simply encourage users to spend more.
+
+It should sometimes recommend:
+
+> "You may want to wait."
+
+> "This purchase is outside your current planned budget."
+
+> "You already own a similar product."
+
+> "A lower-cost alternative may satisfy your requirement."
+
+The AI should behave like a **trusted shopping partner**, not an advertising engine.
+
+---
+
+# 3. PRIMARY PRODUCT PRINCIPLE
+
+The application has two layers.
+
+## Layer 1 — Normal E-Commerce
+
+Users can use the entire website without interacting with AI.
+
+Standard flow:
+
+Home
+→ Categories
+→ Search
+→ Product Listing
+→ Product Details
+→ Wishlist
+→ Cart
+→ Checkout
+→ Payment
+→ Order
+→ Delivery
+→ Post-Purchase
+
+## Layer 2 — AI Intelligence
+
+The AI operates throughout the shopping journey.
+
+User
+→ Understand
+→ Plan
+→ Search
+→ Compare
+→ Decide
+→ Purchase
+→ Use
+→ Maintain
+→ Replace
+→ Plan next purchase
+
+The AI should enhance the normal e-commerce experience rather than replace it.
+
+---
+
+# 4. USER EXPERIENCE PRINCIPLE
+
+Never make the website feel like an AI dashboard.
+
+The primary interface must remain an attractive, simple, familiar e-commerce storefront.
+
+AI should appear naturally through:
+
+* AI Shopping Partner button
+* Personalized recommendations
+* AI insights
+* Smart search
+* Smart cart suggestions
+* Goal suggestions
+* Price alerts
+* Personalized notifications
+* Contextual product insights
+
+The user should always be able to ignore AI and continue normal shopping.
+
+---
+
+# 5. COMPLETE APPLICATION FLOW
+
+Implement this complete flow:
+
+## STEP 1 — Landing Page
+
+User opens the website.
+
+Show:
+
+* Header
+* Logo
+* Search
+* Categories
+* Login/Register
+* Wishlist
+* Cart
+* Hero banner
+* Featured categories
+* Trending products
+* New arrivals
+* Deals
+* Personalized products if logged in
+* AI Shopping Partner entry point
+* Footer
+
+---
+
+# 6. AUTHENTICATION
+
+Create a professional authentication system.
+
+## Registration
+
+Fields:
+
+* First name
+* Last name
+* Email
+* Phone
+* Password
+* Confirm password
+
+Optional:
+
+* Date of birth
+* Preferred language
+* Location
+* Shopping preferences
+
+Do not require financial information during registration.
+
+Financial information must always be optional.
+
+## Login
+
+Support:
+
+* Email + password
+* Optional phone OTP
+* Optional Google authentication
+* Remember session
+* Logout
+* Forgot password
+* Reset password
+
+## Security
+
+Implement:
+
+* Password hashing
+* Secure sessions/JWT where appropriate
+* Refresh token handling
+* Authentication middleware
+* Rate limiting
+* Input validation
+* CSRF protection where applicable
+* Secure cookies where applicable
+* Session expiration
+* Logout invalidation
+
+Never store plain-text passwords.
+
+---
+
+# 7. FIRST-TIME USER ONBOARDING
+
+After registration, show a short optional onboarding flow.
+
+Do not overwhelm the user.
+
+Ask useful questions such as:
+
+### Shopping preferences
+
+* Favorite categories
+* Preferred brands
+* Typical budget range
+* Sizes where applicable
+* Preferred colors
+* Preferred price range
+
+### Optional financial intelligence
+
+Allow the user to choose:
+
+> "Would you like your AI Shopping Partner to help you plan purchases based on your income and budget?"
+
+Options:
+
+* Yes
+* Not now
+
+Never force financial information.
+
+---
+
+# 8. USER PROFILE
+
+Create a complete profile system.
+
+Store:
+
+* Name
+* Email
+* Phone
+* Address
+* Preferences
+* Wishlist
+* Purchase history
+* Search history where permitted
+* Cart
+* Goals
+* Shopping preferences
+* AI preferences
+* Notification preferences
+
+Allow users to edit and delete their data.
+
+---
+
+# 9. HOME PAGE
+
+Design a premium modern e-commerce homepage.
+
+Sections:
+
+1. Header
+2. Search
+3. Categories
+4. Hero banner
+5. Featured categories
+6. Trending products
+7. New arrivals
+8. Personalized recommendations
+9. AI Shopping Partner
+10. Deals
+11. Recently viewed
+12. Recommended for goals
+13. Footer
+
+For logged-in users, dynamically personalize sections.
+
+Example:
+
+### "Picked for you"
+
+### "You may need soon"
+
+### "Based on your goals"
+
+### "Because you bought..."
+
+Do not display all sections blindly.
+
+The recommendation engine should determine relevance.
+
+---
+
+# 10. HEADER
+
+Create a responsive header.
+
+Desktop:
+
+* Logo
+* Categories
+* Search
+* AI Shopping Partner
+* Account
+* Wishlist
+* Cart
+
+Mobile:
+
+* Hamburger
+* Logo
+* Search
+* AI
+* Cart
+* Account
+
+Keep navigation simple.
+
+---
+
+# 11. PRODUCT CATALOG
+
+Build a complete catalog system.
+
+Product fields may include:
+
+* Product ID
+* SKU
+* Name
+* Slug
+* Description
+* Short description
+* Brand
+* Category
+* Subcategory
+* Images
+* Videos where supported
+* Price
+* Discount
+* Tax
+* Stock
+* Weight
+* Dimensions
+* Attributes
+* Variants
+* Ratings
+* Reviews
+* Tags
+* Specifications
+* Seller
+* Warranty
+* Shipping information
+* Created date
+* Updated date
+
+---
+
+# 12. PRODUCT VARIANTS
+
+Support products with variants.
+
+Examples:
+
+* Size
+* Color
+* Storage
+* RAM
+* Capacity
+* Pack size
+
+Variant selection must dynamically update:
+
+* Price
+* Stock
+* SKU
+* Images
+* Availability
+
+---
+
+# 13. CATEGORY SYSTEM
+
+Support:
+
+* Categories
+* Subcategories
+* Nested categories
+* Category images
+* Category descriptions
+* Category SEO data
+
+Example:
+
+Electronics
+→ Computers
+→ Laptops
+→ Gaming Laptops
+
+---
+
+# 14. PRODUCT SEARCH
+
+Implement powerful search.
+
+Normal search:
+
+> "Laptop"
+
+AI/natural-language search:
+
+> "I need a laptop under ₹70,000 for programming and gaming."
+
+The system should understand:
+
+* Product type
+* Budget
+* Use case
+* Preferences
+* Requirements
+
+Then convert natural language into structured filters.
+
+Example:
+
+```text
+category = laptop
+max_price = 70000
+use_cases = programming,gaming
+```
+
+---
+
+# 15. FILTERING
+
+Support:
+
+* Price
+* Brand
+* Rating
+* Category
+* Availability
+* Attributes
+* Discount
+* Seller
+* Specifications
+
+Filters must work with real database queries.
+
+---
+
+# 16. SORTING
+
+Support:
+
+* Relevance
+* Price low to high
+* Price high to low
+* Rating
+* Newest
+* Popularity
+* Discount
+
+---
+
+# 17. PRODUCT DETAILS PAGE
+
+Create a professional product page.
+
+Include:
+
+* Product gallery
+* Product title
+* Rating
+* Reviews
+* Price
+* Discount
+* Variant selector
+* Quantity
+* Stock status
+* Delivery estimate
+* Add to cart
+* Buy now
+* Wishlist
+* Product description
+* Specifications
+* Seller information
+* Warranty
+* Reviews
+* Related products
+
+Add:
+
+# "AI Insight"
+
+Example:
+
+> Why this may be suitable for you
+
+* Fits your budget
+* Matches your saved preferences
+* Similar to products you previously viewed
+* Compatible with your existing products
+
+---
+
+# 18. AI SHOPPING PARTNER
+
+Create one unified AI interface.
+
+The user should be able to open it from anywhere.
+
+Possible UI:
+
+Floating button:
+
+# ✨ Shopping Partner
+
+When opened:
+
+* Conversational chat
+* Suggested prompts
+* Product cards
+* Comparison cards
+* Goal cards
+* Cart actions
+* Budget insights
+* Search results
+
+The assistant should understand conversational context.
+
+Example:
+
+User:
+
+> "I need a laptop."
+
+AI:
+
+> "Sure. What is your approximate budget?"
+
+User:
+
+> "70k."
+
+AI:
+
+> "What will you mainly use it for?"
+
+User:
+
+> "Programming and gaming."
+
+AI should remember the conversation and continue naturally.
+
+---
+
+# 19. AI ORCHESTRATION
+
+Internally, use a unified AI orchestration layer.
+
+Possible internal capabilities:
+
+### Personal Intelligence
+
+Understands:
+
+* Preferences
+* History
+* Behavior
+
+### Financial Intelligence
+
+Analyzes:
+
+* Income
+* Expenses
+* Spending patterns
+* Budget
+
+### Goal Intelligence
+
+Manages:
+
+* Goals
+* Targets
+* Deadlines
+* Progress
+
+### Shopping Intelligence
+
+Handles:
+
+* Search
+* Discovery
+* Comparison
+* Recommendations
+
+### Prediction Intelligence
+
+Handles:
+
+* Future needs
+* Refills
+* Replacement
+* Seasonal requirements
+
+### Cart Intelligence
+
+Handles:
+
+* Cart optimization
+* Alternatives
+* Duplicate detection
+* Budget impact
+
+### Price Intelligence
+
+Handles:
+
+* Price tracking
+* Price alerts
+* Deal analysis
+
+### Social Shopping Intelligence
+
+Handles:
+
+* Group rooms
+* Voting
+* Shared carts
+
+### Post-Purchase Intelligence
+
+Handles:
+
+* Setup
+* Maintenance
+* Usage
+* Replacement
+
+These are internal capabilities.
+
+Do not expose them as separate agents to the user.
+
+---
+
+# 20. AI MEMORY
+
+Create controlled AI memory.
+
+The AI may remember:
+
+* User preferences
+* Favorite categories
+* Preferred brands
+* Product preferences
+* Shopping goals
+* Saved products
+* Purchase history
+* Explicitly provided information
+* Interaction preferences
+
+The AI must distinguish between:
+
+### Explicit information
+
+User directly said it.
+
+### Inferred information
+
+System inferred it.
+
+Never present uncertain inference as fact.
+
+Allow users to view, edit, and delete stored AI preferences/memories.
+
+---
+
+# 21. SALARY / INCOME INTELLIGENCE
+
+Create an optional financial profile.
+
+Fields:
+
+* Monthly income
+* Income frequency
+* Fixed expenses
+* Rent
+* EMI
+* Savings target
+* Monthly shopping budget
+* Other optional commitments
+
+Never require users to provide salary information.
+
+---
+
+# 22. SPENDING PATTERN ANALYSIS
+
+Analyze user purchases only with appropriate consent.
+
+Possible metrics:
+
+* Average monthly shopping
+* Category spending
+* Average order value
+* Purchase frequency
+* Recurring purchases
+* Discretionary purchases
+* Goal-related spending
+
+Example:
+
+> "Your average monthly shopping spend has been around ₹6,500."
+
+Use historical data carefully.
+
+Do not make unsupported financial claims.
+
+---
+
+# 23. AFFORDABILITY INTELLIGENCE
+
+When the user asks:
+
+> "Can I afford this?"
+
+The AI should consider:
+
+* Available budget
+* Planned spending
+* Existing goals
+* Purchase price
+* Optional user-provided income/expenses
+
+Return understandable guidance.
+
+Example:
+
+> "This purchase fits within your current shopping budget, but it would reduce your remaining monthly budget by approximately 30%."
+
+Never present this as professional financial advice.
+
+---
+
+# 24. GOAL SYSTEM
+
+Allow users to create goals.
+
+Example:
+
+### Goal
+
+MacBook
+
+Target:
+
+₹120,000
+
+Current progress:
+
+₹45,000
+
+Remaining:
+
+₹75,000
+
+Optional target date:
+
+December 2026
+
+The AI can help users:
+
+* Create goals
+* Add products to goals
+* Set target budgets
+* Track progress
+* Recommend saving plans
+* Suggest alternatives
+* Detect relevant products
+
+---
+
+# 25. NEED VS WANT INTELLIGENCE
+
+Before checkout, optionally classify products:
+
+### NEED
+
+Essential/high priority.
+
+### USEFUL
+
+Useful but not urgent.
+
+### WANT
+
+Optional purchase.
+
+Never force the classification.
+
+Allow:
+
+* Buy now
+* Save for later
+* Remove
+
+---
+
+# 26. FUTURE NEED PREDICTION
+
+Use historical behavior to estimate possible future purchases.
+
+Examples:
+
+* Refill products
+* Replacement products
+* Seasonal purchases
+* Recurring purchases
+
+Example:
+
+> "Based on your previous purchase interval, you may need this product again soon."
+
+Clearly label predictions as estimates.
+
+---
+
+# 27. SMART CART OPTIMIZER
+
+Add:
+
+# "Optimize My Cart"
+
+The AI analyzes:
+
+* Total cost
+* Duplicate products
+* Alternatives
+* Discounts
+* Coupons
+* Compatibility
+* User goals
+* Budget
+* Delivery cost
+
+Example:
+
+> "I found 3 ways to reduce your cart by approximately ₹1,250."
+
+Actions:
+
+* Replace
+* Remove
+* Save for later
+* Apply coupon
+* Continue
+
+Never modify the cart without user confirmation.
+
+---
+
+# 28. PRODUCT COMPATIBILITY
+
+The AI should understand product relationships.
+
+Example:
+
+Laptop
+→ Charger
+→ Dock
+→ Monitor
+→ Mouse
+→ Keyboard
+→ Bag
+
+If the user already owns an accessory:
+
+> "You already have a compatible USB-C mouse. You may not need another one."
+
+---
+
+# 29. PRODUCT COMPARISON
+
+Allow users to compare multiple products.
+
+AI comparison should consider:
+
+* Price
+* Features
+* Specifications
+* Reviews
+* User requirements
+* Budget
+* Compatibility
+
+Example:
+
+> "For your stated requirement, Product B offers the better balance of performance and price."
+
+---
+
+# 30. ALTERNATIVE PRODUCT ENGINE
+
+If a product is too expensive:
+
+Recommend:
+
+* Similar products
+* Lower-priced alternatives
+* Better-value products
+* Different brands
+
+Explain the trade-offs.
+
+Never claim two products are identical when they are not.
+
+---
+
+# 31. PRICE WATCH
+
+Allow users to watch products.
+
+User:
+
+> "Notify me if this falls below ₹25,000."
+
+Store:
+
+* Product
+* Target price
+* User
+* Notification preference
+
+When the condition is met:
+
+> "The product you're watching has reached ₹24,799."
+
+---
+
+# 32. DEAL INTELLIGENCE
+
+Do not treat every discount as a good deal.
+
+Consider:
+
+* Current price
+* Previous prices where available
+* Discount
+* User's target price
+* Product alternatives
+
+Return transparent explanations.
+
+---
+
+# 33. WISHLIST INTELLIGENCE
+
+Normal wishlist functionality plus AI intelligence.
+
+AI can identify:
+
+* Price drops
+* Duplicate products
+* Products relevant to goals
+* Products that may no longer be relevant
+
+Do not automatically delete anything.
+
+---
+
+# 34. GROUP SHOPPING
+
+Create:
+
+# Shopping Rooms
+
+Users can create a shared shopping room.
+
+Example:
+
+### New Apartment Shopping
+
+Members:
+
+* User A
+* User B
+* User C
+
+Features:
+
+* Invite members
+* Shared product list
+* Shared cart
+* Comments
+* Voting
+* Product comparison
+* Budget
+* Assign items
+* AI recommendations
+
+AI can summarize:
+
+> "Most members prefer Product B and it is within the group's budget."
+
+---
+
+# 35. GIFT PLANNER
+
+Allow users to create gift plans.
+
+Example:
+
+> "I need a birthday gift under ₹5,000."
+
+AI can recommend:
+
+* Main gift
+* Supporting items
+* Personalized options
+* Packaging
+* Budget allocation
+
+Keep this optional.
+
+---
+
+# 36. RECURRING PURCHASE INTELLIGENCE
+
+For recurring products:
+
+* Estimate consumption interval
+* Suggest reorder
+* Allow subscription
+* Allow reminder
+
+Example:
+
+> "You may be running low based on your previous purchase pattern."
+
+---
+
+# 37. OCCASION INTELLIGENCE
+
+Users can optionally add events:
+
+* Birthday
+* Anniversary
+* Festival
+* Travel
+* Wedding
+* Housewarming
+
+AI can prepare shopping recommendations.
+
+Do not infer sensitive personal events without appropriate user input.
+
+---
+
+# 38. POST-PURCHASE AI
+
+After purchase, the AI remains available.
+
+Examples:
+
+> "Would you like help setting up your new monitor?"
+
+> "Here are compatible accessories."
+
+> "Your warranty expires soon."
+
+> "This product may be approaching its typical replacement period."
+
+---
+
+# 39. PRODUCT LIFECYCLE
+
+Model the lifecycle:
+
+Discover
+→ Compare
+→ Purchase
+→ Delivery
+→ Setup
+→ Use
+→ Maintain
+→ Replace
+→ Upgrade
+
+The AI should support the user across this lifecycle.
+
+---
+
+# 40. CART
+
+Cart must be fully functional.
+
+Each cart item:
+
+* Product
+* Variant
+* Quantity
+* Price
+* Discount
+* Tax
+* Subtotal
+* Availability
+
+Actions:
+
+* Increase quantity
+* Decrease quantity
+* Remove
+* Save for later
+* Apply coupon
+
+All cart operations must persist.
+
+---
+
+# 41. CHECKOUT
+
+Create professional checkout.
+
+Steps:
+
+1. Address
+2. Delivery
+3. Order summary
+4. Coupon
+5. Payment
+6. Confirmation
+
+Calculate correctly:
+
+Subtotal
+
+* Tax
+* Shipping
+
+- Discount
+  = Final total
+
+Never trust prices supplied only by the frontend.
+
+Recalculate totals on the backend.
+
+---
+
+# 42. PAYMENT
+
+Build a payment abstraction layer.
+
+Do not hard-code payment provider logic throughout the application.
+
+Support a provider such as:
+
+* Stripe
+* Razorpay
+* Other appropriate gateway
+
+Use environment variables for keys.
+
+Handle:
+
+* Payment success
+* Payment failure
+* Pending
+* Cancellation
+* Webhooks
+* Duplicate webhook protection
+
+Never mark an order paid based only on frontend response.
+
+---
+
+# 43. ORDERS
+
+Create complete order management.
+
+Order states:
+
+Pending
+→ Confirmed
+→ Processing
+→ Shipped
+→ Delivered
+
+Additional states:
+
+Cancelled
+Refunded
+Payment Failed
+
+Store complete order snapshots.
+
+Do not rely only on current product data because product prices/details can change later.
+
+---
+
+# 44. ORDER HISTORY
+
+User can view:
+
+* Order ID
+* Date
+* Items
+* Quantity
+* Total
+* Payment status
+* Delivery status
+* Shipping address
+* Invoice
+* Reorder
+
+---
+
+# 45. REORDER
+
+Allow:
+
+> Buy Again
+
+AI can additionally identify products frequently reordered.
+
+---
+
+# 46. REVIEWS
+
+Support:
+
+* Star rating
+* Written review
+* Product review
+* Optional images
+* Verified purchase indicator
+
+Admin moderation must be available.
+
+---
+
+# 47. NOTIFICATIONS
+
+Create notification infrastructure.
+
+Types:
+
+* Order updates
+* Price alerts
+* Goal updates
+* Shopping reminders
+* Refill predictions
+* Wishlist alerts
+* Group shopping updates
+* AI recommendations
+
+Channels can include:
+
+* In-app
+* Email
+* Push notifications
+
+Respect user preferences.
+
+---
+
+# 48. USER "MY SHOPPING LIFE"
+
+Create a personalized customer dashboard.
+
+Sections:
+
+### My Orders
+
+### My Goals
+
+### My Wishlist
+
+### Price Watch
+
+### Shopping Insights
+
+### Upcoming Needs
+
+### Saved Products
+
+### Shopping Rooms
+
+### AI Preferences
+
+### Budget
+
+### AI Shopping Partner
+
+This dashboard should feel useful, not like a complicated analytics system.
+
+---
+
+# 49. AI PERSONALIZED HOMEPAGE
+
+For logged-in users:
+
+Show contextual sections such as:
+
+### Good morning 👋
+
+### Your Goals
+
+### You May Need Soon
+
+### Price Drops
+
+### Recommended For You
+
+### Continue Shopping
+
+### Your Cart
+
+### Smart Savings
+
+Do not overwhelm the user.
+
+Prioritize the most relevant information.
+
+---
+
+# 50. ADMIN PANEL
+
+Create a professional admin dashboard.
+
+Admin modules:
+
+* Dashboard
+* Users
+* Products
+* Categories
+* Brands
+* Inventory
+* Orders
+* Payments
+* Coupons
+* Discounts
+* Reviews
+* Shipping
+* Customers
+* AI analytics
+* Recommendations
+* Shopping rooms
+* Notifications
+* System settings
+
+---
+
+# 51. ADMIN PRODUCT MANAGEMENT
+
+Admin can:
+
+* Create product
+* Edit product
+* Delete/deactivate product
+* Upload images
+* Add variants
+* Manage inventory
+* Set pricing
+* Add discounts
+* Manage specifications
+* Assign category
+* Assign brand
+
+---
+
+# 52. INVENTORY
+
+Track:
+
+* SKU
+* Stock quantity
+* Reserved quantity
+* Available quantity
+* Low-stock threshold
+
+Prevent overselling.
+
+Use transactions/locking where required.
+
+---
+
+# 53. COUPONS
+
+Support:
+
+* Percentage discount
+* Fixed discount
+* Minimum order value
+* Maximum discount
+* Expiry
+* Usage limits
+* User restrictions
+
+Validate coupons server-side.
+
+---
+
+# 54. DATABASE ARCHITECTURE
+
+Create normalized database structures.
+
+Core entities may include:
+
+Users
+Addresses
+UserPreferences
+AIMemories
+Categories
+Brands
+Products
+ProductVariants
+ProductImages
+Inventory
+Prices
+Reviews
+Wishlists
+WishlistItems
+Carts
+CartItems
+Orders
+OrderItems
+Payments
+Shipments
+Coupons
+Goals
+GoalItems
+FinancialProfiles
+SpendingRecords
+ShoppingRooms
+ShoppingRoomMembers
+ShoppingRoomItems
+ShoppingRoomVotes
+PriceWatches
+Notifications
+AIConversations
+AIConversationMessages
+Recommendations
+ProductInteractions
+RecurringPurchases
+
+Use proper relationships, indexes, constraints, and timestamps.
+
+---
+
+# 55. DATA SYNCHRONIZATION
+
+Every frontend operation must synchronize with the backend.
+
+Example:
+
+User adds product to cart.
+
+Frontend:
+
+Add item
+
+↓
+
+API request
+
+↓
+
+Backend validates:
+
+* User
+* Product
+* Variant
+* Stock
+* Price
+
+↓
+
+Database update
+
+↓
+
+API response
+
+↓
+
+Frontend state update
+
+↓
+
+UI reflects actual server state
+
+Do not maintain fake frontend-only state for important business data.
+
+---
+
+# 56. DATA CONSISTENCY
+
+The backend is the source of truth for:
+
+* Product price
+* Stock
+* Cart totals
+* Taxes
+* Discounts
+* Order totals
+* Payment status
+* User permissions
+
+Frontend must never be trusted for financial/business-critical calculations.
+
+---
+
+# 57. API ARCHITECTURE
+
+Use clean REST or GraphQL architecture.
+
+Example:
+
+```text
+/api/auth
+/api/users
+/api/products
+/api/categories
+/api/search
+/api/cart
+/api/wishlist
+/api/orders
+/api/payments
+/api/goals
+/api/financial
+/api/ai
+/api/recommendations
+/api/price-watch
+/api/shopping-rooms
+/api/notifications
+/api/admin
+```
+
+Use:
+
+* Validation
+* Authentication
+* Authorization
+* Consistent error responses
+* Pagination
+* Filtering
+* Sorting
+* Logging
+
+---
+
+# 58. AI API ARCHITECTURE
+
+Do not allow the frontend to directly control sensitive AI operations.
+
+Flow:
+
+Frontend
+→ Backend AI API
+→ AI Orchestrator
+→ Context Retrieval
+→ Business Tools
+→ AI Model
+→ Validation
+→ Response
+→ Frontend
+
+AI should use controlled tools for actions.
+
+For example:
+
+```text
+search_products()
+get_product()
+compare_products()
+get_cart()
+update_cart()
+create_goal()
+get_user_budget()
+get_orders()
+get_recommendations()
+create_price_watch()
+```
+
+The AI must not directly execute arbitrary database queries.
+
+---
+
+# 59. AI TOOL SAFETY
+
+Every AI action must have permissions.
+
+For example:
+
+AI may suggest:
+
+> "Remove this product."
+
+But it must ask for confirmation before modifying the cart.
+
+Likewise:
+
+AI may prepare a goal.
+
+User confirms.
+
+Then create it.
+
+Never allow an AI model to bypass authorization.
+
+---
+
+# 60. CONVERSATION CONTEXT
+
+The AI should maintain conversation context.
+
+Example:
+
+User:
+
+> "Show me laptops."
+
+AI responds.
+
+User:
+
+> "Under 70k."
+
+AI understands that "under 70k" refers to laptops.
+
+User:
+
+> "Which one is better?"
+
+AI understands which products are being discussed.
+
+---
+
+# 61. AI RESPONSE TYPES
+
+AI should not return only plain text.
+
+Support structured responses:
+
+* Product cards
+* Product comparison
+* Cart actions
+* Goal cards
+* Budget insights
+* Price alerts
+* Recommendation lists
+* Confirmation dialogs
+
+---
+
+# 62. RECOMMENDATION ENGINE
+
+Combine multiple signals:
+
+* Product popularity
+* User preferences
+* Purchase history
+* Browsing behavior
+* Wishlist
+* Goals
+* Budget
+* Similar products
+* Product similarity
+* Context
+* Seasonality
+
+Avoid excessive personalization without enough data.
+
+For new users use:
+
+* Popular products
+* Category preferences
+* Explicit onboarding preferences
+* Contextual recommendations
+
+---
+
+# 63. COLD START
+
+For new users:
+
+Do not pretend to know their preferences.
+
+Use:
+
+> "We are still learning what you like."
+
+Then gradually personalize based on legitimate signals.
+
+---
+
+# 64. EXPLAINABLE RECOMMENDATIONS
+
+Whenever practical, explain recommendations.
+
+Examples:
+
+> "Recommended because you viewed similar laptops."
+
+> "Recommended because it matches your saved ₹70,000 budget."
+
+> "Recommended because it is compatible with your selected device."
+
+Users should be able to understand why something is recommended.
+
+---
+
+# 65. PRIVACY
+
+Financial information and behavioral data are sensitive.
+
+Implement:
+
+* Explicit consent
+* Data minimization
+* Secure storage
+* Encryption where appropriate
+* Access controls
+* Data deletion
+* Export where required
+* Privacy settings
+
+Do not expose one user's information to another user.
+
+---
+
+# 66. FINANCIAL DATA RULE
+
+Financial intelligence is optional.
+
+Never require:
+
+* Salary
+* Bank credentials
+* Bank passwords
+* Card PIN
+* OTP
+* Banking login credentials
+
+Never ask users to provide sensitive authentication secrets.
+
+---
+
+# 67. AI FINANCIAL SAFETY
+
+The system is a shopping assistant, not a financial advisor.
+
+Avoid:
+
+* Guaranteed investment advice
+* Guaranteed income predictions
+* Claims of financial certainty
+* Manipulative spending recommendations
+
+Use language such as:
+
+> "Based on the information you've provided..."
+
+> "Estimated..."
+
+> "You may want to consider..."
+
+---
+
+# 68. RESPONSIVE DESIGN
+
+The entire website must work on:
+
+* Desktop
+* Laptop
+* Tablet
+* Mobile
+
+Do not simply shrink desktop UI.
+
+Create proper mobile layouts.
+
+---
+
+# 69. UI DESIGN
+
+Use a modern premium e-commerce visual language.
+
+Requirements:
+
+* Clean layout
+* Strong typography
+* Consistent spacing
+* Professional cards
+* Smooth hover effects
+* Subtle animations
+* Clear CTA buttons
+* Accessible contrast
+* Consistent iconography
+* Responsive navigation
+
+Do not make every component animated.
+
+Animations should improve usability.
+
+---
+
+# 70. AI UI DESIGN
+
+AI interface should feel integrated.
+
+Avoid a huge chatbot covering the entire screen unnecessarily.
+
+Use:
+
+* Floating assistant
+* Side panel
+* Bottom sheet on mobile
+* Contextual AI cards
+* Inline suggestions
+
+The user should always be able to return to normal shopping.
+
+---
+
+# 71. LOADING STATES
+
+Every async operation needs proper loading UI.
+
+Examples:
+
+* Product skeleton
+* Search loading
+* AI thinking indicator
+* Cart update state
+* Checkout processing
+* Payment processing
+
+Never leave users wondering whether something happened.
+
+---
+
+# 72. ERROR HANDLING
+
+Every API failure must produce a useful message.
+
+Bad:
+
+> Error 500
+
+Good:
+
+> "We couldn't update your cart. Please try again."
+
+Log technical details internally.
+
+Do not expose stack traces to users.
+
+---
+
+# 73. EMPTY STATES
+
+Design meaningful empty states.
+
+Examples:
+
+Empty cart:
+
+> "Your cart is waiting for something great."
+
+Empty wishlist:
+
+> "Save products here and we'll help you track them."
+
+No goals:
+
+> "Create your first shopping goal."
+
+No AI memory:
+
+> "As you shop, your Shopping Partner can learn your preferences."
+
+---
+
+# 74. SEARCH EXPERIENCE
+
+Support:
+
+* Search suggestions
+* Recent searches
+* Popular searches
+* Typo tolerance
+* Natural language
+* Filters
+* AI interpretation
+
+Example:
+
+> "Best headphones for travel under 5000"
+
+should produce meaningful results.
+
+---
+
+# 75. PERFORMANCE
+
+Optimize:
+
+* Images
+* API requests
+* Database queries
+* Search
+* AI calls
+* Caching
+* Lazy loading
+* Pagination
+
+Do not call AI unnecessarily.
+
+AI calls should be triggered only when useful.
+
+---
+
+# 76. AI COST CONTROL
+
+Implement:
+
+* Request limits
+* Context limits
+* Caching where appropriate
+* Model selection
+* Token control
+* Rate limiting
+* Retry handling
+* Failure fallback
+
+If AI is unavailable, normal e-commerce must continue working.
+
+---
+
+# 77. AI FAILURE FALLBACK
+
+If AI fails:
+
+Normal website must still work.
+
+Example:
+
+AI recommendation unavailable.
+
+Show:
+
+> "AI recommendations are temporarily unavailable."
+
+Continue normal product browsing.
+
+Never block checkout because AI is unavailable.
+
+---
+
+# 78. SECURITY
+
+Implement:
+
+* Authentication
+* Authorization
+* Input validation
+* SQL injection protection
+* XSS protection
+* CSRF protection where applicable
+* Rate limiting
+* Secure headers
+* Secure file upload
+* API authorization
+* Payment verification
+* Audit logs
+* Secrets management
+
+---
+
+# 79. ROLE SYSTEM
+
+At minimum:
+
+### Customer
+
+Can:
+
+* Shop
+* Manage account
+* Create goals
+* Use AI
+* Create shopping rooms
+* Manage orders
+
+### Admin
+
+Can:
+
+* Manage catalog
+* Manage users
+* Manage orders
+* Manage inventory
+* Manage AI configuration
+* View analytics
+
+Do not give customer accounts admin permissions.
+
+---
+
+# 80. AUDIT LOGGING
+
+Track important administrative actions:
+
+* Product changes
+* Price changes
+* Inventory changes
+* Order changes
+* User role changes
+* AI configuration changes
+
+---
+
+# 81. ANALYTICS
+
+Create business analytics.
+
+Track appropriate aggregate metrics:
+
+* Users
+* Orders
+* Revenue
+* Conversion
+* Cart abandonment
+* Popular products
+* Search terms
+* Recommendation engagement
+* AI usage
+* Goal creation
+* Price-watch usage
+
+Respect privacy and consent.
+
+---
+
+# 82. AI ANALYTICS
+
+Track:
+
+* AI conversations
+* AI feature usage
+* Recommendation clicks
+* Search assistance
+* Cart optimization usage
+* Goal interactions
+* Price-watch interactions
+
+Do not unnecessarily store private conversation content indefinitely.
+
+---
+
+# 83. SEO
+
+Implement:
+
+* SEO-friendly URLs
+* Metadata
+* Product structured data
+* Category metadata
+* Sitemap
+* Robots configuration
+* Canonical URLs
+
+---
+
+# 84. ACCESSIBILITY
+
+Follow accessibility best practices.
+
+Support:
+
+* Keyboard navigation
+* Screen readers
+* Proper labels
+* Focus states
+* Semantic HTML
+* Accessible dialogs
+* Accessible forms
+* Sufficient contrast
+
+---
+
+# 85. IMAGE MANAGEMENT
+
+Product images must:
+
+* Be optimized
+* Have alt text
+* Support responsive sizes
+* Use lazy loading
+* Validate file type
+* Validate file size
+
+Do not allow arbitrary executable uploads.
+
+---
+
+# 86. NOTIFICATION CENTER
+
+Create an in-app notification center.
+
+Example:
+
+🔔
+
+* Product price dropped
+* Goal progress updated
+* Order shipped
+* Shopping room activity
+* Product may need replacement
+* AI recommendation
+
+Users can:
+
+* Mark read
+* Mark unread
+* Delete
+* Configure preferences
+
+---
+
+# 87. USER CONTROL
+
+The user must always remain in control.
+
+AI suggestions must be:
+
+**Suggestions, not forced actions.**
+
+Before significant actions:
+
+* Confirm
+* Cancel
+
+Especially:
+
+* Purchases
+* Cart removal
+* Financial profile changes
+* Goal changes
+* Account changes
+
+---
+
+# 88. AI PERSONALIZATION LEVELS
+
+Support:
+
+### Basic
+
+Normal shopping.
+
+### Personalized
+
+Recommendations and preferences.
+
+### Intelligent
+
+Goals, budget and predictions.
+
+### Full AI Partner
+
+Complete contextual shopping assistance.
+
+Users should be able to control personalization.
+
+---
+
+# 89. EXAMPLE USER JOURNEY
+
+User registers.
+
+↓
+
+Completes optional onboarding.
+
+↓
+
+Visits homepage.
+
+↓
+
+Browses products.
+
+↓
+
+AI learns from legitimate interactions.
+
+↓
+
+User creates:
+
+"Buy laptop under ₹70,000."
+
+↓
+
+AI creates goal.
+
+↓
+
+User searches.
+
+↓
+
+AI recommends products.
+
+↓
+
+User compares two laptops.
+
+↓
+
+AI explains differences.
+
+↓
+
+User adds one to cart.
+
+↓
+
+AI checks compatibility.
+
+↓
+
+User opens:
+
+"Optimize my cart."
+
+↓
+
+AI finds savings.
+
+↓
+
+User confirms.
+
+↓
+
+Checkout.
+
+↓
+
+Payment.
+
+↓
+
+Order created.
+
+↓
+
+AI tracks order.
+
+↓
+
+After delivery:
+
+"Would you like help setting up your laptop?"
+
+↓
+
+Months later:
+
+AI may identify a relevant accessory or future need.
+
+This is the complete lifecycle.
+
+---
+
+# 90. TECHNICAL ARCHITECTURE
+
+Use a modular architecture.
+
+Recommended structure:
+
+```text
+Frontend
+│
+├── Authentication
+├── Storefront
+├── Product Catalog
+├── Search
+├── Cart
+├── Checkout
+├── Customer Account
+├── Goals
+├── Shopping Rooms
+├── Notifications
+└── AI Shopping Partner
+          │
+          ▼
+Backend API
+│
+├── Auth Service
+├── User Service
+├── Catalog Service
+├── Search Service
+├── Cart Service
+├── Order Service
+├── Payment Service
+├── Recommendation Service
+├── Goal Service
+├── Financial Intelligence
+├── Notification Service
+└── AI Orchestrator
+          │
+          ├── LLM
+          ├── User Context
+          ├── Product Search
+          ├── Recommendation Engine
+          ├── Business Tools
+          └── Memory
+          │
+          ▼
+Database
+```
+
+Use a modular monolith initially unless there is a strong reason to introduce microservices.
+
+Do not over-engineer the first version.
+
+---
+
+# 91. DEVELOPMENT APPROACH
+
+Build incrementally.
+
+## PHASE 1
+
+Foundation:
+
+* Project setup
+* Database
+* Authentication
+* User management
+* Layout
+* Routing
+
+## PHASE 2
+
+E-commerce:
+
+* Categories
+* Products
+* Product details
+* Search
+* Cart
+* Wishlist
+
+## PHASE 3
+
+Checkout:
+
+* Address
+* Shipping
+* Payment
+* Orders
+* Order history
+
+## PHASE 4
+
+Personalization:
+
+* User preferences
+* Recommendations
+* Recently viewed
+* Personalized homepage
+
+## PHASE 5
+
+AI Shopping Partner:
+
+* AI chat
+* Product search
+* Product comparison
+* Context
+* AI tools
+
+## PHASE 6
+
+Intelligence:
+
+* Goals
+* Budget
+* Spending analysis
+* Future needs
+* Smart cart
+* Price watch
+
+## PHASE 7
+
+Social:
+
+* Shopping rooms
+* Shared shopping
+* Voting
+* Gift planning
+
+## PHASE 8
+
+Post-purchase:
+
+* Product lifecycle
+* Reorder
+* Maintenance
+* Replacement predictions
+
+## PHASE 9
+
+Admin:
+
+* Catalog
+* Orders
+* Users
+* Inventory
+* AI analytics
+
+## PHASE 10
+
+Production:
+
+* Security
+* Performance
+* Testing
+* Monitoring
+* Deployment
+* Backup
+* Documentation
+
+---
+
+# 92. TESTING
+
+Create tests for:
+
+### Unit
+
+* Price calculations
+* Cart calculations
+* Discount logic
+* Goal calculations
+* Recommendation logic
+
+### Integration
+
+* Authentication
+* Product API
+* Cart API
+* Checkout
+* Payment webhook
+* AI tools
+
+### End-to-end
+
+Test:
+
+Registration
+→ Login
+→ Browse
+→ Search
+→ Product
+→ Cart
+→ Checkout
+→ Payment
+→ Order
+
+Also:
+
+Login
+→ AI
+→ Search
+→ Goal
+→ Recommendation
+→ Cart
+→ Checkout
+
+---
+
+# 93. DATA VALIDATION
+
+Validate data on both:
+
+Frontend
+and
+Backend.
+
+Backend validation is mandatory.
+
+Never assume frontend validation is sufficient.
+
+---
+
+# 94. DATABASE TRANSACTIONS
+
+Use transactions for critical operations.
+
+Especially:
+
+* Checkout
+* Inventory reservation
+* Order creation
+* Payment state changes
+* Cart operations where necessary
+
+Prevent duplicate orders.
+
+---
+
+# 95. PAYMENT WEBHOOK IDEMPOTENCY
+
+Payment webhook events can arrive multiple times.
+
+Store event IDs.
+
+Process each event only once.
+
+---
+
+# 96. ENVIRONMENT CONFIGURATION
+
+Separate:
+
+Development
+Staging
+Production
+
+Never hard-code:
+
+* API keys
+* Database passwords
+* AI keys
+* Payment secrets
+
+Use environment variables/secrets management.
+
+---
+
+# 97. LOGGING
+
+Create structured logs.
+
+Include:
+
+* Timestamp
+* Request ID
+* User ID where appropriate
+* Endpoint
+* Error type
+* Status
+
+Never log:
+
+* Passwords
+* OTPs
+* Payment secrets
+* Sensitive credentials
+
+---
+
+# 98. BACKUP & RECOVERY
+
+Design:
+
+* Database backups
+* Backup retention
+* Recovery procedure
+* Error monitoring
+
+---
+
+# 99. DOCUMENTATION
+
+Create documentation for:
+
+* Project setup
+* Environment variables
+* Database
+* API
+* Authentication
+* AI architecture
+* AI tools
+* Deployment
+* Admin usage
+* Testing
+
+---
+
+# 100. CODE QUALITY RULES
+
+Follow:
+
+* Clean architecture
+* Reusable components
+* Modular services
+* Strong typing where applicable
+* Meaningful naming
+* Error handling
+* No duplicated business logic
+* No hard-coded business values
+* No unnecessary dependencies
+
+Do not create enormous components.
+
+Separate:
+
+UI
+Business Logic
+API
+Database
+AI logic
+
+---
+
+# 101. NO FAKE FUNCTIONALITY
+
+Never create:
+
+```text
+button → console.log("coming soon")
+```
+
+for features presented as implemented.
+
+If a feature cannot be implemented yet:
+
+* Clearly mark it
+* Document it
+* Do not pretend it works
+
+---
+
+# 102. NO MOCK DATA IN PRODUCTION FLOWS
+
+Demo/seed data may be used for development.
+
+But production flows must use:
+
+Frontend
+→ API
+→ Backend
+→ Database
+
+Do not fake:
+
+* Orders
+* Payments
+* Cart
+* User data
+* Inventory
+* Financial analysis
+
+---
+
+# 103. REAL-TIME DATA PRINCIPLE
+
+For business-critical information always retrieve current server state.
+
+Examples:
+
+Product stock
+Price
+Cart
+Order
+Payment
+
+Do not rely on stale client data.
+
+---
+
+# 104. AI DATA PRINCIPLE
+
+The AI should only receive the minimum context required for the current task.
+
+Example:
+
+For product comparison:
+
+Send:
+
+* Relevant products
+* User's stated requirements
+* Relevant preferences
+
+Do not unnecessarily send the entire user profile.
+
+---
+
+# 105. AI HALLUCINATION CONTROL
+
+The AI must never invent:
+
+* Product specifications
+* Prices
+* Stock
+* Discounts
+* Order status
+* Payment status
+* User financial information
+
+For factual commerce information, retrieve from backend tools.
+
+The AI explains retrieved information rather than inventing it.
+
+---
+
+# 106. AI ACTION CONFIRMATION
+
+Separate AI operations into:
+
+### Read operations
+
+Can happen automatically.
+
+Examples:
+
+* Search products
+* Compare
+* Read cart
+* Read goal
+
+### Write operations
+
+Require user confirmation when appropriate.
+
+Examples:
+
+* Add to cart
+* Remove from cart
+* Create goal
+* Change budget
+* Create price alert
+
+### High-impact operations
+
+Always require explicit confirmation.
+
+Examples:
+
+* Place order
+* Payment
+* Account deletion
+* Financial profile changes
+
+---
+
+# 107. USER FEEDBACK LOOP
+
+Allow users to provide feedback:
+
+* Helpful
+* Not helpful
+* Wrong recommendation
+* Not relevant
+
+Use this to improve recommendations.
+
+---
+
+# 108. AI PERSONALITY
+
+The Shopping Partner should be:
+
+* Friendly
+* Concise
+* Helpful
+* Transparent
+* Non-judgmental
+* Practical
+* User-focused
+
+Avoid:
+
+* Aggressive sales language
+* Manipulation
+* Excessive notifications
+* Fake urgency
+
+---
+
+# 109. EXAMPLE AI CONVERSATION
+
+User:
+
+> I need a laptop.
+
+AI:
+
+> Sure. What's your approximate budget?
+
+User:
+
+> ₹70,000.
+
+AI:
+
+> What will you mainly use it for?
+
+User:
+
+> Programming and gaming.
+
+AI:
+
+> I found 5 suitable options. I can narrow them down based on performance, battery life, or overall value.
+
+User:
+
+> Overall value.
+
+AI:
+
+> I recommend these 3.
+
+The AI displays product cards.
+
+User:
+
+> Compare the first two.
+
+AI displays comparison.
+
+User:
+
+> Add the second one.
+
+AI:
+
+> It is ₹67,999. Would you like me to add it to your cart?
+
+User:
+
+> Yes.
+
+AI adds product.
+
+AI:
+
+> Added. Your cart is currently ₹69,250. Would you like me to check whether there are cheaper compatible accessories?
+
+---
+
+# 110. EXAMPLE FINANCIAL JOURNEY
+
+User optionally provides:
+
+Monthly income:
+
+₹50,000
+
+Shopping budget:
+
+₹8,000
+
+Goal:
+
+Laptop ₹70,000
+
+AI understands:
+
+Current goal
++
+shopping budget
++
+purchase history
+
+User asks:
+
+> Can I buy this ₹6,000 headphone?
+
+AI:
+
+> It fits within your current shopping budget, but purchasing it would use about 75% of the remaining discretionary amount you've set for this month. Since you're also saving toward your laptop goal, you may want to consider waiting.
+
+The user decides.
+
+The AI does not decide for them.
+
+---
+
+# 111. EXAMPLE SMART CART
+
+Cart:
+
+Laptop ₹60,000
+Mouse ₹2,000
+Keyboard ₹3,000
+Headset ₹5,000
+USB Hub ₹2,500
+
+AI:
+
+> I found 3 optimization opportunities.
+
+1. A compatible mouse is already included with your laptop bundle.
+2. A similar keyboard is ₹1,500 cheaper.
+3. The USB hub duplicates a device you previously purchased.
+
+Potential savings:
+
+₹4,000+
+
+User can approve changes individually.
+
+---
+
+# 112. EXAMPLE GROUP SHOPPING
+
+Room:
+
+"New Apartment"
+
+Budget:
+
+₹50,000
+
+Members add:
+
+* Sofa
+* Table
+* Bed
+* Curtains
+
+AI:
+
+> Your room currently contains 14 products with a combined cost of ₹56,700. The group budget is ₹50,000.
+
+Then:
+
+> I found alternatives that could reduce the total by approximately ₹6,900.
+
+Members vote.
+
+Final selection is made by users.
+
+---
+
+# 113. MOBILE EXPERIENCE
+
+On mobile:
+
+AI should appear as a bottom sheet.
+
+Product cards must be touch-friendly.
+
+Cart must be easy to access.
+
+Checkout must be short.
+
+Avoid unnecessary forms.
+
+---
+
+# 114. ACCESSIBILITY OF AI
+
+AI must support:
+
+* Keyboard interaction
+* Screen readers
+* Clear focus
+* Accessible chat messages
+* Accessible product cards
+* Accessible buttons
+
+---
+
+# 115. INTERNATIONALIZATION
+
+Architect the application so it can support:
+
+* Multiple currencies
+* Multiple languages
+* Regional pricing
+* Regional taxes
+* Regional shipping
+
+Start with the initial target market but avoid hard-coding the entire architecture to one region.
+
+---
+
+# 116. CURRENCY
+
+Create a currency abstraction.
+
+Do not hard-code currency symbols throughout components.
+
+---
+
+# 117. TAX
+
+Tax calculation must happen server-side.
+
+The tax engine should be replaceable.
+
+---
+
+# 118. SHIPPING
+
+Create shipping abstraction.
+
+Support:
+
+* Shipping methods
+* Delivery estimates
+* Shipping cost
+* Address validation
+* Tracking
+
+---
+
+# 119. SEARCH INDEXING
+
+For larger catalogs, design a search layer that can eventually support:
+
+* Full-text search
+* Semantic search
+* Vector similarity
+* Filters
+* Ranking
+
+Do not make every search request depend on an LLM.
+
+Use normal search infrastructure first.
+
+Use AI for natural-language interpretation and semantic intelligence.
+
+---
+
+# 120. VECTOR / SEMANTIC SEARCH
+
+Where useful, create embeddings for:
+
+* Product descriptions
+* Product specifications
+* Categories
+* User preferences
+
+Use semantic search to understand intent.
+
+Example:
+
+> "Laptop for coding and gaming"
+
+can retrieve products even when exact keywords don't match.
+
+---
+
+# 121. AI RECOMMENDATION PIPELINE
+
+Example:
+
+```text
+User Context
+      ↓
+Intent Detection
+      ↓
+Candidate Products
+      ↓
+Business Rules
+      ↓
+Personalization
+      ↓
+Ranking
+      ↓
+AI Explanation
+      ↓
+User
+```
+
+Do not let the LLM blindly choose products from the entire database.
+
+---
+
+# 122. BUSINESS RULES
+
+AI recommendations must respect:
+
+* Stock
+* Price
+* Availability
+* Product status
+* Age restrictions where applicable
+* Regional restrictions
+* User preferences
+* Budget
+* Catalog rules
+
+---
+
+# 123. ADMIN AI CONTROLS
+
+Admin should be able to configure:
+
+* AI enable/disable
+* Recommendation settings
+* Notification settings
+* AI model settings
+* Feature flags
+* Rate limits
+* Prompt/version configuration
+
+Do not expose secret API keys to frontend users.
+
+---
+
+# 124. FEATURE FLAGS
+
+Use feature flags for experimental AI features.
+
+Example:
+
+```text
+ai_goal_prediction = true
+ai_cart_optimizer = true
+group_shopping = false
+```
+
+This allows gradual rollout.
+
+---
+
+# 125. VERSIONED AI PROMPTS
+
+Store AI system prompt versions/configuration separately.
+
+Track:
+
+* Version
+* Date
+* Feature
+* Changes
+
+This allows controlled improvement.
+
+---
+
+# 126. MONITORING
+
+Monitor:
+
+* API errors
+* Database errors
+* Payment failures
+* AI failures
+* Latency
+* Search performance
+* Checkout failures
+
+Create alerts for critical failures.
+
+---
+
+# 127. ACCEPTANCE CRITERIA
+
+The application is considered successful only when:
+
+### Authentication
+
+User can register, log in, log out, reset password.
+
+### Storefront
+
+User can browse real products.
+
+### Search
+
+Search returns real catalog results.
+
+### Product
+
+Product details display real database information.
+
+### Cart
+
+Cart persists correctly.
+
+### Checkout
+
+Checkout calculates correct totals.
+
+### Payment
+
+Payment status is verified server-side.
+
+### Orders
+
+Orders are persisted and displayed.
+
+### Admin
+
+Admin can manage catalog and orders.
+
+### AI
+
+AI can understand shopping requests.
+
+### Goals
+
+Users can create and track goals.
+
+### Financial intelligence
+
+Optional financial information can be analyzed securely.
+
+### Smart cart
+
+AI can analyze cart and propose changes.
+
+### Predictions
+
+AI can provide clearly labeled estimates.
+
+### Price watch
+
+Users can create price alerts.
+
+### Group shopping
+
+Users can create and collaborate in shopping rooms.
+
+### Personalization
+
+Recommendations adapt to legitimate user context.
+
+### Privacy
+
+Users can control their personal/AI data.
+
+### Failure handling
+
+Normal e-commerce works even if AI is unavailable.
+
+---
+
+# 128. DEVELOPMENT ORDER
+
+Do not attempt to implement everything simultaneously.
+
+Build in this order:
+
+```text
+1. Architecture
+2. Database
+3. Authentication
+4. User management
+5. Catalog
+6. Categories
+7. Product pages
+8. Search
+9. Cart
+10. Checkout
+11. Payment
+12. Orders
+13. Admin
+14. Wishlist
+15. Personalization
+16. AI Shopping Partner
+17. AI product search
+18. AI comparison
+19. Goals
+20. Financial intelligence
+21. Smart cart
+22. Price watch
+23. Future needs
+24. Group shopping
+25. Post-purchase AI
+26. Notifications
+27. Analytics
+28. Security hardening
+29. Testing
+30. Deployment
+```
+
+---
+
+# 129. IMPORTANT IMPLEMENTATION RULE
+
+At every phase:
+
+1. Understand existing architecture.
+2. Inspect existing files before modifying them.
+3. Do not overwrite working functionality unnecessarily.
+4. Reuse components/services where appropriate.
+5. Implement one complete feature end-to-end.
+6. Connect frontend to backend.
+7. Connect backend to database.
+8. Test the complete flow.
+9. Fix errors.
+10. Only then continue to the next feature.
+
+---
+
+# 130. DO NOT BUILD A UI-ONLY PROJECT
+
+The final result must not be:
+
+```text
+Beautiful UI
++
+Fake buttons
++
+Static products
++
+Fake AI responses
+```
+
+The target is:
+
+```text
+Professional UI
++
+Real backend
++
+Real database
++
+Real authentication
++
+Real catalog
++
+Real cart
++
+Real checkout
++
+Real orders
++
+Real admin
++
+Real AI orchestration
++
+Real personalization
++
+Real data synchronization
++
+Real error handling
++
+Real security
+```
+
+---
+
+# 131. FINAL PRODUCT EXPERIENCE
+
+The finished platform should feel like:
+
+## A normal e-commerce website
+
+but underneath it behaves like:
+
+## A personal shopping intelligence system.
+
+The user should be able to enter normally:
+
+> "I want to buy a laptop."
+
+But over time the system can understand:
+
+> "What does this person usually buy?"
+
+> "What are they trying to achieve?"
+
+> "What can they reasonably spend?"
+
+> "What do they already own?"
+
+> "What might they need next?"
+
+> "Which products actually fit their requirements?"
+
+> "Can their cart be optimized?"
+
+> "Should they buy now or wait?"
+
+> "What should happen after the purchase?"
+
+All of these capabilities must be integrated into **one unified AI Shopping Partner**.
+
+---
+
+# 132. FINAL ARCHITECTURAL PRINCIPLE
+
+Never think of this product as:
+
+```text
+E-commerce + 20 AI agents
+```
+
+Think of it as:
+
+```text
+                 USER
+                   │
+                   ▼
+        NORMAL E-COMMERCE EXPERIENCE
+                   │
+                   ▼
+          AI SHOPPING PARTNER
+                   │
+                   ▼
+          UNIFIED AI ORCHESTRATOR
+                   │
+      ┌────────────┼────────────┐
+      ▼            ▼            ▼
+   Personal     Financial     Shopping
+ Intelligence  Intelligence  Intelligence
+      │            │            │
+      ├────────────┼────────────┤
+      ▼            ▼            ▼
+    Goals      Prediction      Cart
+      │            │            │
+      ├────────────┼────────────┤
+      ▼            ▼            ▼
+   Pricing     Compatibility   Social
+      │            │            │
+      └────────────┼────────────┘
+                   ▼
+             USER CONTEXT
+                   │
+                   ▼
+              RECOMMEND
+                   │
+                   ▼
+                DECIDE
+                   │
+                   ▼
+                 BUY
+                   │
+                   ▼
+                 USE
+                   │
+                   ▼
+              FUTURE NEED
+```
+
+The AI should feel like **one intelligent partner**, even though many specialized services operate behind the scenes.
+
+---
+
+# 133. FINAL COMMAND TO THE DEVELOPMENT AI
+
+Now begin implementation as a senior engineering team.
+
+Do not skip architecture.
+
+Do not skip database design.
+
+Do not create fake functionality.
+
+Do not hard-code business-critical data.
+
+Do not expose sensitive information.
+
+Do not make AI responsible for facts that should come from the database.
+
+Do not let AI perform high-impact actions without appropriate confirmation.
+
+Do not break existing functionality when adding new features.
+
+Build the project incrementally.
+
+After each major phase:
+
+* Run the application.
+* Test the feature.
+* Test API integration.
+* Test database persistence.
+* Test error states.
+* Fix all blocking issues.
+* Verify responsive behavior.
+* Verify security.
+* Then continue.
+
+The final goal is a **production-ready, scalable, secure, attractive, user-friendly e-commerce platform with a unified AI Shopping Partner deeply integrated into the complete customer journey.**
+
+# END OF MASTER PROMPT
