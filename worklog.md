@@ -22,3 +22,29 @@ Stage Summary:
 - Trusted-partner persona: gives honest assessments ("may have limited gaming capabilities"), affordability guidance, and cart optimization — not a sales engine
 - Demo credentials: demo@ai-shop.in / demo1234 (customer), admin@ai-shop.in / admin1234 (admin)
 - All APIs return 200, no console errors, lint passes, responsive on mobile + desktop
+
+---
+Task ID: 2
+Agent: main (Z.ai Code)
+Task: Add real product images and redesign UI/UX for a more attractive, real e-commerce feel.
+
+Work Log:
+- Used image-search skill (z-ai CLI) to fetch real product photos for all 30 products via parallel batches with retries (3 batches, small concurrency to avoid rate limits)
+- Built image-map.json mapping 30 product slugs to OSS-hosted real image URLs (https://z-cdn.chatglm.cn/...)
+- Wrote update-images.ts script to update the database: each product now stores [realUrl, emojiFallback] in the images JSON column
+- Redesigned ProductImage component: renders real <img> with lazy loading, async decode, hover zoom, and graceful emoji-gradient fallback on error
+- Refined the design system in globals.css: warmer off-white background, deeper emerald primary, premium rounded radius (0.875rem), shimmer skeleton utility, fade-in/scale-in animations, hidden horizontal scrollbar for nav
+- Redesigned Header: gradient logo badge, refined search with violet "Ask AI" pill, scroll-aware shadow, avatar with gradient, cleaner category pills, hidden-scrollbar nav
+- Redesigned Home: premium hero with gradient mesh background + floating product collage (3 real product images), trust strip, category cards with gradient icons, AI partner banner with blur glow, shimmer skeleton loaders, redesigned goal/budget CTAs with blur accents
+- Redesigned ProductCard: real images, hover-reveal "Add to cart" overlay, always-subtle wishlist heart, brand+rating row, cleaner price hierarchy, smooth lift on hover
+- Redesigned Product Detail: sticky gallery with trust badges, premium price block, AI Insight card with gradient, quantity stepper, better tabs styling, related grid
+- Redesigned Catalog: cleaner filter sidebar with "active" count badge, shimmer skeletons, redesigned empty state, mobile filter sheet with count badge
+- Redesigned Cart: cleaner item cards with image thumbnails, sticky order summary, AI Smart Cart card with gradient
+- Redesigned Checkout: address cards with selected ring, payment method cards with icons, security notes, sticky summary with trust badges
+- Ran lint (clean), restarted dev server, verified end-to-end with Agent Browser: home renders with real images (13/18 lazy-loaded), product detail shows real image, catalog shows 11/11 images loaded, login → add to cart → checkout → order placed (AIS63263677LRG), mobile responsive with hamburger + 2-col grid
+
+Stage Summary:
+- All 30 products now display real, category-accurate product photos (laptops, headphones, phones, furniture, skincare, etc.) with graceful emoji fallback
+- Complete UI/UX redesign: premium hero with floating product collage, gradient mesh backgrounds, shimmer skeletons, smoother hover/transitions, refined color palette, better visual hierarchy, trust badges, and consistent rounded design language
+- Verified: 18 images on home (13 loaded, rest lazy), 11/11 on catalog, product detail real image, full purchase flow works, mobile responsive
+- No console errors, no lint errors, all APIs 200

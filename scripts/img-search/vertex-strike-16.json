@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "gaming laptop with rgb keyboard product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e65aec7993bc.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "1536px",
+      "original_height": "1536px"
+    }
+  ]
+}

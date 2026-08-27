@@ -9,10 +9,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
-import { ShoppingCart, Heart, Sparkles, Star, Truck, Shield, RotateCcw, Check, Minus, Plus, ChevronRight, BadgeCheck } from 'lucide-react'
+import { ShoppingCart, Heart, Sparkles, Star, Truck, Shield, RotateCcw, Check, Minus, Plus, ChevronRight, BadgeCheck, Clock, Zap } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
-import { formatPrice, discountPercent, parseImages, parseAttributes, parseTags } from '@/lib/format'
+import { formatPrice, discountPercent, parseAttributes, parseTags } from '@/lib/format'
 import { ProductImage } from '@/components/shared/product-image'
 import { StarRating } from '@/components/shared/star-rating'
 import { ProductCard } from '@/components/shared/product-card'
@@ -78,11 +78,11 @@ export function ProductView({ id }: { id: string }) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid gap-8 md:grid-cols-2">
-          <div className="aspect-square animate-pulse rounded-2xl bg-muted" />
+          <div className="shimmer aspect-square rounded-2xl bg-muted" />
           <div className="space-y-4">
-            <div className="h-8 w-3/4 animate-pulse rounded bg-muted" />
-            <div className="h-6 w-1/3 animate-pulse rounded bg-muted" />
-            <div className="h-24 animate-pulse rounded bg-muted" />
+            <div className="shimmer h-8 w-3/4 rounded bg-muted" />
+            <div className="shimmer h-6 w-1/3 rounded bg-muted" />
+            <div className="shimmer h-24 rounded bg-muted" />
           </div>
         </div>
       </div>
@@ -95,7 +95,6 @@ export function ProductView({ id }: { id: string }) {
   const discount = discountPercent(product.price, product.compareAtPrice)
   const specs = parseAttributes(product.attributes)
   const tags = parseTags(product.tags)
-  const emojis = parseImages(product.images)
   const inStock = product.stock > 0
 
   return (
@@ -111,78 +110,92 @@ export function ProductView({ id }: { id: string }) {
 
       <div className="grid gap-8 md:grid-cols-2">
         {/* Gallery */}
-        <div className="space-y-3">
-          <div className="overflow-hidden rounded-2xl border border-border/60">
-            <ProductImage name={product.name} images={product.images} className="aspect-square w-full" />
+        <div className="space-y-3 md:sticky md:top-32 md:self-start">
+          <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
+            <ProductImage name={product.name} images={product.images} className="aspect-square w-full" priority />
           </div>
-          <div className="flex gap-2">
-            {emojis.map((e, i) => (
-              <div key={i} className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-border/60 bg-muted/40">
-                <span className="text-2xl">{e}</span>
-              </div>
-            ))}
+          {/* Trust badges under image */}
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-xl border border-border/50 bg-card p-2.5">
+              <Truck className="mx-auto h-4 w-4 text-primary" />
+              <p className="mt-1 text-[10px] font-medium">Free delivery</p>
+            </div>
+            <div className="rounded-xl border border-border/50 bg-card p-2.5">
+              <RotateCcw className="mx-auto h-4 w-4 text-primary" />
+              <p className="mt-1 text-[10px] font-medium">7-day returns</p>
+            </div>
+            <div className="rounded-xl border border-border/50 bg-card p-2.5">
+              <Shield className="mx-auto h-4 w-4 text-primary" />
+              <p className="mt-1 text-[10px] font-medium">Warranty</p>
+            </div>
           </div>
         </div>
 
         {/* Info */}
         <div className="space-y-5">
           <div>
-            <p className="text-sm font-medium uppercase tracking-wide text-primary">{product.brand?.name}</p>
-            <h1 className="mt-1 text-2xl font-bold leading-tight md:text-3xl">{product.name}</h1>
-            <div className="mt-2 flex items-center gap-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">{product.brand?.name}</p>
+            <h1 className="mt-1 text-2xl font-bold leading-tight tracking-tight md:text-3xl">{product.name}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
               <StarRating rating={product.rating} size={16} showNumber count={product.ratingCount} />
-              {product.isFeatured && <Badge variant="secondary"><BadgeCheck className="mr-1 h-3 w-3" /> Featured</Badge>}
+              {product.isFeatured && <Badge variant="secondary" className="gap-1"><BadgeCheck className="h-3 w-3" /> Featured</Badge>}
+              {product.isTrending && <Badge variant="secondary" className="gap-1 bg-amber-100 text-amber-700"><Zap className="h-3 w-3" /> Trending</Badge>}
             </div>
           </div>
 
-          <div className="flex items-end gap-3">
-            <span className="text-3xl font-bold">{formatPrice(product.price)}</span>
-            {product.compareAtPrice && (
-              <>
-                <span className="text-lg text-muted-foreground line-through">{formatPrice(product.compareAtPrice)}</span>
-                <Badge className="bg-deal text-white hover:bg-deal">-{discount}% OFF</Badge>
-              </>
-            )}
+          {/* Price block */}
+          <div className="rounded-xl bg-muted/40 p-4">
+            <div className="flex items-end gap-3">
+              <span className="text-3xl font-bold tracking-tight">{formatPrice(product.price)}</span>
+              {product.compareAtPrice && (
+                <>
+                  <span className="text-lg text-muted-foreground line-through">{formatPrice(product.compareAtPrice)}</span>
+                  <Badge className="bg-deal text-white hover:bg-deal">Save {discount}%</Badge>
+                </>
+              )}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">Inclusive of all taxes</p>
           </div>
-          <p className="text-sm text-muted-foreground">Inclusive of all taxes</p>
 
           {/* AI Insight card */}
-          <Card className="flex items-start gap-3 border-violet-200 bg-violet-50 p-3 dark:border-violet-900 dark:bg-violet-950/30">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-violet-900 dark:text-violet-200">AI Insight</p>
-              <p className="mt-0.5 text-xs text-violet-800 dark:text-violet-300">{product.shortDescription || 'A solid choice that matches common shopper preferences. Ask your AI partner for a personalised take.'}</p>
-              <Button size="sm" variant="link" className="h-auto p-0 text-violet-700 dark:text-violet-300" onClick={() => setAiOpen(true)}>Ask the AI about this →</Button>
+          <Card className="overflow-hidden border-violet-200/60 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-4 dark:border-violet-900/50 dark:from-violet-950/30 dark:to-fuchsia-950/30">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-md">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-violet-900 dark:text-violet-200">AI Insight</p>
+                <p className="mt-0.5 text-sm text-violet-800/90 dark:text-violet-300/90">{product.shortDescription || 'A solid choice that matches common shopper preferences. Ask your AI partner for a personalised take.'}</p>
+                <button onClick={() => setAiOpen(true)} className="mt-1.5 inline-flex items-center gap-1 text-sm font-semibold text-violet-700 hover:underline dark:text-violet-300">
+                  Ask the AI about this <ChevronRight className="h-3 w-3" />
+                </button>
+              </div>
             </div>
           </Card>
 
           {/* Stock + delivery */}
-          <div className="flex flex-wrap items-center gap-4 text-sm">
+          <div className="flex flex-wrap items-center gap-3 text-sm">
             {inStock ? (
-              <Badge variant="secondary" className="bg-emerald-100 text-emerald-700"><Check className="mr-1 h-3 w-3" /> In stock ({product.stock} left)</Badge>
+              <Badge variant="secondary" className="gap-1 bg-emerald-100 text-emerald-700"><Check className="h-3 w-3" /> In stock ({product.stock} left)</Badge>
             ) : <Badge variant="destructive">Out of stock</Badge>}
-            <span className="flex items-center gap-1.5 text-muted-foreground"><Truck className="h-4 w-4" /> Free delivery</span>
-            <span className="flex items-center gap-1.5 text-muted-foreground"><RotateCcw className="h-4 w-4" /> 7-day returns</span>
-            <span className="flex items-center gap-1.5 text-muted-foreground"><Shield className="h-4 w-4" /> Warranty</span>
+            <span className="flex items-center gap-1.5 text-muted-foreground"><Clock className="h-4 w-4" /> Delivers in 2-3 days</span>
           </div>
 
           {/* Quantity + actions */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center rounded-lg border border-border">
-              <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1}><Minus className="h-4 w-4" /></Button>
-              <span className="w-10 text-center font-semibold">{qty}</span>
-              <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setQty((q) => Math.min(product.stock, q + 1))}><Plus className="h-4 w-4" /></Button>
+            <div className="flex items-center rounded-xl border border-border bg-card">
+              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-l-xl rounded-r-none" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1}><Minus className="h-4 w-4" /></Button>
+              <span className="w-12 text-center font-semibold">{qty}</span>
+              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-r-xl rounded-l-none" onClick={() => setQty((q) => Math.min(product.stock, q + 1))}><Plus className="h-4 w-4" /></Button>
             </div>
-            <Button variant="outline" size="icon" className="h-10 w-10" onClick={toggleWishlist}><Heart className={wished ? 'fill-rose-500 text-rose-500' : 'h-4 w-4'} /></Button>
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl" onClick={toggleWishlist}><Heart className={wished ? 'fill-rose-500 text-rose-500' : 'h-4 w-4'} /></Button>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button size="lg" className="flex-1" onClick={addToCart} disabled={adding || !inStock}>
+          <div className="flex flex-col gap-2.5 sm:flex-row">
+            <Button size="lg" className="h-12 flex-1 rounded-xl" onClick={addToCart} disabled={adding || !inStock}>
               <ShoppingCart className="mr-2 h-4 w-4" /> {adding ? 'Adding…' : 'Add to cart'}
             </Button>
-            <Button size="lg" variant="secondary" className="flex-1" onClick={buyNow} disabled={!inStock}>Buy now</Button>
+            <Button size="lg" variant="secondary" className="h-12 flex-1 rounded-xl" onClick={buyNow} disabled={!inStock}>Buy now</Button>
           </div>
 
           {tags.length > 0 && (
@@ -193,12 +206,12 @@ export function ProductView({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* Tabs: description / specs / reviews */}
-      <Tabs defaultValue="description" className="mt-10">
-        <TabsList className="w-full justify-start overflow-x-auto">
-          <TabsTrigger value="description">Description</TabsTrigger>
-          <TabsTrigger value="specs">Specifications</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
+      {/* Tabs */}
+      <Tabs defaultValue="description" className="mt-12">
+        <TabsList className="h-auto w-full justify-start gap-1 rounded-xl bg-muted/50 p-1">
+          <TabsTrigger value="description" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">Description</TabsTrigger>
+          <TabsTrigger value="specs" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">Specifications</TabsTrigger>
+          <TabsTrigger value="reviews" className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm">Reviews ({reviews.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="description" className="mt-4">
           <Card className="p-6">
@@ -207,9 +220,9 @@ export function ProductView({ id }: { id: string }) {
         </TabsContent>
         <TabsContent value="specs" className="mt-4">
           <Card className="p-6">
-            <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+            <dl className="grid gap-x-8 gap-y-1 sm:grid-cols-2">
               {Object.entries(specs).map(([k, v]) => (
-                <div key={k} className="flex justify-between border-b border-border/40 py-2">
+                <div key={k} className="flex justify-between border-b border-border/40 py-2.5">
                   <dt className="text-sm text-muted-foreground">{k}</dt>
                   <dd className="text-sm font-medium">{v}</dd>
                 </div>
@@ -218,7 +231,6 @@ export function ProductView({ id }: { id: string }) {
           </Card>
         </TabsContent>
         <TabsContent value="reviews" className="mt-4 space-y-4">
-          {/* Write review */}
           <Card className="p-4">
             <h4 className="mb-3 text-sm font-semibold">Write a review</h4>
             <div className="space-y-3">
@@ -227,7 +239,7 @@ export function ProductView({ id }: { id: string }) {
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((r) => (
                     <button key={r} onClick={() => setReviewForm({ ...reviewForm, rating: r })}>
-                      <Star className={`h-5 w-5 ${r <= reviewForm.rating ? 'fill-amber-400 text-amber-400' : 'fill-muted text-muted-foreground/40'}`} />
+                      <Star className={`h-5 w-5 transition-transform hover:scale-110 ${r <= reviewForm.rating ? 'fill-amber-400 text-amber-400' : 'fill-muted text-muted-foreground/40'}`} />
                     </button>
                   ))}
                 </div>
@@ -237,7 +249,6 @@ export function ProductView({ id }: { id: string }) {
               <Button onClick={submitReview} disabled={submitting}>{submitting ? 'Submitting…' : 'Submit review'}</Button>
             </div>
           </Card>
-          {/* Reviews list */}
           {reviews.length === 0 ? (
             <Card className="p-8 text-center text-sm text-muted-foreground">No reviews yet. Be the first to review!</Card>
           ) : (
@@ -248,7 +259,7 @@ export function ProductView({ id }: { id: string }) {
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{rv.authorName[0]}</div>
                     <div>
                       <p className="text-sm font-semibold">{rv.authorName}</p>
-                      {rv.isVerifiedPurchase && <Badge variant="secondary" className="text-[10px]"><BadgeCheck className="mr-1 h-3 w-3" /> Verified</Badge>}
+                      {rv.isVerifiedPurchase && <Badge variant="secondary" className="text-[10px] gap-1"><BadgeCheck className="h-3 w-3" /> Verified</Badge>}
                     </div>
                   </div>
                   <StarRating rating={rv.rating} size={12} />
@@ -264,7 +275,7 @@ export function ProductView({ id }: { id: string }) {
       {/* Related */}
       {related.length > 0 && (
         <section className="mt-12">
-          <h2 className="mb-4 text-xl font-bold">You may also like</h2>
+          <h2 className="mb-5 text-xl font-bold tracking-tight md:text-2xl">You may also like</h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {related.slice(0, 6).map((p) => <ProductCard key={p.id} product={p} compact />)}
           </div>
@@ -273,4 +284,3 @@ export function ProductView({ id }: { id: string }) {
     </div>
   )
 }
-

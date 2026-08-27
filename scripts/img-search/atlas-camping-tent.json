@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "outdoor camping tent product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/95e87e5601a5.jpg",
+      "caption": "",
+      "source": "Coody Tents",
+      "original_width": "2500px",
+      "original_height": "2500px"
+    }
+  ]
+}

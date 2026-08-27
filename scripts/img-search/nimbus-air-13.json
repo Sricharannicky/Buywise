@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "thin silver ultrabook laptop product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/85867f675fbc.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "1952px",
+      "original_height": "1336px"
+    }
+  ]
+}

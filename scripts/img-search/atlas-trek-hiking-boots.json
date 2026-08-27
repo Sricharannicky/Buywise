@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "leather hiking boots product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ff23c1608921.jpg",
+      "caption": "",
+      "source": "Limmer Boots",
+      "original_width": "2048px",
+      "original_height": "2048px"
+    }
+  ]
+}

@@ -8,10 +8,10 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import { CheckCircle2, MapPin, CreditCard, ShoppingBag, Loader2, ChevronLeft } from 'lucide-react'
+import { CheckCircle2, MapPin, CreditCard, ShoppingBag, Loader2, ChevronLeft, Shield, Lock, Truck, Wallet } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
-import { formatPrice } from '@/lib/format'
+import { formatPrice, parseImages } from '@/lib/format'
 import { toast } from 'sonner'
 
 export function CheckoutView() {
@@ -78,17 +78,19 @@ export function CheckoutView() {
   if (placed) {
     return (
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 animate-scale-in">
           <CheckCircle2 className="h-10 w-10" />
         </div>
-        <h2 className="mt-5 text-2xl font-bold">Order confirmed!</h2>
+        <h2 className="mt-5 text-2xl font-bold tracking-tight">Order confirmed!</h2>
         <p className="mt-2 text-muted-foreground">Thank you for your purchase. Your order <span className="font-semibold text-foreground">{placed.orderNumber}</span> has been placed.</p>
-        <Card className="mt-6 p-4 text-left">
+        <Card className="mt-6 p-5 text-left">
           <div className="flex justify-between text-sm"><span className="text-muted-foreground">Total</span><span className="font-bold">{formatPrice(placed.total)}</span></div>
           <div className="flex justify-between text-sm"><span className="text-muted-foreground">Payment</span><span>{placed.paymentMethod === 'COD' ? 'Cash on Delivery' : 'Paid'}</span></div>
           <div className="flex justify-between text-sm"><span className="text-muted-foreground">Items</span><span>{placed.items.length}</span></div>
+          <Separator className="my-3" />
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Truck className="h-3.5 w-3.5 text-primary" /> Expected delivery in 2-3 business days</p>
         </Card>
-        <div className="mt-6 flex gap-2 justify-center">
+        <div className="mt-6 flex justify-center gap-2">
           <Button onClick={() => navigate({ name: 'orders' })}>View my orders</Button>
           <Button variant="outline" onClick={() => navigate({ name: 'home' })}>Continue shopping</Button>
         </div>
@@ -117,16 +119,19 @@ export function CheckoutView() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <button onClick={() => navigate({ name: 'cart' })} className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"><ChevronLeft className="h-4 w-4" /> Back to cart</button>
-      <h1 className="mb-6 text-2xl font-bold md:text-3xl">Checkout</h1>
+      <h1 className="mb-6 text-2xl font-bold tracking-tight md:text-3xl">Checkout</h1>
       <div className="grid gap-6 md:grid-cols-3">
         <div className="space-y-6 md:col-span-2">
           {/* Address */}
           <Card className="p-5">
-            <div className="mb-3 flex items-center gap-2"><MapPin className="h-5 w-5 text-primary" /><h3 className="font-semibold">Delivery address</h3></div>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary"><MapPin className="h-4 w-4" /></div>
+              <h3 className="font-semibold">Delivery address</h3>
+            </div>
             {addresses.length > 0 && (
               <RadioGroup value={selectedAddress} onValueChange={setSelectedAddress} className="space-y-2">
                 {addresses.map((a) => (
-                  <label key={a.id} className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors ${selectedAddress === a.id ? 'border-primary bg-accent/50' : 'border-border hover:bg-accent/30'}`}>
+                  <label key={a.id} className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-all ${selectedAddress === a.id ? 'border-primary bg-accent/50 ring-1 ring-primary/30' : 'border-border hover:bg-accent/30'}`}>
                     <RadioGroupItem value={a.id} className="mt-1" />
                     <div className="flex-1 text-sm">
                       <p className="font-medium">{a.fullName} <span className="text-muted-foreground">· {a.phone}</span></p>
@@ -138,7 +143,7 @@ export function CheckoutView() {
               </RadioGroup>
             )}
             {showNewAddr ? (
-              <div className="mt-3 space-y-3 rounded-xl border border-dashed border-border p-3">
+              <div className="mt-3 space-y-3 rounded-xl border border-dashed border-border p-4">
                 <div className="grid grid-cols-2 gap-2">
                   <div><Label className="text-xs">Full name *</Label><Input value={newAddr.fullName} onChange={(e) => setNewAddr({ ...newAddr, fullName: e.target.value })} /></div>
                   <div><Label className="text-xs">Phone *</Label><Input value={newAddr.phone} onChange={(e) => setNewAddr({ ...newAddr, phone: e.target.value })} /></div>
@@ -159,31 +164,37 @@ export function CheckoutView() {
 
           {/* Payment */}
           <Card className="p-5">
-            <div className="mb-3 flex items-center gap-2"><CreditCard className="h-5 w-5 text-primary" /><h3 className="font-semibold">Payment method</h3></div>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary"><CreditCard className="h-4 w-4" /></div>
+              <h3 className="font-semibold">Payment method</h3>
+            </div>
             <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-2">
               {[
-                { value: 'COD', label: 'Cash on Delivery', desc: 'Pay when you receive' },
-                { value: 'CARD', label: 'Credit / Debit Card', desc: 'Visa, Mastercard, RuPay' },
-                { value: 'UPI', label: 'UPI', desc: 'GPay, PhonePe, Paytm' },
+                { value: 'COD', label: 'Cash on Delivery', desc: 'Pay when you receive', icon: Wallet },
+                { value: 'CARD', label: 'Credit / Debit Card', desc: 'Visa, Mastercard, RuPay', icon: CreditCard },
+                { value: 'UPI', label: 'UPI', desc: 'GPay, PhonePe, Paytm', icon: Wallet },
               ].map((p) => (
-                <label key={p.value} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors ${paymentMethod === p.value ? 'border-primary bg-accent/50' : 'border-border hover:bg-accent/30'}`}>
+                <label key={p.value} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3.5 transition-all ${paymentMethod === p.value ? 'border-primary bg-accent/50 ring-1 ring-primary/30' : 'border-border hover:bg-accent/30'}`}>
                   <RadioGroupItem value={p.value} />
-                  <div className="text-sm"><p className="font-medium">{p.label}</p><p className="text-xs text-muted-foreground">{p.desc}</p></div>
+                  <div className="flex flex-1 items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-foreground"><p.icon className="h-4 w-4" /></div>
+                    <div className="text-sm"><p className="font-medium">{p.label}</p><p className="text-xs text-muted-foreground">{p.desc}</p></div>
+                  </div>
                 </label>
               ))}
             </RadioGroup>
-            <p className="mt-3 rounded-lg bg-amber-50 p-2 text-xs text-amber-700 dark:bg-amber-950/30 dark:text-amber-400">🔒 This is a demo store. No real payment will be processed.</p>
+            <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-amber-50 p-2.5 text-xs text-amber-700 dark:bg-amber-950/30 dark:text-amber-400"><Lock className="h-3.5 w-3.5" /> This is a demo store. No real payment will be processed.</p>
           </Card>
         </div>
 
         {/* Summary */}
         <div>
-          <Card className="sticky top-32 p-5">
+          <Card className="sticky top-36 p-5">
             <h3 className="mb-3 font-semibold">Order summary</h3>
-            <div className="max-h-48 space-y-2 overflow-y-auto scrollbar-thin">
+            <div className="max-h-48 space-y-2 overflow-y-auto scrollbar-thin pr-1">
               {items.map((item) => (
                 <div key={item.id} className="flex items-center gap-2 text-sm">
-                  <span className="text-lg">{JSON.parse(item.product.images || '["📦"]')[0]}</span>
+                  <span className="text-lg">{parseImages(item.product.images)[1] || parseImages(item.product.images)[0] || '📦'}</span>
                   <span className="flex-1 truncate">{item.product.name}</span>
                   <span className="text-muted-foreground">×{item.quantity}</span>
                   <span className="font-medium">{formatPrice(item.product.price * item.quantity)}</span>
@@ -194,14 +205,17 @@ export function CheckoutView() {
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatPrice(subtotal)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Tax (5%)</span><span>{formatPrice(tax)}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>{shipping === 0 ? <span className="text-emerald-600">FREE</span> : formatPrice(shipping)}</span></div>
               <Separator className="my-2" />
-              <div className="flex justify-between text-base font-bold"><span>Total</span><span>{formatPrice(total)}</span></div>
+              <div className="flex justify-between text-lg font-bold"><span>Total</span><span>{formatPrice(total)}</span></div>
             </div>
-            <Button className="mt-4 w-full" onClick={placeOrder} disabled={placing || !selectedAddress}>
+            <Button className="mt-4 w-full rounded-xl" onClick={placeOrder} disabled={placing || !selectedAddress}>
               {placing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Placing order…</> : 'Place order'}
             </Button>
-            <p className="mt-2 text-center text-xs text-muted-foreground">By placing your order you agree to our terms.</p>
+            <div className="mt-3 space-y-1.5 text-xs text-muted-foreground">
+              <p className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-primary" /> Secure & encrypted</p>
+              <p className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5 text-primary" /> Free delivery over ₹999</p>
+            </div>
           </Card>
         </div>
       </div>

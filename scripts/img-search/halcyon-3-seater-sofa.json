@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "modern fabric three seater sofa product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b756c049179f.jpg",
+      "caption": "",
+      "source": "Icon By Design",
+      "original_width": "3000px",
+      "original_height": "3000px"
+    }
+  ]
+}

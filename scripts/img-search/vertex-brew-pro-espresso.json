@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "espresso coffee machine product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/01dd91dc0da8.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "894px",
+      "original_height": "894px"
+    }
+  ]
+}

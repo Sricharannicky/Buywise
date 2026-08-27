@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "fitness tracker wristband product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/fdb9edce9b9e.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "933px",
+      "original_height": "1000px"
+    }
+  ]
+}

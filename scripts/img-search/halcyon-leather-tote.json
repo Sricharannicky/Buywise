@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "leather handbag tote product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ad2829e555cb.jpg",
+      "caption": "",
+      "source": "Huckberry",
+      "original_width": "3358px",
+      "original_height": "4198px"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "flagship smartphone triple camera product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/00a1cfdf2766.jpg",
+      "caption": "",
+      "source": "TechRadar",
+      "original_width": "2000px",
+      "original_height": "1125px"
+    }
+  ]
+}

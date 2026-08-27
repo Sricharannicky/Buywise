@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "smartwatch with amoled display product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1b599f9479dc.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "894px",
+      "original_height": "897px"
+    }
+  ]
+}

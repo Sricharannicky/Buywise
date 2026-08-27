@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "rolled yoga mat product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/fd56b4edac55.jpg",
+      "caption": "",
+      "source": "Eco Black",
+      "original_width": "2000px",
+      "original_height": "2000px"
+    }
+  ]
+}

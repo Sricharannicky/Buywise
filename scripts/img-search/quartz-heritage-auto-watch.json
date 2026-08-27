@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "automatic wristwatch with steel bracelet product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/f9922099601f.jpg",
+      "caption": "",
+      "source": "SLOMO Watches",
+      "original_width": "1638px",
+      "original_height": "2048px"
+    }
+  ]
+}

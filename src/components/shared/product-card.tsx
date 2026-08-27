@@ -3,9 +3,8 @@
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Heart, ShoppingCart, Eye } from 'lucide-react'
+import { Heart, ShoppingCart, Eye, Star } from 'lucide-react'
 import { ProductImage } from './product-image'
-import { StarRating } from './star-rating'
 import { formatPrice, discountPercent } from '@/lib/format'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
@@ -57,50 +56,84 @@ export function ProductCard({ product, compact = false }: { product: any; compac
   }
 
   return (
-    <Card
+    <div
       onClick={() => navigate({ name: 'product', id: product.id })}
-      className="group relative cursor-pointer overflow-hidden border-border/60 p-0 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/5"
+      className="group relative cursor-pointer"
     >
-      <div className="relative">
-        <ProductImage name={product.name} images={product.images} className="aspect-square w-full" />
-        {discount > 0 && (
-          <Badge className="absolute left-2 top-2 bg-deal text-white shadow-sm hover:bg-deal">-{discount}%</Badge>
-        )}
-        {product.isNewArrival && (
-          <Badge variant="secondary" className="absolute right-2 top-2 bg-white/90 text-foreground shadow-sm">New</Badge>
-        )}
-        <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center gap-2 bg-gradient-to-t from-black/60 to-transparent p-2 transition-transform group-hover:translate-y-0">
-          <Button size="sm" variant="secondary" className="h-8 flex-1 bg-white/95 text-foreground hover:bg-white" onClick={addToCart} disabled={adding}>
-            <ShoppingCart className="mr-1 h-3.5 w-3.5" /> {adding ? 'Adding' : 'Add'}
-          </Button>
-          <Button size="icon" variant="secondary" className="h-8 w-8 bg-white/95 text-foreground hover:bg-white" onClick={() => navigate({ name: 'product', id: product.id })}>
-            <Eye className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-        <button
-          onClick={toggleWishlist}
-          className={cn(
-            'absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/80 backdrop-blur transition-colors hover:bg-white',
-            product.isNewArrival && 'top-9'
+      <Card className="overflow-hidden border-border/50 p-0 transition-all duration-300 hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5">
+        {/* Image */}
+        <div className="relative aspect-square overflow-hidden bg-muted/30">
+          <ProductImage name={product.name} images={product.images} className="h-full w-full" />
+
+          {/* Discount badge */}
+          {discount > 0 && (
+            <div className="absolute left-2.5 top-2.5">
+              <span className="inline-flex items-center rounded-full bg-deal px-2 py-0.5 text-[11px] font-bold text-white shadow-sm">
+                -{discount}%
+              </span>
+            </div>
           )}
-          aria-label="Toggle wishlist"
-        >
-          <Heart className={cn('h-3.5 w-3.5', wishlisted ? 'fill-rose-500 text-rose-500' : 'text-muted-foreground')} />
-        </button>
-      </div>
-      <div className="space-y-1.5 p-3">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{product.brand?.name}</p>
-        <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-snug text-foreground">{product.name}</h3>
-        {!compact && (
-          <StarRating rating={product.rating} showNumber count={product.ratingCount} />
-        )}
-        <div className="flex items-baseline gap-2 pt-0.5">
-          <span className="text-base font-bold text-foreground">{formatPrice(product.price)}</span>
-          {product.compareAtPrice && (
-            <span className="text-xs text-muted-foreground line-through">{formatPrice(product.compareAtPrice)}</span>
+
+          {/* New badge */}
+          {product.isNewArrival && (
+            <div className={cn('absolute right-2.5', discount > 0 ? 'top-9' : 'top-2.5')}>
+              <span className="inline-flex items-center rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-semibold text-foreground shadow-sm backdrop-blur">
+                New
+              </span>
+            </div>
           )}
+
+          {/* Wishlist heart — always visible, subtle */}
+          <button
+            onClick={toggleWishlist}
+            className="absolute bottom-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-white/85 text-foreground opacity-0 shadow-sm backdrop-blur transition-all duration-200 hover:bg-white group-hover:opacity-100"
+            aria-label="Toggle wishlist"
+          >
+            <Heart className={cn('h-4 w-4 transition-all', wishlisted ? 'fill-rose-500 text-rose-500 scale-110' : 'text-foreground')} />
+          </button>
+
+          {/* Quick actions overlay on hover */}
+          <div className="absolute inset-x-2.5 bottom-2.5 flex translate-y-2 gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100" style={{ marginRight: '2.5rem' }}>
+            <Button
+              size="sm"
+              onClick={addToCart}
+              disabled={adding}
+              className="h-9 flex-1 rounded-full bg-foreground/95 text-background backdrop-blur hover:bg-foreground"
+            >
+              <ShoppingCart className="mr-1.5 h-3.5 w-3.5" />
+              {adding ? 'Adding…' : 'Add to cart'}
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={(e) => { e.stopPropagation(); navigate({ name: 'product', id: product.id }) }}
+              className="h-9 w-9 rounded-full bg-white/95 p-0 text-foreground shadow-sm hover:bg-white"
+            >
+              <Eye className="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </div>
-      </div>
-    </Card>
+
+        {/* Info */}
+        <div className="space-y-1.5 p-3.5">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{product.brand?.name}</p>
+            {!compact && product.rating > 0 && (
+              <div className="flex items-center gap-0.5 text-xs">
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                <span className="font-medium text-foreground">{product.rating.toFixed(1)}</span>
+              </div>
+            )}
+          </div>
+          <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium leading-snug text-foreground">{product.name}</h3>
+          <div className="flex items-baseline gap-2 pt-0.5">
+            <span className="text-base font-bold tracking-tight text-foreground">{formatPrice(product.price)}</span>
+            {product.compareAtPrice && (
+              <span className="text-xs text-muted-foreground line-through">{formatPrice(product.compareAtPrice)}</span>
+            )}
+          </div>
+        </div>
+      </Card>
+    </div>
   )
 }

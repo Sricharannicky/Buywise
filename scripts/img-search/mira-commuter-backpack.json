@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "black commuter laptop backpack product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a28e7f4d477b.jpg",
+      "caption": "",
+      "source": "Port Authority",
+      "original_width": "1200px",
+      "original_height": "1800px"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "macbook style silver laptop product photo white background",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a27f4e89e470.jpg",
+      "caption": "",
+      "source": "Unsplash",
+      "original_width": "3000px",
+      "original_height": "2000px"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "budget 5g smartphone product photo on white",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/99b4ece42135.jpg",
+      "caption": "",
+      "source": "WIRED",
+      "original_width": "4676px",
+      "original_height": "3507px"
+    }
+  ]
+}

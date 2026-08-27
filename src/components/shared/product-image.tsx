@@ -1,8 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { parseImages } from '@/lib/format'
 
-// Deterministic gradient from a seed string
+// Deterministic gradient for emoji fallback
 const GRADIENTS = [
   'from-emerald-100 to-teal-50',
   'from-amber-100 to-orange-50',
@@ -20,15 +21,44 @@ function hash(str: string): number {
   return Math.abs(h)
 }
 
-export function ProductImage({ name, images, className = '' }: { name: string; images: string; className?: string }) {
-  const emoji = parseImages(images)[0] || '📦'
+interface ProductImageProps {
+  name: string
+  images: string // JSON array: [realUrl?, emojiFallback]
+  className?: string
+  priority?: boolean
+}
+
+export function ProductImage({ name, images, className = '', priority = false }: ProductImageProps) {
+  const parsed = parseImages(images)
+  const realUrl = parsed[0]
+  const emoji = parsed[1] || parsed[0] || '📦'
+  const isUrl = realUrl && (realUrl.startsWith('http://') || realUrl.startsWith('https://'))
+  const [errored, setErrored] = useState(false)
   const gradient = GRADIENTS[hash(name) % GRADIENTS.length]
+
+  // No real URL or it failed → render emoji gradient placeholder
+  if (!isUrl || errored) {
+    return (
+      <div className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br ${gradient} ${className}`}>
+        <span className="select-none drop-shadow-sm" style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)' }} aria-hidden>
+          {emoji}
+        </span>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.5),transparent_60%)]" />
+      </div>
+    )
+  }
+
+  // Real image with lazy loading + async decode for smooth UX
   return (
-    <div className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br ${gradient} ${className}`}>
-      <span className="select-none drop-shadow-sm" style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)' }} aria-hidden>
-        {emoji}
-      </span>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.5),transparent_60%)]" />
+    <div className={`relative overflow-hidden bg-muted/30 ${className}`}>
+      <img
+        src={realUrl}
+        alt={name}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        onError={() => setErrored(true)}
+        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      />
     </div>
   )
 }

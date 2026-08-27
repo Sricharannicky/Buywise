@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "adjustable dumbbell weight set product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/01e6811c91a0.jpg",
+      "caption": "",
+      "source": "Alibaba",
+      "original_width": "1200px",
+      "original_height": "1200px"
+    }
+  ]
+}
