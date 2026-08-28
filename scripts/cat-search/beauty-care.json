@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "skincare cosmetics bottles beauty products",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3a92760e34d3.jpg",
+      "caption": "",
+      "source": "Alibaba.com",
+      "original_width": "1000px",
+      "original_height": "1000px"
+    }
+  ]
+}

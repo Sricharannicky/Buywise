@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "stylish fashion clothing shoes accessories",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/50a4fa0220b7.jpg",
+      "caption": "",
+      "source": "DepositPhotos",
+      "original_width": "1600px",
+      "original_height": "1700px"
+    }
+  ]
+}

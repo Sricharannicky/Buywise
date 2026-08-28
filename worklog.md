@@ -48,3 +48,25 @@ Stage Summary:
 - Complete UI/UX redesign: premium hero with floating product collage, gradient mesh backgrounds, shimmer skeletons, smoother hover/transitions, refined color palette, better visual hierarchy, trust badges, and consistent rounded design language
 - Verified: 18 images on home (13 loaded, rest lazy), 11/11 on catalog, product detail real image, full purchase flow works, mobile responsive
 - No console errors, no lint errors, all APIs 200
+
+---
+Task ID: 3
+Agent: main (Z.ai Code)
+Task: Fix emoji images showing instead of real photos — user reported seeing emojis on catalog page.
+
+Work Log:
+- Investigated user screenshot via VLM: confirmed product cards were showing emoji icons on pastel gradients instead of real photos
+- Root cause: dev server had stopped, causing the browser to show a stale cached version with emoji fallbacks. Database still had correct real image URLs (verified: all 30 products store [realUrl, emoji] and URLs return HTTP 200 image/jpeg)
+- Searched real images for 5 parent categories (Electronics, Home & Living, Fashion, Sports & Fitness, Beauty & Care) via image-search CLI
+- Updated database: all 5 parent categories now store real photo URLs in imageUrl field
+- Redesigned ProductImage component: added shimmer skeleton loading state (shows animated shimmer while image loads, NOT emoji), opacity fade-in on load, more robust URL detection (finds first http/https entry in array)
+- Created new CategoryImage component: renders real category photos with shimmer fallback
+- Updated HomeView: category cards now use CategoryImage (real photos) instead of emoji icons; "Explore more" section also uses real category photos
+- Verified with Agent Browser: 26/26 images loaded (products + categories), all real photographs
+- VLM confirmation: "Product images are REAL photographs... Category images are REAL photographs... Overall this looks like a real e-commerce website with genuine product photos"
+
+Stage Summary:
+- ALL images now real: 30 product photos + 5 category photos = 35 real images across the site
+- Added shimmer skeleton loading state so users see a professional animated loader (not emoji) while images load on slow connections
+- Verified end-to-end: home page shows real photos in hero collage, category cards, trending/deals/new arrivals sections
+- Dev server restarted, all images loading correctly

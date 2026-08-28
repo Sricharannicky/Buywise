@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "electronics gadgets technology products flat lay",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c747c85783da.jpg",
+      "caption": "",
+      "source": "Unsplash",
+      "original_width": "3000px",
+      "original_height": "2000px"
+    }
+  ]
+}

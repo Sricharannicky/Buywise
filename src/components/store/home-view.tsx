@@ -7,7 +7,7 @@ import { Sparkles, ArrowRight, TrendingUp, Zap, Star, Shield, Truck, RotateCcw, 
 import { useStore } from '@/lib/store'
 import { api } from '@/lib/api'
 import { ProductCard } from '@/components/shared/product-card'
-import { ProductImage } from '@/components/shared/product-image'
+import { ProductImage, CategoryImage } from '@/components/shared/product-image'
 
 export function HomeView({ categories }: { categories: any[] }) {
   const { navigate, user, setAiOpen } = useStore()
@@ -133,12 +133,12 @@ export function HomeView({ categories }: { categories: any[] }) {
               <button
                 key={c.id}
                 onClick={() => navigate({ name: 'catalog', category: c.slug })}
-                className="group flex flex-col items-center gap-2.5 rounded-2xl border border-border/50 bg-card p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+                className="group flex flex-col items-center gap-2.5 overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
               >
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-muted text-3xl transition-transform duration-300 group-hover:scale-110">
-                  {c.imageUrl}
+                <div className="relative aspect-square w-full overflow-hidden rounded-t-2xl">
+                  <CategoryImage name={c.name} imageUrl={c.imageUrl} className="h-full w-full" />
                 </div>
-                <span className="text-center text-xs font-semibold leading-tight md:text-sm">{c.name}</span>
+                <span className="px-2 pb-3 text-center text-xs font-semibold leading-tight md:text-sm">{c.name}</span>
               </button>
             ))}
           </div>
@@ -181,7 +181,7 @@ export function HomeView({ categories }: { categories: any[] }) {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {categories.slice(0, 3).map((c) => (
                 <button key={c.id} onClick={() => navigate({ name: 'catalog', category: c.slug })} className="group relative h-44 overflow-hidden rounded-2xl border border-border/50 text-left">
-                  <ProductImage name={c.name + c.id} images={JSON.stringify([c.imageUrl])} className="absolute inset-0 h-full w-full opacity-90" />
+                  <CategoryImage name={c.name} imageUrl={c.imageUrl} className="absolute inset-0 h-full w-full" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 p-5">
                     <p className="text-lg font-bold text-white">{c.name}</p>
