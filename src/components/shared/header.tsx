@@ -6,14 +6,14 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu'
-import { Sparkles, Search, ShoppingCart, Heart, User, Menu, Package, Target, Tag, Wallet, BarChart3, LogOut, Bell, ChevronDown, Home, ArrowLeft, Users } from 'lucide-react'
+import { Sparkles, Search, ShoppingCart, Heart, User, Menu, Package, Target, Tag, Wallet, BarChart3, LogOut, Bell, ChevronDown, Home, ArrowLeft, Users, Camera, LayoutGrid } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
 export function Header({ categories }: { categories: any[] }) {
-  const { navigate, user, setUser, cartCount, setAiOpen, setAuthOpen, view, back, history } = useStore()
+  const { navigate, user, setUser, cartCount, setAiOpen, setAuthOpen, view, back, history, setMiniCartOpen, setMegaMenuOpen } = useStore()
   const [query, setQuery] = useState('')
   const [notifications, setNotifications] = useState<any[]>([])
   const [notifOpen, setNotifOpen] = useState(false)
@@ -59,44 +59,15 @@ export function Header({ categories }: { categories: any[] }) {
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
-        {/* Mobile menu */}
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden" aria-label="Menu">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-72">
-            <SheetHeader>
-              <SheetTitle>Categories</SheetTitle>
-            </SheetHeader>
-            <nav className="mt-4 flex flex-col gap-1">
-              <button onClick={() => navigate({ name: 'home' })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium hover:bg-accent"><Home className="h-4 w-4" /> Home</button>
-              {categories.map((c) => (
-                <button key={c.id} onClick={() => navigate({ name: 'catalog', category: c.slug })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent">
-                  <span>{c.imageUrl}</span>{c.name}
-                </button>
-              ))}
-              <div className="my-2 border-t" />
-              <button onClick={() => navigate({ name: 'account' })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"><User className="h-4 w-4" /> My Account</button>
-              <button onClick={() => navigate({ name: 'orders' })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"><Package className="h-4 w-4" /> My Orders</button>
-              <button onClick={() => navigate({ name: 'goals' })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"><Target className="h-4 w-4" /> My Goals</button>
-              <button onClick={() => navigate({ name: 'rooms' })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"><Users className="h-4 w-4" /> Shopping Rooms</button>
-            </nav>
-          </SheetContent>
-        </Sheet>
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3">
+        {/* Mega menu trigger — "ALL" hamburger, visible on all screens */}
+        <Button variant="outline" size="sm" onClick={() => setMegaMenuOpen(true)} className="shrink-0 gap-1.5 rounded-lg" aria-label="All categories">
+          <LayoutGrid className="h-4 w-4" /> <span className="hidden sm:inline">All</span>
+        </Button>
 
         {/* Back button — shown when there's history to go back to */}
         {history.length > 0 && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={back}
-            className="shrink-0"
-            aria-label="Go back"
-            title="Go back"
-          >
+          <Button variant="ghost" size="icon" onClick={back} className="shrink-0" aria-label="Go back" title="Go back">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         )}
@@ -119,17 +90,12 @@ export function Header({ categories }: { categories: any[] }) {
             ref={searchRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search products, brands or ask the AI…"
-            className="h-11 rounded-full border-border/50 bg-muted/40 pl-10 pr-24 transition-all focus-visible:border-primary/40 focus-visible:bg-card"
+            placeholder="Search products, brands…"
+            className="h-11 rounded-full border-border/50 bg-muted/40 pl-10 pr-12 transition-all focus-visible:border-primary/40 focus-visible:bg-card"
           />
-          <Button
-            type="button"
-            onClick={() => setAiOpen(true)}
-            size="sm"
-            className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 text-white shadow-sm hover:opacity-90"
-          >
-            <Sparkles className="mr-1 h-3.5 w-3.5" /> Ask AI
-          </Button>
+          <button type="button" onClick={() => setAiOpen(true)} className="absolute right-1 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Image search / Ask AI">
+            <Camera className="h-4 w-4" />
+          </button>
         </form>
 
         {/* Right actions */}
@@ -171,7 +137,7 @@ export function Header({ categories }: { categories: any[] }) {
             <Heart className="h-5 w-5" />
           </Button>
 
-          <Button variant="ghost" size="icon" onClick={() => user ? navigate({ name: 'cart' }) : setAuthOpen(true, 'login')} aria-label="Cart" className="relative">
+          <Button variant="ghost" size="icon" onClick={() => user ? setMiniCartOpen(true) : setAuthOpen(true, 'login')} aria-label="Cart" className="relative">
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
               <Badge className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-deal px-1 text-[10px] font-bold text-white ring-2 ring-background">{cartCount}</Badge>

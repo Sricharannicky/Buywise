@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 export function ProductCard({ product, compact = false }: { product: any; compact?: boolean }) {
   const navigate = useStore((s) => s.navigate)
   const setAuthOpen = useStore((s) => s.setAuthOpen)
+  const setMiniCartOpen = useStore((s) => s.setMiniCartOpen)
   const [adding, setAdding] = useState(false)
   const [wishlisted, setWishlisted] = useState(false)
 
@@ -29,6 +30,7 @@ export function ProductCard({ product, compact = false }: { product: any; compac
       await api.cart.add(product.id)
       await refreshCartCount()
       toast.success('Added to cart', { description: product.name })
+      setMiniCartOpen(true) // open mini-cart drawer on success
       return true
     } catch (err: any) {
       const msg = err.message || ''

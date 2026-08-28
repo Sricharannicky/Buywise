@@ -9,17 +9,98 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
-import { ShoppingCart, Heart, Sparkles, Star, Truck, Shield, RotateCcw, Check, Minus, Plus, ChevronRight, BadgeCheck, Clock, Zap } from 'lucide-react'
+import {
+  ShoppingCart, Heart, Sparkles, Star, Truck, Shield, RotateCcw,
+  Check, Minus, Plus, ChevronRight, BadgeCheck, Clock, Zap, GitCompare,
+} from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
-import { formatPrice, discountPercent, parseAttributes, parseTags } from '@/lib/format'
+import {
+  formatPrice, discountPercent, parseAttributes, parseTags, parseImages,
+} from '@/lib/format'
 import { ProductImage } from '@/components/shared/product-image'
 import { StarRating } from '@/components/shared/star-rating'
 import { ProductCard } from '@/components/shared/product-card'
 import { toast } from 'sonner'
 
+// Thumbnail gradient palette (mirrors ProductImage for visual consistency)
+const THUMB_GRADIENTS = [
+  'from-emerald-100 to-teal-50',
+  'from-amber-100 to-orange-50',
+  'from-rose-100 to-pink-50',
+  'from-violet-100 to-purple-50',
+  'from-cyan-100 to-sky-50',
+  'from-lime-100 to-green-50',
+  'from-fuchsia-100 to-pink-50',
+  'from-yellow-100 to-amber-50',
+]
+
+function hashString(str: string): number {
+  let h = 0
+  for (let i = 0; i < str.length; i++) h = (h << 5) - h + str.charCodeAt(i)
+  return Math.abs(h)
+}
+
+// Mock variant value pools — used because our products don't have real
+// variants in the DB. The label is derived from the product's spec keys.
+const VARIANT_POOLS: Record<string, string[]> = {
+  ram: ['8 GB', '16 GB', '32 GB'],
+  storage: ['256 GB', '512 GB', '1 TB'],
+  color: ['Midnight', 'Silver', 'Rose Gold', 'Navy'],
+  material: ['Mesh', 'Fabric', 'Leather'],
+  size: ['Small', 'Medium', 'Large', 'XL'],
+  capacity: ['6 L', '8 L', '10 L'],
+  display: ['13"', '15"', '17"'],
+  default: ['Standard', 'Premium'],
+}
+
+interface VariantGroup {
+  label: string
+  key: string
+  options: string[]
+}
+
+// Build mock variant groups from the product's attributes/specs.
+// If we find a RAM/Storage/Color/Material/etc. spec key, surface it as a
+// selectable pill group. Otherwise fall back to a generic Standard/Premium.
+function buildVariantGroups(specs: Record<string, string>): VariantGroup[] {
+  if (Object.keys(specs).length === 0) {
+    return [{ label: 'Edition', key: 'edition', options: VARIANT_POOLS.default }]
+  }
+  const result: VariantGroup[] = []
+  const seen = new Set<string>()
+  for (const k of Object.keys(specs)) {
+    const lower = k.toLowerCase()
+    let matched: keyof typeof VARIANT_POOLS | null = null
+    if (lower.includes('ram') || lower.includes('memory')) matched = 'ram'
+    else if (lower.includes('storage') || lower.includes('ssd') || lower.includes('drive')) matched = 'storage'
+    else if (lower.includes('color') || lower.includes('colour')) matched = 'color'
+    else if (lower.includes('material')) matched = 'material'
+    else if (lower.includes('size') || lower.includes('dimension')) matched = 'size'
+    else if (lower.includes('capacity') || lower.includes('volume') || lower.includes('tank')) matched = 'capacity'
+    else if (lower.includes('display')) matched = 'display'
+    if (matched && !seen.has(matched)) {
+      seen.add(matched)
+      result.push({
+        label: k.charAt(0).toUpperCase() + k.slice(1),
+        key: matched,
+        options: VARIANT_POOLS[matched],
+      })
+    }
+    if (result.length >= 2) break
+  }
+  if (result.length === 0) {
+    result.push({ label: 'Edition', key: 'edition', options: VARIANT_POOLS.default })
+  }
+  return result
+}
+
+type GalleryView =
+  | { type: 'real'; label: string }
+  | { type: 'emoji'; label: string; emoji: string; gradient: string }
+
 export function ProductView({ id }: { id: string }) {
-  const { navigate, setAuthOpen, setAiOpen } = useStore()
+  const { navigate, setAuthOpen, setAiOpen, setMiniCartOpen } = useStore()
   const [data, setData] = useState<{ product: any; related: any[] } | null>(null)
   const [loading, setLoading] = useState(true)
   const [qty, setQty] = useState(1)
@@ -28,11 +109,21 @@ export function ProductView({ id }: { id: string }) {
   const [reviews, setReviews] = useState<any[]>([])
   const [reviewForm, setReviewForm] = useState({ rating: 5, title: '', body: '' })
   const [submitting, setSubmitting] = useState(false)
+  const [activeView, setActiveView] = useState(0)
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({})
 
   useEffect(() => {
     setLoading(true)
+    setActiveView(0)
+    setSelectedVariants({})
     api.products.get(id).then((d) => {
       setData(d)
+      // Pre-select the first option of each variant group for a smoother UX
+      const specs = parseAttributes(d.product.attributes)
+      const groups = buildVariantGroups(specs)
+      const init: Record<string, string> = {}
+      for (const g of groups) init[g.key] = g.options[0]
+      setSelectedVariants(init)
       api.reviews.list(id).then((r) => setReviews(r.reviews)).catch(() => {})
     }).finally(() => setLoading(false))
   }, [id])
@@ -50,6 +141,8 @@ export function ProductView({ id }: { id: string }) {
       await api.cart.add(data!.product.id, qty)
       await refreshCartCount()
       toast.success('Added to cart', { description: `${qty} × ${data!.product.name}` })
+      // Open the mini-cart drawer so the user sees their cart update
+      setMiniCartOpen(true)
       return true
     } catch (e: any) {
       const msg = e.message || ''
@@ -68,6 +161,8 @@ export function ProductView({ id }: { id: string }) {
   async function buyNow() {
     const ok = await addToCart()
     if (ok) {
+      // Close the mini-cart drawer (addToCart opens it) before navigating
+      setMiniCartOpen(false)
       navigate({ name: 'checkout' })
     }
   }
@@ -86,6 +181,10 @@ export function ProductView({ id }: { id: string }) {
         toast.error('Could not update wishlist')
       }
     }
+  }
+
+  function addToCompare() {
+    toast.success('Added to comparison', { description: data!.product.name })
   }
 
   async function submitReview() {
@@ -130,6 +229,26 @@ export function ProductView({ id }: { id: string }) {
   const tags = parseTags(product.tags)
   const inStock = product.stock > 0
 
+  // Build gallery views — 1 real photo + 3 emoji-based alternate "views"
+  const parsedImages = parseImages(product.images)
+  const realUrl = parsedImages.find((p) => typeof p === 'string' && (p.startsWith('http://') || p.startsWith('https://')))
+  const emoji = parsedImages.find((p) => typeof p === 'string' && !p.startsWith('http')) || '📦'
+  const productHash = hashString(product.name)
+  const views: GalleryView[] = []
+  if (realUrl) views.push({ type: 'real', label: 'View 1' })
+  for (let i = 0; i < 3; i++) {
+    views.push({
+      type: 'emoji',
+      label: `View ${views.length + 1}`,
+      emoji,
+      gradient: THUMB_GRADIENTS[(productHash + i) % THUMB_GRADIENTS.length],
+    })
+  }
+  const safeView = views[activeView] ?? views[0]
+
+  // Build mock variant groups from specs
+  const variantGroups = buildVariantGroups(specs)
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-6">
       {/* Breadcrumb */}
@@ -142,10 +261,52 @@ export function ProductView({ id }: { id: string }) {
       </nav>
 
       <div className="grid gap-8 md:grid-cols-2">
-        {/* Gallery */}
+        {/* Gallery — sticky on desktop */}
         <div className="space-y-3 md:sticky md:top-32 md:self-start">
-          <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
-            <ProductImage name={product.name} images={product.images} className="aspect-square w-full" priority />
+          <div className="flex flex-col gap-3 sm:flex-row">
+            {/* Main image */}
+            <div className="relative flex-1 overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
+              {safeView.type === 'real' ? (
+                <ProductImage name={product.name} images={product.images} className="aspect-square w-full" priority />
+              ) : (
+                <div className={`relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gradient-to-br ${safeView.gradient}`}>
+                  <span className="select-none drop-shadow-sm" style={{ fontSize: 'clamp(5rem, 14vw, 9rem)' }} aria-hidden>
+                    {safeView.emoji}
+                  </span>
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.5),transparent_60%)]" />
+                  <Badge variant="secondary" className="absolute left-3 top-3 bg-white/80 text-foreground backdrop-blur">
+                    Concept view
+                  </Badge>
+                </div>
+              )}
+            </div>
+            {/* Thumbnails — vertical strip on desktop, horizontal row on mobile */}
+            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar sm:w-20 sm:flex-col sm:overflow-visible sm:pb-0">
+              {views.map((v, i) => {
+                const active = i === activeView
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setActiveView(i)}
+                    aria-label={v.label}
+                    aria-pressed={active}
+                    className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 bg-card transition-all sm:h-20 sm:w-20 ${
+                      active
+                        ? 'border-primary ring-2 ring-primary/30'
+                        : 'border-border/50 hover:border-primary/40'
+                    }`}
+                  >
+                    {v.type === 'real' ? (
+                      <ProductImage name={product.name} images={product.images} className="h-full w-full" />
+                    ) : (
+                      <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${v.gradient}`}>
+                        <span className="text-2xl sm:text-3xl" aria-hidden>{v.emoji}</span>
+                      </div>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
           </div>
           {/* Trust badges under image */}
           <div className="grid grid-cols-3 gap-2 text-center">
@@ -190,6 +351,48 @@ export function ProductView({ id }: { id: string }) {
             <p className="mt-1 text-xs text-muted-foreground">Inclusive of all taxes</p>
           </div>
 
+          {/* Variant selectors — derived from the product's specs */}
+          {variantGroups.length > 0 && (
+            <div className="space-y-4">
+              {variantGroups.map((g) => {
+                const selected = selectedVariants[g.key]
+                return (
+                  <div key={g.key}>
+                    <div className="mb-2 flex items-center justify-between">
+                      <Label className="text-sm font-semibold">
+                        Select {g.label}
+                      </Label>
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {selected ?? 'Choose…'}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {g.options.map((opt) => {
+                        const isSel = selected === opt
+                        return (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() => setSelectedVariants((s) => ({ ...s, [g.key]: opt }))}
+                            aria-pressed={isSel}
+                            className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${
+                              isSel
+                                ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                                : 'border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted/50'
+                            }`}
+                          >
+                            {opt}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })}
+              <Separator className="bg-border/40" />
+            </div>
+          )}
+
           {/* AI Insight card */}
           <Card className="overflow-hidden border-violet-200/60 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-4 dark:border-violet-900/50 dark:from-violet-950/30 dark:to-fuchsia-950/30">
             <div className="flex items-start gap-3">
@@ -214,7 +417,7 @@ export function ProductView({ id }: { id: string }) {
             <span className="flex items-center gap-1.5 text-muted-foreground"><Clock className="h-4 w-4" /> Delivers in 2-3 days</span>
           </div>
 
-          {/* Quantity + actions */}
+          {/* Quantity + wishlist */}
           <div className="flex items-center gap-3">
             <div className="flex items-center rounded-xl border border-border bg-card">
               <Button variant="ghost" size="icon" className="h-10 w-10 rounded-l-xl rounded-r-none" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1}><Minus className="h-4 w-4" /></Button>
@@ -229,6 +432,22 @@ export function ProductView({ id }: { id: string }) {
               <ShoppingCart className="mr-2 h-4 w-4" /> {adding ? 'Adding…' : 'Add to cart'}
             </Button>
             <Button size="lg" variant="secondary" className="h-12 flex-1 rounded-xl" onClick={buyNow} disabled={!inStock}>Buy now</Button>
+          </div>
+
+          {/* Compare + wishlist shortcut row */}
+          <div className="flex flex-wrap items-center gap-4 pt-1 text-sm">
+            <button
+              onClick={addToCompare}
+              className="inline-flex items-center gap-1.5 font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              <GitCompare className="h-4 w-4" /> Add to compare
+            </button>
+            <button
+              onClick={() => navigate({ name: 'wishlist' })}
+              className="inline-flex items-center gap-1.5 font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              <Heart className="h-4 w-4" /> View wishlist
+            </button>
           </div>
 
           {tags.length > 0 && (

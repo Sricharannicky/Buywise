@@ -7,6 +7,8 @@ import { Header } from '@/components/shared/header'
 import { Footer } from '@/components/shared/footer'
 import { AuthModal } from '@/components/shared/auth-modal'
 import { AIPartner } from '@/components/ai/ai-partner'
+import { MiniCart } from '@/components/shared/mini-cart'
+import { MegaMenu } from '@/components/shared/mega-menu'
 import { HomeView } from '@/components/store/home-view'
 import { CatalogView } from '@/components/store/catalog-view'
 import { ProductView } from '@/components/store/product-view'
@@ -80,6 +82,8 @@ export default function Page() {
       <main className="flex-1">{renderView()}</main>
       <Footer />
       <AuthModal />
+      <MiniCart />
+      <MegaMenu categories={categories} />
       <AIPartner />
     </div>
   )

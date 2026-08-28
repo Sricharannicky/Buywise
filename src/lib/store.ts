@@ -25,12 +25,16 @@ interface AppState {
   aiOpen: boolean
   authOpen: boolean
   authMode: 'login' | 'register'
+  miniCartOpen: boolean
+  megaMenuOpen: boolean
   navigate: (view: View) => void
   back: () => void
   setUser: (u: AppState['user']) => void
   setCartCount: (n: number) => void
   setAiOpen: (open: boolean) => void
   setAuthOpen: (open: boolean, mode?: 'login' | 'register') => void
+  setMiniCartOpen: (open: boolean) => void
+  setMegaMenuOpen: (open: boolean) => void
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -41,9 +45,11 @@ export const useStore = create<AppState>((set, get) => ({
   aiOpen: false,
   authOpen: false,
   authMode: 'login',
+  miniCartOpen: false,
+  megaMenuOpen: false,
   navigate: (view) => {
     const { view: current, history } = get()
-    set({ view, history: [...history, current].slice(-20) })
+    set({ view, history: [...history, current].slice(-20), miniCartOpen: false, megaMenuOpen: false })
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
   },
   back: () => {
@@ -60,4 +66,6 @@ export const useStore = create<AppState>((set, get) => ({
   setCartCount: (n) => set({ cartCount: n }),
   setAiOpen: (open) => set({ aiOpen: open }),
   setAuthOpen: (open, mode) => set({ authOpen: open, authMode: mode || get().authMode }),
+  setMiniCartOpen: (open) => set({ miniCartOpen: open }),
+  setMegaMenuOpen: (open) => set({ megaMenuOpen: open }),
 }))
