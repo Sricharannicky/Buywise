@@ -14,27 +14,31 @@ import { cn } from '@/lib/utils'
 
 export function ProductCard({ product, compact = false }: { product: any; compact?: boolean }) {
   const navigate = useStore((s) => s.navigate)
-  const user = useStore((s) => s.user)
   const setAuthOpen = useStore((s) => s.setAuthOpen)
   const [adding, setAdding] = useState(false)
   const [wishlisted, setWishlisted] = useState(false)
 
   const discount = discountPercent(product.price, product.compareAtPrice)
 
-  async function addToCart(e: React.MouseEvent) {
-    e.stopPropagation()
-    if (!user) {
-      setAuthOpen(true, 'login')
-      toast.info('Please sign in to add items to your cart')
-      return
-    }
+  // Try the API directly — the httpOnly cookie is the real auth source.
+  // If we get 401, THEN open the auth modal. This avoids stale store state.
+  async function addToCart(e?: React.MouseEvent): Promise<boolean> {
+    e?.stopPropagation()
     setAdding(true)
     try {
       await api.cart.add(product.id)
       await refreshCartCount()
       toast.success('Added to cart', { description: product.name })
-    } catch (e: any) {
-      toast.error(e.message || 'Could not add to cart')
+      return true
+    } catch (err: any) {
+      const msg = err.message || ''
+      if (msg.toLowerCase().includes('sign in') || msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('please sign')) {
+        setAuthOpen(true, 'login')
+        toast.info('Please sign in to add items to your cart')
+      } else {
+        toast.error(msg || 'Could not add to cart')
+      }
+      return false
     } finally {
       setAdding(false)
     }
@@ -42,16 +46,18 @@ export function ProductCard({ product, compact = false }: { product: any; compac
 
   async function toggleWishlist(e: React.MouseEvent) {
     e.stopPropagation()
-    if (!user) {
-      setAuthOpen(true, 'login')
-      return
-    }
     try {
       const res = await api.wishlist.toggle(product.id)
       setWishlisted(res.action === 'added')
       toast.success(res.action === 'added' ? 'Saved to wishlist' : 'Removed from wishlist')
-    } catch {
-      toast.error('Could not update wishlist')
+    } catch (err: any) {
+      const msg = err.message || ''
+      if (msg.toLowerCase().includes('sign in') || msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('please sign')) {
+        setAuthOpen(true, 'login')
+        toast.info('Please sign in to manage your wishlist')
+      } else {
+        toast.error('Could not update wishlist')
+      }
     }
   }
 

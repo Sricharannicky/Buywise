@@ -70,3 +70,27 @@ Stage Summary:
 - Added shimmer skeleton loading state so users see a professional animated loader (not emoji) while images load on slow connections
 - Verified end-to-end: home page shows real photos in hero collage, category cards, trending/deals/new arrivals sections
 - Dev server restarted, all images loading correctly
+
+---
+Task ID: 4
+Agent: main (Z.ai Code)
+Task: Fix 6 user-reported issues: add-to-cart after login, buy-now flow, back button, rename to Buywise, rename AI agent, add View button to AI suggestions.
+
+Work Log:
+- Fix #1 (Add to cart after login): Root cause was ProductCard/ProductView checking store's `user` state which could be stale. Refactored addToCart to try the API directly (httpOnly cookie is the real auth source) and only open the auth modal if the API returns 401. This eliminates all stale state issues. Verified: after signing in, "Add to cart" works immediately.
+- Fix #2 (Buy now → checkout): Fixed buyNow to call addToCart, check its return value, and only navigate to checkout if it succeeded. Previously it navigated even when addToCart failed. Verified: "Buy now" now shows the full checkout page with address + payment + order summary.
+- Fix #3 (Back button): Added a back button (ArrowLeft icon) to the header that appears whenever there's navigation history. Uses the existing store `back()` and `history` array. Verified: back button appears on product/checkout pages and navigates to the previous page.
+- Fix #4 (Rename to Buywise): Updated all "ShopMate AI"/"ShopMate" references to "Buywise" across layout.tsx (title), header.tsx (logo + announcement bar), footer.tsx, auth-modal.tsx, page.tsx (loading text). Verified: browser title shows "Buywise — Your Smart Shopping Partner".
+- Fix #5 (Rename AI agent to Buywise AI): Updated all "AI Shopping Partner"/"Shopping Partner" references to "Buywise AI" across header.tsx, ai-partner.tsx (floating button, panel header, welcome message, chat labels), home-view.tsx, cart-view.tsx, catalog-view.tsx, account-view.tsx, footer.tsx, auth-modal.tsx, and ai.ts (system prompts). Verified: floating button says "Buywise AI", panel header says "Buywise AI".
+- Fix #6 (View button on AI suggestions): Redesigned ProductRow in ai-partner.tsx — changed from a single <button> wrapper to a <div> with separate clickable elements + a visible "View" button with ArrowRight icon. Also added "View" buttons to the ComparisonCard. Updated serializeProduct and add_to_cart tool to pass full `images` array so AI product cards show real product photos, not just emojis. Verified: clicking "View" navigates to the product detail page.
+- Ran lint (clean), restarted dev server, verified all 6 fixes with Agent Browser.
+
+Stage Summary:
+- All 6 issues fixed and browser-verified:
+  1. ✅ Add to cart works after login (API-first approach, no stale state)
+  2. ✅ Buy now navigates to checkout (address + payment page)
+  3. ✅ Back button in header (appears when history exists)
+  4. ✅ Renamed to "Buywise" everywhere (title, logo, footer, loading)
+  5. ✅ AI agent renamed to "Buywise AI" (button, panel, prompts, chat labels)
+  6. ✅ "View" button on all AI-suggested products + real images in AI cards
+- No console errors, lint clean, all APIs 200

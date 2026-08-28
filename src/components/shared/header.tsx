@@ -6,14 +6,14 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu'
-import { Sparkles, Search, ShoppingCart, Heart, User, Menu, Package, Target, Tag, Wallet, BarChart3, LogOut, Bell, ChevronDown, Home } from 'lucide-react'
+import { Sparkles, Search, ShoppingCart, Heart, User, Menu, Package, Target, Tag, Wallet, BarChart3, LogOut, Bell, ChevronDown, Home, ArrowLeft } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
 export function Header({ categories }: { categories: any[] }) {
-  const { navigate, user, setUser, cartCount, setAiOpen, setAuthOpen, view } = useStore()
+  const { navigate, user, setUser, cartCount, setAiOpen, setAuthOpen, view, back, history } = useStore()
   const [query, setQuery] = useState('')
   const [notifications, setNotifications] = useState<any[]>([])
   const [notifOpen, setNotifOpen] = useState(false)
@@ -51,7 +51,7 @@ export function Header({ categories }: { categories: any[] }) {
       {/* Top announcement bar */}
       <div className="bg-foreground text-background">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-1.5 text-[11px]">
-          <p className="font-medium">Free delivery on orders over ₹999 · Trusted AI Shopping Partner</p>
+          <p className="font-medium">Free delivery on orders over ₹999 · Trusted Buywise AI Partner</p>
           <div className="hidden items-center gap-4 md:flex">
             <button onClick={() => navigate({ name: 'orders' })} className="hover:opacity-80">Track Order</button>
             <button onClick={() => navigate({ name: 'account' })} className="hover:opacity-80">My Account</button>
@@ -86,14 +86,28 @@ export function Header({ categories }: { categories: any[] }) {
           </SheetContent>
         </Sheet>
 
+        {/* Back button — shown when there's history to go back to */}
+        {history.length > 0 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={back}
+            className="shrink-0"
+            aria-label="Go back"
+            title="Go back"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
+
         {/* Logo */}
         <button onClick={() => navigate({ name: 'home' })} className="flex shrink-0 items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-sm">
             <Sparkles className="h-5 w-5" />
           </div>
           <div className="hidden sm:block">
-            <span className="text-lg font-bold tracking-tight">ShopMate</span>
-            <span className="ml-1 text-lg font-bold text-primary">AI</span>
+            <span className="text-lg font-bold tracking-tight">Buy</span>
+            <span className="text-lg font-bold text-primary">wise</span>
           </div>
         </button>
 
@@ -219,7 +233,7 @@ export function Header({ categories }: { categories: any[] }) {
           ))}
           <div className="ml-auto shrink-0">
             <button onClick={() => setAiOpen(true)} className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105">
-              <Sparkles className="h-3.5 w-3.5" /> Shopping Partner
+              <Sparkles className="h-3.5 w-3.5" /> Buywise AI
             </button>
           </div>
         </div>

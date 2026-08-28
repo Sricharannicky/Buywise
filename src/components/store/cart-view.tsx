@@ -72,7 +72,7 @@ export function CartView() {
       <EmptyState
         icon={<ShoppingBag />}
         title="Your cart is waiting for something great"
-        desc="Browse our catalog or ask the AI Shopping Partner to find the perfect product."
+        desc="Browse our catalog or ask the Buywise AI to find the perfect product."
         action={<div className="flex gap-2"><Button onClick={() => navigate({ name: 'catalog' })}>Browse products</Button><Button variant="outline" onClick={() => setAiOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Ask AI</Button></div>}
       />
     )

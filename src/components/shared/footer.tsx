@@ -14,7 +14,7 @@ export function Footer() {
             { icon: Truck, title: 'Free Delivery', desc: 'On orders over ₹999' },
             { icon: RotateCcw, title: 'Easy Returns', desc: '7-day return policy' },
             { icon: Shield, title: 'Secure Payments', desc: 'Encrypted checkout' },
-            { icon: Sparkles, title: 'AI Shopping Partner', desc: 'Always here to help' },
+            { icon: Sparkles, title: 'Buywise AI', desc: 'Always here to help' },
           ].map((b) => (
             <div key={b.title} className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -35,7 +35,7 @@ export function Footer() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Sparkles className="h-4 w-4" />
             </div>
-            <span className="text-base font-bold">ShopMate<span className="text-primary">AI</span></span>
+            <span className="text-base font-bold">Buywise<span className="text-primary">AI</span></span>
           </div>
           <p className="mt-3 text-sm text-muted-foreground">Your trusted AI shopping partner — discover, compare, budget and decide with confidence.</p>
         </div>
@@ -68,7 +68,7 @@ export function Footer() {
       </div>
       <div className="border-t border-border/40">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} ShopMate AI. Built with the AI Shopping Partner.</p>
+          <p>© {new Date().getFullYear()} Buywise. Built with the Buywise AI.</p>
           <p>Demo store · demo@ai-shop.in / demo1234</p>
         </div>
       </div>

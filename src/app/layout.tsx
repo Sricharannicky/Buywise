@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ShopMate AI — Your Smart Shopping Partner",
-  description: "A modern e-commerce store with an integrated AI Shopping Partner that helps you discover, compare, budget and decide — like a trusted friend.",
+  title: "Buywise — Your Smart Shopping Partner",
+  description: "A modern e-commerce store with an integrated Buywise AI that helps you discover, compare, budget and decide — like a trusted friend.",
   keywords: ["ecommerce", "AI shopping", "smart cart", "deals", "online store"],
   icons: { icon: "/logo.svg" },
 };

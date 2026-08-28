@@ -130,7 +130,7 @@ RULES:
 - To recommend products, ALWAYS call search_products or get_recommendations first.
 `
 
-const SYSTEM_PROMPT = `You are the "AI Shopping Partner" — a single, unified, trusted shopping assistant for an e-commerce store.
+const SYSTEM_PROMPT = `You are "Buywise AI" — a single, unified, trusted shopping assistant for the Buywise e-commerce store.
 
 PERSONA: Friendly, concise, transparent, practical and non-judgmental. You are a trusted partner, NOT a sales engine. You genuinely help users make good decisions.
 
@@ -151,7 +151,7 @@ You respond with STRICT JSON only (no markdown fences, no prose outside JSON):
 
 If no tools are needed, return { "toolCalls": [], "replyPlan": "..." }.`
 
-const FINAL_PROMPT = `You are the "AI Shopping Partner". Write the final reply to the user based on the conversation and the tool results below.
+const FINAL_PROMPT = `You are "Buywise AI". Write the final reply to the user based on the conversation and the tool results below.
 
 RULES:
 - Be friendly, concise and honest. 1-3 short paragraphs.
@@ -178,7 +178,8 @@ function serializeProduct(p: Product & { brand?: { name: string } | null, catego
     price: p.price,
     compareAtPrice: p.compareAtPrice,
     discount: discountPercent(p.price, p.compareAtPrice),
-    emoji: parseImages(p.images)[0] || '📦',
+    emoji: parseImages(p.images).find((x) => !x.startsWith('http')) || parseImages(p.images)[0] || '📦',
+    images: p.images, // full JSON array [realUrl?, emoji]
     brand: p.brand?.name || null,
     category: p.category?.name || null,
     categorySlug: p.category?.slug || null,
@@ -307,7 +308,7 @@ async function executeTool(name: string, args: any, userId: string | null): Prom
     case 'add_to_cart': {
       const p = await db.product.findUnique({ where: { id: args.productId }, select: { name: true, price: true, images: true, stock: true } })
       if (!p) return { type: 'error', data: { message: 'Product not found' } }
-      return { type: 'add_to_cart_proposal', data: { productId: args.productId, productName: p.name, price: p.price, quantity: args.quantity || 1, inStock: p.stock > 0, emoji: parseImages(p.images)[0] || '📦' } }
+      return { type: 'add_to_cart_proposal', data: { productId: args.productId, productName: p.name, price: p.price, quantity: args.quantity || 1, inStock: p.stock > 0, images: p.images, emoji: parseImages(p.images).find((x) => !x.startsWith('http')) || '📦' } }
     }
     default:
       return { type: 'error', data: { message: `Unknown tool: ${name}` } }

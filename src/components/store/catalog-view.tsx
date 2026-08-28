@@ -178,7 +178,7 @@ export function CatalogView({ categories, brands, initialCategory, initialQuery 
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/60 py-20 text-center">
               <PackageSearch className="h-12 w-12 text-muted-foreground/50" />
               <h3 className="mt-4 text-lg font-semibold">No products found</h3>
-              <p className="mt-1 max-w-sm text-sm text-muted-foreground">Try adjusting your filters or ask the AI Shopping Partner to find what you need.</p>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">Try adjusting your filters or ask the Buywise AI to find what you need.</p>
               <div className="mt-4 flex gap-2">
                 <Button variant="outline" onClick={clearAll}>Clear filters</Button>
                 <Button onClick={() => setAiOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Ask AI</Button>

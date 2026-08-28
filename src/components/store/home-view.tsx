@@ -45,7 +45,7 @@ export function HomeView({ categories }: { categories: any[] }) {
             {/* Left: copy */}
             <div className="space-y-6">
               <Badge className="border-primary/20 bg-primary/10 text-primary hover:bg-primary/15">
-                <Sparkles className="mr-1.5 h-3 w-3" /> Meet your AI Shopping Partner
+                <Sparkles className="mr-1.5 h-3 w-3" /> Meet your Buywise AI
               </Badge>
               <div>
                 <h1 className="text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-6xl">
@@ -154,7 +154,7 @@ export function HomeView({ categories }: { categories: any[] }) {
                   <Sparkles className="h-7 w-7" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight">Your AI Shopping Partner</h3>
+                  <h3 className="text-xl font-bold tracking-tight">Your Buywise AI</h3>
                   <p className="mt-1 max-w-md text-sm text-muted-foreground">Ask in plain English: "I need a laptop under ₹70k for coding and gaming." Your partner searches, compares, checks your budget and finds the best value — without pushing you to overspend.</p>
                 </div>
               </div>

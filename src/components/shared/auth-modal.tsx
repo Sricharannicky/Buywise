@@ -31,7 +31,7 @@ export function AuthModal() {
       } else {
         const { user } = await api.auth.register(form)
         setUser(user)
-        toast.success(`Welcome to ShopMate AI, ${user.firstName}!`)
+        toast.success(`Welcome to Buywise, ${user.firstName}!`)
       }
       await refreshCartCount()
       setAuthOpen(false)
@@ -57,7 +57,7 @@ export function AuthModal() {
             {authMode === 'login' ? 'Welcome back' : 'Create your account'}
           </DialogTitle>
           <DialogDescription className="text-center">
-            {authMode === 'login' ? 'Sign in to sync your cart, goals and AI partner' : 'Join to unlock your AI Shopping Partner'}
+            {authMode === 'login' ? 'Sign in to sync your cart, goals and AI partner' : 'Join to unlock your Buywise AI'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-3">

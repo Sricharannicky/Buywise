@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Sparkles, Send, X, ShoppingBag, Check, AlertCircle, Target, Tag, TrendingDown, Wallet, Loader2, Trash2 } from 'lucide-react'
+import { Sparkles, Send, X, ShoppingBag, Check, AlertCircle, Target, Tag, TrendingDown, Wallet, Loader2, Trash2, ArrowRight } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
 import { formatPrice } from '@/lib/format'
@@ -78,10 +78,10 @@ export function AIPartner() {
         <button
           onClick={() => setAiOpen(true)}
           className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3.5 font-semibold text-white shadow-xl shadow-violet-500/30 transition-transform hover:scale-105 ai-pulse"
-          aria-label="Open AI Shopping Partner"
+          aria-label="Open Buywise AI"
         >
           <Sparkles className="h-5 w-5" />
-          <span className="hidden sm:inline">Shopping Partner</span>
+          <span className="hidden sm:inline">Buywise AI</span>
         </button>
       )}
 
@@ -95,7 +95,7 @@ export function AIPartner() {
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div>
-                  <SheetTitle className="text-base font-bold text-white">AI Shopping Partner</SheetTitle>
+                  <SheetTitle className="text-base font-bold text-white">Buywise AI</SheetTitle>
                   <p className="text-xs text-white/80">Your trusted shopping companion</p>
                 </div>
               </div>
@@ -119,7 +119,7 @@ export function AIPartner() {
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg">
                   <Sparkles className="h-8 w-8" />
                 </div>
-                <h3 className="text-lg font-bold">Hi{user ? `, ${user.firstName}` : ''}! I'm your Shopping Partner.</h3>
+                <h3 className="text-lg font-bold">Hi{user ? `, ${user.firstName}` : ''}! I'm your Buywise AI.</h3>
                 <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">I can help you discover products, compare options, plan budgets, set goals and find the best value — without pushing you to overspend.</p>
                 <div className="mt-6 grid w-full gap-2">
                   {STARTER_PROMPTS.map((p) => (
@@ -136,7 +136,7 @@ export function AIPartner() {
                 <div className={cn('max-w-[88%] space-y-3', msg.role === 'user' ? 'items-end' : 'items-start')}>
                   {msg.role === 'assistant' && (
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <Sparkles className="h-3 w-3 text-violet-500" /> Shopping Partner
+                      <Sparkles className="h-3 w-3 text-violet-500" /> Buywise AI
                     </div>
                   )}
                   <div
@@ -273,10 +273,15 @@ function ToolResultCard({ result, onNavigate }: { result: any; onNavigate: (id: 
 }
 
 function ProductRow({ product, onClick, showDesc = false }: { product: any; onClick: () => void; showDesc?: boolean }) {
+  // Use the full images array (real URL + emoji fallback) if available;
+  // otherwise fall back to just the emoji.
+  const images = product.images || JSON.stringify([product.emoji])
   return (
-    <button onClick={onClick} className="flex w-full items-center gap-3 border-b border-border/40 px-3 py-2.5 text-left transition-colors last:border-0 hover:bg-accent/50">
-      <ProductImage name={product.name} images={JSON.stringify([product.emoji])} className="h-12 w-12 shrink-0 rounded-lg" />
-      <div className="min-w-0 flex-1">
+    <div className="flex w-full items-center gap-3 border-b border-border/40 px-3 py-2.5 transition-colors last:border-0 hover:bg-accent/50">
+      <button onClick={onClick} className="shrink-0">
+        <ProductImage name={product.name} images={images} className="h-12 w-12 rounded-lg" />
+      </button>
+      <button onClick={onClick} className="min-w-0 flex-1 text-left">
         <p className="truncate text-sm font-medium">{product.name}</p>
         {showDesc && product.shortDescription && <p className="truncate text-xs text-muted-foreground">{product.shortDescription}</p>}
         <div className="flex items-center gap-2">
@@ -284,8 +289,11 @@ function ProductRow({ product, onClick, showDesc = false }: { product: any; onCl
           {product.compareAtPrice && <span className="text-xs text-muted-foreground line-through">{formatPrice(product.compareAtPrice)}</span>}
           {!product.inStock && <Badge variant="destructive" className="text-[10px]">Out of stock</Badge>}
         </div>
-      </div>
-    </button>
+      </button>
+      <Button size="sm" variant="outline" onClick={onClick} className="shrink-0 rounded-full">
+        View <ArrowRight className="ml-1 h-3 w-3" />
+      </Button>
+    </div>
   )
 }
 
@@ -308,9 +316,12 @@ function ComparisonCard({ products, onNavigate }: { products: any[]; onNavigate:
               {products.map((p) => (
                 <th key={p.id} className="p-2 text-left align-top">
                   <button onClick={() => onNavigate(p.id)} className="block text-left">
-                    <ProductImage name={p.name} images={JSON.stringify([p.emoji])} className="mb-1.5 h-14 w-full rounded-lg" />
+                    <ProductImage name={p.name} images={p.images || JSON.stringify([p.emoji])} className="mb-1.5 h-14 w-full rounded-lg" />
                     <p className="line-clamp-2 text-xs font-semibold">{p.name}</p>
                   </button>
+                  <Button size="sm" variant="outline" onClick={() => onNavigate(p.id)} className="mt-1.5 w-full rounded-full text-[11px]">
+                    View <ArrowRight className="ml-1 h-2.5 w-2.5" />
+                  </Button>
                 </th>
               ))}
             </tr>
@@ -459,7 +470,7 @@ function AddToCartProposalCard({ data }: { data: any }) {
   }
   return (
     <Card className="flex items-center gap-3 p-3">
-      <ProductImage name={data.productName} images={JSON.stringify([data.emoji])} className="h-10 w-10 shrink-0 rounded-lg" />
+      <ProductImage name={data.productName} images={data.images || JSON.stringify([data.emoji])} className="h-10 w-10 shrink-0 rounded-lg" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{data.productName}</p>
         <p className="text-xs text-muted-foreground">{formatPrice(data.price)} × {data.quantity}</p>

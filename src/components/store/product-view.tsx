@@ -19,7 +19,7 @@ import { ProductCard } from '@/components/shared/product-card'
 import { toast } from 'sonner'
 
 export function ProductView({ id }: { id: string }) {
-  const { navigate, user, setAuthOpen, setAiOpen } = useStore()
+  const { navigate, setAuthOpen, setAiOpen } = useStore()
   const [data, setData] = useState<{ product: any; related: any[] } | null>(null)
   const [loading, setLoading] = useState(true)
   const [qty, setQty] = useState(1)
@@ -37,33 +37,58 @@ export function ProductView({ id }: { id: string }) {
     }).finally(() => setLoading(false))
   }, [id])
 
-  async function addToCart() {
-    if (!user) { setAuthOpen(true, 'login'); return }
+  // Try the API directly — the httpOnly cookie is the real auth source.
+  // Only open the auth modal if the API returns 401.
+  function isAuthError(msg: string): boolean {
+    const l = msg.toLowerCase()
+    return l.includes('sign in') || l.includes('unauthorized') || l.includes('please sign')
+  }
+
+  async function addToCart(): Promise<boolean> {
     setAdding(true)
     try {
       await api.cart.add(data!.product.id, qty)
       await refreshCartCount()
       toast.success('Added to cart', { description: `${qty} × ${data!.product.name}` })
-    } catch (e: any) { toast.error(e.message) } finally { setAdding(false) }
+      return true
+    } catch (e: any) {
+      const msg = e.message || ''
+      if (isAuthError(msg)) {
+        setAuthOpen(true, 'login')
+        toast.info('Please sign in to add items to your cart')
+      } else {
+        toast.error(msg || 'Could not add to cart')
+      }
+      return false
+    } finally {
+      setAdding(false)
+    }
   }
 
   async function buyNow() {
-    if (!user) { setAuthOpen(true, 'login'); return }
-    await addToCart()
-    navigate({ name: 'checkout' })
+    const ok = await addToCart()
+    if (ok) {
+      navigate({ name: 'checkout' })
+    }
   }
 
   async function toggleWishlist() {
-    if (!user) { setAuthOpen(true, 'login'); return }
     try {
       const r = await api.wishlist.toggle(data!.product.id)
       setWished(r.action === 'added')
       toast.success(r.action === 'added' ? 'Saved to wishlist' : 'Removed from wishlist')
-    } catch { toast.error('Could not update wishlist') }
+    } catch (e: any) {
+      const msg = e.message || ''
+      if (isAuthError(msg)) {
+        setAuthOpen(true, 'login')
+        toast.info('Please sign in to manage your wishlist')
+      } else {
+        toast.error('Could not update wishlist')
+      }
+    }
   }
 
   async function submitReview() {
-    if (!user) { setAuthOpen(true, 'login'); return }
     if (!reviewForm.title || !reviewForm.body) { toast.error('Please fill all fields'); return }
     setSubmitting(true)
     try {
@@ -71,7 +96,15 @@ export function ProductView({ id }: { id: string }) {
       setReviews((rv) => [r.review, ...rv])
       setReviewForm({ rating: 5, title: '', body: '' })
       toast.success('Review submitted')
-    } catch (e: any) { toast.error(e.message) } finally { setSubmitting(false) }
+    } catch (e: any) {
+      const msg = e.message || ''
+      if (isAuthError(msg)) {
+        setAuthOpen(true, 'login')
+        toast.info('Please sign in to write a review')
+      } else {
+        toast.error(msg)
+      }
+    } finally { setSubmitting(false) }
   }
 
   if (loading) {

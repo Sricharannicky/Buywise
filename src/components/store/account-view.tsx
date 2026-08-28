@@ -53,7 +53,7 @@ export function AccountView() {
           <Sparkles className="h-6 w-6" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-violet-900 dark:text-violet-200">Your AI Shopping Partner</h3>
+          <h3 className="font-semibold text-violet-900 dark:text-violet-200">Your Buywise AI</h3>
           <p className="text-sm text-violet-800 dark:text-violet-300">Discover, compare, budget and decide — all in one chat.</p>
         </div>
         <Button onClick={() => setAiOpen(true)} className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:opacity-90">Chat now</Button>
