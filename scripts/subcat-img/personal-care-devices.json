@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "electric toothbrush massager device product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d809e9c06934.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "1600px",
+      "original_height": "1600px"
+    }
+  ]
+}

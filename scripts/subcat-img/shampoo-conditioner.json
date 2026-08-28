@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "shampoo bottle product photo white background",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/39f990028374.jpg",
+      "caption": "",
+      "source": "Shutterstock",
+      "original_width": "1500px",
+      "original_height": "1600px"
+    }
+  ]
+}

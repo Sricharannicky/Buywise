@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "electronics gadgets technology flat lay",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d6c6ff7bedd8.jpeg",
+      "caption": "",
+      "source": "Yanko Design",
+      "original_width": "1280px",
+      "original_height": "960px"
+    }
+  ]
+}

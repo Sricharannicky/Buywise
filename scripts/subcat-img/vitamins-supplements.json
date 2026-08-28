@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "vitamins supplement bottle product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/20130d6028cf.jpg",
+      "caption": "",
+      "source": "NatureWise",
+      "original_width": "3000px",
+      "original_height": "3000px"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "fashion clothing accessories flat lay",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d0d3d6408c30.jpg",
+      "caption": "",
+      "source": "The Newbury Girl -",
+      "original_width": "1350px",
+      "original_height": "1080px"
+    }
+  ]
+}

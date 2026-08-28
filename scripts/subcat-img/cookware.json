@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "cookware pot pan product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c27691cd55fe.jpg",
+      "caption": "",
+      "source": "Our Place",
+      "original_width": "1200px",
+      "original_height": "1200px"
+    }
+  ]
+}

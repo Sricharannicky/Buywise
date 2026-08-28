@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "face wash cleanser skincare product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d999aa056ade.jpg",
+      "caption": "",
+      "source": "Complete Skin Makeover",
+      "original_width": "1000px",
+      "original_height": "1000px"
+    }
+  ]
+}

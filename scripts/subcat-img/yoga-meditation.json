@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "yoga mat meditation cushion product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/15e3f94f55d3.jpg",
+      "caption": "",
+      "source": "Gaiam",
+      "original_width": "2000px",
+      "original_height": "2000px"
+    }
+  ]
+}

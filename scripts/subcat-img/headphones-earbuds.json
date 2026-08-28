@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "headphones earbuds product photo white background",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8fe5cb8a522e.jpeg",
+      "caption": "",
+      "source": "Active Edge Chiro",
+      "original_width": "1980px",
+      "original_height": "1980px"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "light bulb lamp lighting product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/876f1b27f200.jpg",
+      "caption": "",
+      "source": "Bees Lighting",
+      "original_width": "1946px",
+      "original_height": "1946px"
+    }
+  ]
+}

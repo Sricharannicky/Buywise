@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "notebook journal product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/f1db6ac26851.jpg",
+      "caption": "",
+      "source": "Notebook Therapy",
+      "original_width": "1600px",
+      "original_height": "1130px"
+    }
+  ]
+}

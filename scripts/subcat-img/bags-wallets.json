@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "backpack bag product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/82a72b2dc5b4.jpg",
+      "caption": "",
+      "source": "O My Bag",
+      "original_width": "1538px",
+      "original_height": "1980px"
+    }
+  ]
+}

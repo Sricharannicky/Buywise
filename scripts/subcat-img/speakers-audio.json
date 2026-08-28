@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "bluetooth speaker product photo white background",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/fd61c5ebe40a.jpg",
+      "caption": "",
+      "source": "Dreamstime.com",
+      "original_width": "1600px",
+      "original_height": "1156px"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "pet food dog cat product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4cef306b50f7.jpg",
+      "caption": "",
+      "source": "NBC News",
+      "original_width": "1500px",
+      "original_height": "750px"
+    }
+  ]
+}

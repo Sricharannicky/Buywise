@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "bedsheet bedding product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/89b51d36a01f.png",
+      "caption": "",
+      "source": "Alibaba",
+      "original_width": "948px",
+      "original_height": "950px"
+    }
+  ]
+}

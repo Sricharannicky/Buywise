@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "snacks chips biscuits product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4ace3e935fc8.png",
+      "caption": "",
+      "source": "Gopal Snacks",
+      "original_width": "1300px",
+      "original_height": "1581px"
+    }
+  ]
+}

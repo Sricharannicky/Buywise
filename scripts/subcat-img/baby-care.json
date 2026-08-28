@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "baby care diaper product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a1c9f83f8275.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "1065px"
+    }
+  ]
+}

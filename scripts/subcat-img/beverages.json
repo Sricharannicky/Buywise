@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "tea coffee beverage product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f6ef2c9604c.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "1600px",
+      "original_height": "1600px"
+    }
+  ]
+}

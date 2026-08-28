@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "fitness gym equipment and sports gear",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/28fe3ef4a640.webp",
+      "caption": "",
+      "source": "www.ritfitsports.com",
+      "original_width": "1800px",
+      "original_height": "2400px"
+    }
+  ]
+}

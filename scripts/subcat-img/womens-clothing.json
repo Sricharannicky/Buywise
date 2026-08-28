@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "womens dress clothing product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/fb8a34466cdd.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "796px",
+      "original_height": "1000px"
+    }
+  ]
+}

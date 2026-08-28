@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "books stationery product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/45a1feec0a77.jpg",
+      "caption": "",
+      "source": "anthonynewmancamps.com",
+      "original_width": "1600px",
+      "original_height": "1600px"
+    }
+  ]
+}

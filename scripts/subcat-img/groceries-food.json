@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "grocery food products shopping",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7f36800ba83f.jpg",
+      "caption": "",
+      "source": "Whole Foods Market",
+      "original_width": "2000px",
+      "original_height": "800px"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "power bank charger product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b0d0c42c3f53.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "1600px",
+      "original_height": "1600px"
+    }
+  ]
+}

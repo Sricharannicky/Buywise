@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "pet supplies dog cat product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b24d55e6b807.jpg",
+      "caption": "",
+      "source": "Good Good Good",
+      "original_width": "1360px",
+      "original_height": "1360px"
+    }
+  ]
+}

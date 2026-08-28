@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "fiction book novel product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/46e40046d4a8.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "872px",
+      "original_height": "1000px"
+    }
+  ]
+}

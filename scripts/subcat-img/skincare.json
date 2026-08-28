@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "skincare serum bottle product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/d3f1ffe63dba.png",
+      "caption": "",
+      "source": "Yon-Ka Paris",
+      "original_width": "1536px",
+      "original_height": "1024px"
+    }
+  ]
+}

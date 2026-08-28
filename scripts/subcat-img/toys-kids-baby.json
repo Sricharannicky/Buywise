@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "toys kids baby products flat lay",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a9e13fdd3469.jpeg",
+      "caption": "",
+      "source": "Walmart",
+      "original_width": "2000px",
+      "original_height": "2000px"
+    }
+  ]
+}

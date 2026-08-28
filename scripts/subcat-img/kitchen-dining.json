@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "kitchen cookware product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8f36f2f6534b.jpg",
+      "caption": "",
+      "source": "Alibaba.com",
+      "original_width": "1200px",
+      "original_height": "1308px"
+    }
+  ]
+}

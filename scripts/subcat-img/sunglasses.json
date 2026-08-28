@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "sunglasses product photo white background",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/126921298dff.webp",
+      "caption": "",
+      "source": "SVS Vision",
+      "original_width": "3200px",
+      "original_height": "3200px"
+    }
+  ]
+}

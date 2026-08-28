@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "cleaning supplies spray mop product photo",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1a6fb6a6a656.jpg",
+      "caption": "",
+      "source": "Alibaba",
+      "original_width": "1082px",
+      "original_height": "1082px"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "pens office supplies product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c9a2b6ba856b.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "945px",
+      "original_height": "1000px"
+    }
+  ]
+}

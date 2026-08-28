@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "query": "dumbbell gym equipment product",
+  "count": 1,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9fbed2412205.jpg",
+      "caption": "",
+      "source": "Really Wild Business",
+      "original_width": "3800px",
+      "original_height": "2138px"
+    }
+  ]
+}
