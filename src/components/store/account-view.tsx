@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Package, Target, Heart, Tag, Wallet, BarChart3, Sparkles, ChevronRight, Settings, Shield } from 'lucide-react'
+import { Package, Target, Heart, Tag, Wallet, BarChart3, Sparkles, ChevronRight, Settings, Shield, Users } from 'lucide-react'
 import { useStore } from '@/lib/store'
 
 export function AccountView() {
@@ -23,6 +23,7 @@ export function AccountView() {
   const cards = [
     { icon: Package, title: 'My Orders', desc: 'Track and manage your orders', action: () => navigate({ name: 'orders' }) },
     { icon: Target, title: 'My Goals', desc: 'Savings goals and progress', action: () => navigate({ name: 'goals' }) },
+    { icon: Users, title: 'Shopping Rooms', desc: 'Shop together with friends', action: () => navigate({ name: 'rooms' }) },
     { icon: Heart, title: 'Wishlist', desc: 'Saved products', action: () => navigate({ name: 'wishlist' }) },
     { icon: Tag, title: 'Price Watch', desc: 'Price drop alerts', action: () => navigate({ name: 'price-watch' }) },
     { icon: Wallet, title: 'Budget & Finance', desc: 'Optional financial profile', action: () => navigate({ name: 'budget' }) },

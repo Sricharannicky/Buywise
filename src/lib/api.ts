@@ -122,6 +122,19 @@ export const api = {
     conversations: () => request<{ conversations: any[] }>('/api/ai/chat'),
     conversation: (id: string) => request<{ conversation: any }>(`/api/ai/conversations/${id}`),
   },
+  rooms: {
+    list: () => request<{ rooms: any[] }>('/api/shopping-rooms'),
+    create: (data: any) => request<{ room: any }>('/api/shopping-rooms', { method: 'POST', body: JSON.stringify(data) }),
+    get: (slug: string) => request<{ room: any }>(`/api/shopping-rooms/${slug}`),
+    update: (slug: string, data: any) => request<{ room: any }>(`/api/shopping-rooms/${slug}`, { method: 'PATCH', body: JSON.stringify(data) }),
+    addItem: (roomId: string, productId: string, note?: string) =>
+      request<{ item: any }>('/api/shopping-rooms/items', { method: 'POST', body: JSON.stringify({ roomId, productId, note }) }),
+    removeItem: (itemId: string) => request(`/api/shopping-rooms/items?itemId=${itemId}`, { method: 'DELETE' }),
+    vote: (itemId: string, vote: string | null) =>
+      request(`/api/shopping-rooms/items/${itemId}`, { method: 'PATCH', body: JSON.stringify({ vote }) }),
+    comment: (itemId: string, body: string) =>
+      request<{ comment: any }>(`/api/shopping-rooms/items/${itemId}`, { method: 'POST', body: JSON.stringify({ body }) }),
+  },
 }
 
 // Helper to refresh cart count globally

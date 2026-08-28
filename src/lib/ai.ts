@@ -122,12 +122,20 @@ You have access to these tools. Call them by returning a JSON object with a "too
     params: { productId: string, quantity?: number (default 1) }
     PROPOSES adding to cart. User must confirm before it is added.
 
+11. analyze_group_room
+    params: { roomSlug: string }
+    Analyzes a shared shopping room: products, votes, comments, budget, and members.
+    Returns a group decision summary with vote tallies, budget status, per-person split,
+    and identified group priorities. The AI explains differences between options but
+    does NOT decide for the group — members make the final choice.
+
 RULES:
 - Always use tools to fetch real product data. NEVER invent prices, stock, specs or ratings.
 - For write operations (create_goal, create_price_watch, add_to_cart), return them as proposals only.
 - Call at most 3 tools per turn.
 - If the user just makes small talk, you may respond without any tool calls.
 - To recommend products, ALWAYS call search_products or get_recommendations first.
+- For group shopping rooms, ALWAYS call analyze_group_room first before giving advice.
 `
 
 const SYSTEM_PROMPT = `You are "Buywise AI" — a single, unified, trusted shopping assistant for the Buywise e-commerce store.
@@ -309,6 +317,91 @@ async function executeTool(name: string, args: any, userId: string | null): Prom
       const p = await db.product.findUnique({ where: { id: args.productId }, select: { name: true, price: true, images: true, stock: true } })
       if (!p) return { type: 'error', data: { message: 'Product not found' } }
       return { type: 'add_to_cart_proposal', data: { productId: args.productId, productName: p.name, price: p.price, quantity: args.quantity || 1, inStock: p.stock > 0, images: p.images, emoji: parseImages(p.images).find((x) => !x.startsWith('http')) || '📦' } }
+    }
+    case 'analyze_group_room': {
+      const room = await db.shoppingRoom.findUnique({
+        where: { slug: args.roomSlug },
+        include: {
+          members: { include: { user: { select: { id: true, firstName: true, lastName: true } } } },
+          items: {
+            include: {
+              product: { include: { brand: { select: { name: true } } } },
+              addedBy: { include: { user: { select: { id: true, firstName: true, lastName: true } } } },
+              votes: true,
+              comments: { include: { member: { include: { user: { select: { id: true, firstName: true, lastName: true } } } } } },
+            },
+          },
+        },
+      })
+      if (!room) return { type: 'error', data: { message: 'Shopping room not found' } }
+
+      // Build per-product summary with vote counts
+      const products = room.items.map((item) => {
+        const upVotes = item.votes.filter((v) => v.vote === 'UP').length
+        const downVotes = item.votes.filter((v) => v.vote === 'DOWN').length
+        return {
+          itemId: item.id,
+          productId: item.productId,
+          name: item.product.name,
+          price: item.product.price,
+          emoji: parseImages(item.product.images).find((x) => !x.startsWith('http')) || '📦',
+          images: item.product.images,
+          brand: item.product.brand?.name || null,
+          rating: item.product.rating,
+          ratingCount: item.product.ratingCount,
+          addedBy: item.addedBy.user.firstName + ' ' + item.addedBy.user.lastName,
+          note: item.note,
+          upVotes,
+          downVotes,
+          netVotes: upVotes - downVotes,
+          commentCount: item.comments.length,
+          comments: item.comments.map((c) => ({ author: c.member.user.firstName + ' ' + c.member.user.lastName, body: c.body })),
+        }
+      })
+
+      const totalCost = room.items.reduce((s, i) => s + i.product.price, 0)
+      const memberCount = room.members.length
+      const perPersonShare = memberCount > 0 ? totalCost / memberCount : 0
+      const overBudget = room.budget > 0 && totalCost > room.budget
+      const remainingBudget = room.budget > 0 ? room.budget - totalCost : 0
+
+      // Identify group preferences from comments
+      const allComments = room.items.flatMap((i) => i.comments.map((c) => c.body.toLowerCase()))
+      const priorities: Record<string, 'Very important' | 'Important' | 'Mentioned'> = {}
+      if (allComments.some((c) => c.match(/price|cost|cheap|budget|afford|expensive/))) priorities['Price'] = 'Important'
+      if (allComments.some((c) => c.match(/quality|rating|review|durable|build/))) priorities['Quality'] = 'Important'
+      if (allComments.some((c) => c.match(/feature|function|spec|capability/))) priorities['Features'] = 'Important'
+      if (allComments.some((c) => c.match(/brand|reliab|trust|warranty/))) priorities['Brand'] = 'Mentioned'
+      if (allComments.some((c) => c.match(/deliver|shipping|fast|quick/))) priorities['Delivery'] = 'Mentioned'
+      if (allComments.some((c) => c.match(/gift|present|look|appear|design|color/))) priorities['Appearance'] = 'Important'
+
+      // Sort products by net votes
+      const ranked = [...products].sort((a, b) => b.netVotes - a.netVotes)
+      const topVoted = ranked[0]
+      const bestRated = [...products].sort((a, b) => b.rating - a.rating)[0]
+      const lowestPrice = [...products].sort((a, b) => a.price - b.price)[0]
+
+      return {
+        type: 'group_room_analysis',
+        data: {
+          roomName: room.name,
+          roomSlug: room.slug,
+          description: room.description,
+          budget: room.budget,
+          splitType: room.splitType,
+          totalCost,
+          perPersonShare,
+          memberCount,
+          overBudget,
+          remainingBudget,
+          members: room.members.map((m) => ({ name: m.user.firstName + ' ' + m.user.lastName, role: m.role })),
+          products: ranked,
+          topVoted: topVoted ? { name: topVoted.name, netVotes: topVoted.netVotes, price: topVoted.price } : null,
+          bestRated: bestRated ? { name: bestRated.name, rating: bestRated.rating, price: bestRated.price } : null,
+          lowestPrice: lowestPrice ? { name: lowestPrice.name, price: lowestPrice.price } : null,
+          priorities,
+        },
+      }
     }
     default:
       return { type: 'error', data: { message: `Unknown tool: ${name}` } }

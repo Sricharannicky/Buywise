@@ -145,3 +145,42 @@ Stage Summary:
 - localStorage tokens work in ALL contexts (iframe, cross-origin, any SameSite policy) — no more cookie issues
 - Belt-and-suspenders approach: Authorization header (primary) + cookie (fallback)
 - Verified end-to-end: login → product page → add to cart → buy now → checkout — all work without any sign-in prompts
+
+---
+Task ID: 7
+Agent: main (Z.ai Code)
+Task: Add Sharable Shopping Room Agent — collaborative group shopping with AI-assisted decision making.
+
+Work Log:
+- Database: Added 5 new models — ShoppingRoom (slug, name, budget, splitType, status), ShoppingRoomMember (role, unique roomId+userId), ShoppingRoomItem (product added to room with note), ShoppingRoomVote (UP/DOWN, unique per member+item), ShoppingRoomComment (discussion). Added back-relations on User and Product. Pushed schema.
+- API routes:
+  - /api/shopping-rooms (GET list, POST create with auto-generated shareable slug)
+  - /api/shopping-rooms/[slug] (GET room with all items/votes/comments/members, PATCH update budget/splitType)
+  - /api/shopping-rooms/items (POST add product, DELETE remove)
+  - /api/shopping-rooms/items/[itemId] (PATCH vote toggle, POST comment)
+  - Auto-join: signed-in users who visit a room slug are automatically added as members
+- AI orchestrator: Added `analyze_group_room` tool (tool #11) that:
+  - Fetches all room data (products, votes, comments, members, budget)
+  - Computes per-product vote tallies (up/down/net)
+  - Identifies group priorities by scanning comments for keywords (price, quality, features, brand, delivery, appearance)
+  - Identifies top-voted, best-rated, and lowest-price products
+  - Calculates total cost, per-person share, budget status (over/under)
+  - Returns a `group_room_analysis` structured card
+  - The AI explains differences but does NOT decide for the group
+- Frontend UI:
+  - RoomsView: list rooms, create room dialog (name, description, budget, split type: SHARED_EQUALLY/FIXED/CUSTOM)
+  - RoomView: shareable link copy, budget/total/per-person summary cards, AI analysis button, add-product search, product cards with up/down voting, comments, member list
+  - GroupRoomAnalysisCard in AI partner: renders the analysis with stats, highlights (group favourite, best rated, lowest price), priorities, ranked products, budget status
+  - Navigation: added "Shopping Rooms" to header dropdown, mobile menu, and account dashboard
+  - Shareable links: /?room=<slug> auto-navigates to the room
+- Fixed Prisma relation issue: added `addedBy` relation on ShoppingRoomItem → ShoppingRoomMember
+- Ran lint (clean), pushed DB, restarted dev server
+- Verified with Agent Browser: created room → opened it → added Quartz Heritage Auto Watch → voted → saw budget tracking
+- Verified AI analysis via curl: "Analyze our birthday gift room" → AI returned group_room_analysis with room name, member count, total cost, per-person share, top voted, best rated, budget warning (over budget by ₹8,999)
+
+Stage Summary:
+- Complete Sharable Shopping Room feature with AI-assisted collaborative decision making
+- Users can: create a room, share a link, invite friends (auto-join on visit), add products, vote (up/down), comment, set group budget, see per-person split (shared equally / fixed / custom)
+- Buywise AI analyzes the room: vote tallies, group priorities (from comments), best-value highlights, budget status — and explains differences without deciding for the group
+- Payment split: SHARED_EQUALLY (total / members), FIXED, CUSTOM — shows each person's share
+- Shareable via /?room=<slug> links — friends can join and collaborate in real-time

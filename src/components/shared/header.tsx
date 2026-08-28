@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu'
-import { Sparkles, Search, ShoppingCart, Heart, User, Menu, Package, Target, Tag, Wallet, BarChart3, LogOut, Bell, ChevronDown, Home, ArrowLeft } from 'lucide-react'
+import { Sparkles, Search, ShoppingCart, Heart, User, Menu, Package, Target, Tag, Wallet, BarChart3, LogOut, Bell, ChevronDown, Home, ArrowLeft, Users } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
 import { toast } from 'sonner'
@@ -82,6 +82,7 @@ export function Header({ categories }: { categories: any[] }) {
               <button onClick={() => navigate({ name: 'account' })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"><User className="h-4 w-4" /> My Account</button>
               <button onClick={() => navigate({ name: 'orders' })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"><Package className="h-4 w-4" /> My Orders</button>
               <button onClick={() => navigate({ name: 'goals' })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"><Target className="h-4 w-4" /> My Goals</button>
+              <button onClick={() => navigate({ name: 'rooms' })} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"><Users className="h-4 w-4" /> Shopping Rooms</button>
             </nav>
           </SheetContent>
         </Sheet>
@@ -196,6 +197,7 @@ export function Header({ categories }: { categories: any[] }) {
                 <DropdownMenuItem onClick={() => navigate({ name: 'account' })}><User className="mr-2 h-4 w-4" /> My Account</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ name: 'orders' })}><Package className="mr-2 h-4 w-4" /> My Orders</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ name: 'goals' })}><Target className="mr-2 h-4 w-4" /> My Goals</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate({ name: 'rooms' })}><Users className="mr-2 h-4 w-4" /> Shopping Rooms</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ name: 'wishlist' })}><Heart className="mr-2 h-4 w-4" /> Wishlist</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ name: 'price-watch' })}><Tag className="mr-2 h-4 w-4" /> Price Watch</DropdownMenuItem>
                 <DropdownMenuSeparator />

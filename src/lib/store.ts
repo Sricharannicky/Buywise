@@ -14,6 +14,8 @@ export type View =
   | { name: 'price-watch' }
   | { name: 'budget' }
   | { name: 'insights' }
+  | { name: 'rooms' }
+  | { name: 'room'; slug: string }
 
 interface AppState {
   view: View

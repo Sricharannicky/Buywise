@@ -32,6 +32,7 @@ model User {
   aiConversations AIConversation[]
   notifications Notification[]
   recentlyViewed RecentlyViewed[]
+  shoppingRooms ShoppingRoomMember[]
 }
 
 model UserPreferences {
@@ -132,6 +133,7 @@ model Product {
   goalItems     GoalItem[]
   priceWatches  PriceWatch[]
   recentlyViewed RecentlyViewed[]
+  roomItems     ShoppingRoomItem[]
 }
 
 model Review {
@@ -297,4 +299,84 @@ model RecentlyViewed {
   viewedAt  DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   product   Product  @relation(fields: [productId], references: [id])
+}
+
+// ============================================================================
+// SHARABLE SHOPPING ROOMS — collaborative group shopping
+// ============================================================================
+
+model ShoppingRoom {
+  id          String   @id @default(cuid())
+  slug        String   @unique // shareable link token
+  name        String
+  description String?
+  creatorId   String
+  budget      Float    @default(0) // group budget (0 = no budget)
+  splitType   String   @default("SHARED_EQUALLY") // SHARED_EQUALLY | FIXED | CUSTOM
+  status      String   @default("ACTIVE") // ACTIVE | COMPLETED | ARCHIVED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     ShoppingRoomMember[]
+  items       ShoppingRoomItem[]
+
+  @@index([creatorId])
+}
+
+model ShoppingRoomMember {
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
+  role      String   @default("MEMBER") // CREATOR | MEMBER
+  joinedAt  DateTime @default(now())
+
+  room      ShoppingRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  votes     ShoppingRoomVote[]
+  comments  ShoppingRoomComment[]
+  addedItems ShoppingRoomItem[]
+
+  @@unique([roomId, userId])
+  @@index([userId])
+}
+
+model ShoppingRoomItem {
+  id          String   @id @default(cuid())
+  roomId      String
+  productId   String
+  addedById   String
+  note        String? // optional note from the person who added it
+  createdAt   DateTime @default(now())
+
+  room        ShoppingRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id])
+  addedBy     ShoppingRoomMember @relation(fields: [addedById], references: [id], onDelete: Cascade)
+  votes       ShoppingRoomVote[]
+  comments    ShoppingRoomComment[]
+
+  @@index([roomId])
+}
+
+model ShoppingRoomVote {
+  id        String   @id @default(cuid())
+  itemId    String
+  memberId  String // ShoppingRoomMember id
+  vote      String   @default("UP") // UP | DOWN
+  createdAt DateTime @default(now())
+
+  item      ShoppingRoomItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  member    ShoppingRoomMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, memberId])
+}
+
+model ShoppingRoomComment {
+  id        String   @id @default(cuid())
+  itemId    String
+  memberId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  item      ShoppingRoomItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  member    ShoppingRoomMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
 }

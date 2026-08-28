@@ -261,6 +261,8 @@ function ToolResultCard({ result, onNavigate }: { result: any; onNavigate: (id: 
       return <PriceWatchProposalCard data={data} />
     case 'add_to_cart_proposal':
       return <AddToCartProposalCard data={data} />
+    case 'group_room_analysis':
+      return <GroupRoomAnalysisCard data={data} onNavigate={onNavigate} />
     case 'error':
       return (
         <Card className="flex items-center gap-2 border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
@@ -476,6 +478,87 @@ function AddToCartProposalCard({ data }: { data: any }) {
         <p className="text-xs text-muted-foreground">{formatPrice(data.price)} × {data.quantity}</p>
       </div>
       {done ? <Badge className="bg-emerald-600 text-white"><Check className="mr-1 h-3 w-3" /> Added</Badge> : <Button size="sm" onClick={confirm} disabled={!data.inStock}>{data.inStock ? 'Add to cart' : 'Out of stock'}</Button>}
+    </Card>
+  )
+}
+
+// Group Room Analysis — AI-assisted collaborative decision summary
+function GroupRoomAnalysisCard({ data, onNavigate }: { data: any; onNavigate: (id: string) => void }) {
+  return (
+    <Card className="overflow-hidden p-0">
+      <div className="border-b border-border/60 bg-gradient-to-r from-violet-50 to-fuchsia-50 px-3 py-2 dark:from-violet-950/30 dark:to-fuchsia-950/30">
+        <span className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">🤝 Group Decision Analysis</span>
+      </div>
+      <div className="space-y-3 p-3">
+        {/* Summary stats */}
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="rounded-lg bg-muted/40 p-2">
+            <p className="text-[10px] text-muted-foreground">Members</p>
+            <p className="text-sm font-bold">{data.memberCount}</p>
+          </div>
+          <div className={`rounded-lg p-2 ${data.overBudget ? 'bg-destructive/10' : 'bg-muted/40'}`}>
+            <p className="text-[10px] text-muted-foreground">Total cost</p>
+            <p className={`text-sm font-bold ${data.overBudget ? 'text-destructive' : ''}`}>{formatPrice(data.totalCost)}</p>
+          </div>
+          <div className="rounded-lg bg-muted/40 p-2">
+            <p className="text-[10px] text-muted-foreground">Per person</p>
+            <p className="text-sm font-bold">{formatPrice(data.perPersonShare)}</p>
+          </div>
+        </div>
+
+        {data.budget > 0 && (
+          <div className={`rounded-lg p-2 text-xs ${data.overBudget ? 'bg-destructive/10 text-destructive' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400'}`}>
+            {data.overBudget
+              ? `⚠️ Over budget by ${formatPrice(-data.remainingBudget)}`
+              : `✓ Within budget — ${formatPrice(data.remainingBudget)} remaining`}
+          </div>
+        )}
+
+        {/* Highlights */}
+        {(data.topVoted || data.bestRated || data.lowestPrice) && (
+          <div className="space-y-1.5 rounded-lg border border-border/40 p-2">
+            {data.topVoted && (
+              <p className="text-xs"><span className="font-semibold text-amber-600">🏆 Group favourite:</span> {data.topVoted.name} ({data.topVoted.netVotes > 0 ? '+' : ''}{data.topVoted.netVotes} votes, {formatPrice(data.topVoted.price)})</p>
+            )}
+            {data.bestRated && (
+              <p className="text-xs"><span className="font-semibold text-blue-600">⭐ Best rated:</span> {data.bestRated.name} ({data.bestRated.rating.toFixed(1)}★, {formatPrice(data.bestRated.price)})</p>
+            )}
+            {data.lowestPrice && (
+              <p className="text-xs"><span className="font-semibold text-emerald-600">💰 Lowest price:</span> {data.lowestPrice.name} ({formatPrice(data.lowestPrice.price)})</p>
+            )}
+          </div>
+        )}
+
+        {/* Group priorities */}
+        {Object.keys(data.priorities || {}).length > 0 && (
+          <div className="rounded-lg border border-border/40 p-2">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Group priorities (from comments)</p>
+            <div className="flex flex-wrap gap-1.5">
+              {Object.entries(data.priorities).map(([k, v]: any) => (
+                <span key={k} className={`rounded-full px-2 py-0.5 text-[10px] ${v === 'Important' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                  {k}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Ranked products */}
+        <div className="space-y-1.5">
+          {data.products?.slice(0, 5).map((p: any, i: number) => (
+            <div key={p.itemId} className="flex items-center gap-2 text-xs">
+              <span className="w-4 text-muted-foreground">{i + 1}.</span>
+              <button onClick={() => onNavigate(p.productId)} className="min-w-0 flex-1 truncate text-left hover:text-primary">{p.name}</button>
+              <span className={`font-medium ${p.netVotes > 0 ? 'text-emerald-600' : p.netVotes < 0 ? 'text-rose-600' : 'text-muted-foreground'}`}>{p.netVotes > 0 ? '+' : ''}{p.netVotes}</span>
+              <span className="font-medium">{formatPrice(p.price)}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="border-t border-border/40 pt-2 text-[10px] italic text-muted-foreground">
+          The AI explains the differences — the group makes the final decision.
+        </p>
+      </div>
     </Card>
   )
 }

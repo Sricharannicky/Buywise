@@ -17,9 +17,10 @@ import { GoalsView } from '@/components/store/goals-view'
 import { WishlistView, PriceWatchView } from '@/components/store/wishlist-pricewatch-view'
 import { BudgetView, InsightsView } from '@/components/store/budget-insights-view'
 import { AccountView } from '@/components/store/account-view'
+import { RoomsView, RoomView } from '@/components/store/rooms-view'
 
 export default function Page() {
-  const { view, user, setUser } = useStore()
+  const { view, user, setUser, navigate } = useStore()
   const [categories, setCategories] = useState<any[]>([])
   const [brands, setBrands] = useState<any[]>([])
   const [ready, setReady] = useState(false)
@@ -28,6 +29,19 @@ export default function Page() {
     api.categories().then((r) => { setCategories(r.categories); setBrands(r.brands) }).catch(() => {})
     api.auth.me().then((r) => setUser(r.user)).catch(() => {}).finally(() => setReady(true))
   }, [setUser])
+
+  // Handle ?room=<slug> shareable link — auto-navigate to the room
+  useEffect(() => {
+    if (typeof window !== 'undefined' && ready) {
+      const params = new URLSearchParams(window.location.search)
+      const roomSlug = params.get('room')
+      if (roomSlug) {
+        navigate({ name: 'room', slug: roomSlug })
+        // Clean the URL
+        window.history.replaceState({}, '', window.location.pathname)
+      }
+    }
+  }, [ready, navigate])
 
   function renderView() {
     switch (view.name) {
@@ -43,6 +57,8 @@ export default function Page() {
       case 'price-watch': return <PriceWatchView />
       case 'budget': return <BudgetView />
       case 'insights': return <InsightsView />
+      case 'rooms': return <RoomsView />
+      case 'room': return <RoomView slug={view.slug} />
       default: return <HomeView categories={categories} />
     }
   }
