@@ -24,17 +24,20 @@ export function AuthModal() {
     e.preventDefault()
     setLoading(true)
     try {
+      let user
       if (authMode === 'login') {
-        const { user } = await api.auth.login(form.email, form.password)
-        setUser(user)
-        toast.success(`Welcome back, ${user.firstName}!`)
+        const res = await api.auth.login(form.email, form.password)
+        user = res.user
       } else {
-        const { user } = await api.auth.register(form)
-        setUser(user)
-        toast.success(`Welcome to Buywise, ${user.firstName}!`)
+        const res = await api.auth.register(form)
+        user = res.user
       }
-      await refreshCartCount()
+      // Close the modal IMMEDIATELY and update the store — don't wait for cart refresh
+      setUser(user)
       setAuthOpen(false)
+      toast.success(authMode === 'login' ? `Welcome back, ${user.firstName}!` : `Welcome to Buywise, ${user.firstName}!`)
+      // Refresh cart count in the background (non-blocking)
+      refreshCartCount().catch(() => {})
     } catch (e: any) {
       toast.error(e.message || 'Authentication failed')
     } finally {

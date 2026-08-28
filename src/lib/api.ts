@@ -3,6 +3,7 @@ import { useStore } from './store'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
+    credentials: 'include', // always send cookies — essential for iframe/preview contexts
     headers: { 'Content-Type': 'application/json' },
     ...options,
   })

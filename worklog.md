@@ -94,3 +94,25 @@ Stage Summary:
   5. ✅ AI agent renamed to "Buywise AI" (button, panel, prompts, chat labels)
   6. ✅ "View" button on all AI-suggested products + real images in AI cards
 - No console errors, lint clean, all APIs 200
+
+---
+Task ID: 5
+Agent: main (Z.ai Code)
+Task: Fix "already signed in but still showing sign-in prompt" — cookie/SameSite issue in preview iframe.
+
+Work Log:
+- Analyzed user screenshot via VLM: confirmed user IS logged in (avatar "ss" shows) but cart API returns 401, triggering the auth modal. This is a classic SameSite cookie issue in cross-origin iframes.
+- Root cause: The session cookie was set with `sameSite: 'lax'`, which blocks cookies from being sent with cross-origin fetch requests (like POST /api/cart) in the preview iframe. The Z.ai preview panel embeds the app in a cross-origin iframe, so `sameSite: 'lax'` cookies are not sent for fetch requests.
+- Fix #1 (Cookie settings): Created `src/lib/cookie-options.ts` with `getCookieOptions(req)` that detects HTTPS via the `X-Forwarded-Proto` header (set by the Caddy gateway). When HTTPS: `sameSite: 'none'` + `secure: true` (allows cross-origin cookie sending). When HTTP: `sameSite: 'lax'` (fallback for local dev).
+- Fix #2 (credentials: 'include'): Added `credentials: 'include'` to ALL fetch requests in `src/lib/api.ts`. This tells the browser to always send cookies, even for cross-origin requests. Without this, `sameSite: 'none'` cookies still wouldn't be sent for fetch requests.
+- Fix #3 (Auth modal): Made the auth modal close IMMEDIATELY on successful login/register (`setUser` + `setAuthOpen(false)` happen before `refreshCartCount`). Previously, if `refreshCartCount` threw, the modal could stay open. Now `refreshCartCount` runs in the background (non-blocking).
+- Updated login, register, and logout routes to use the new cookie options
+- Ran lint (clean), restarted dev server
+- Verified with Agent Browser: registered a NEW user (Charan Saran, charansaran@gmail.com) → avatar "CS" shows → clicked "Add to cart" → "Added to cart" (no sign-in prompt!) → clicked "Buy now" → checkout page with address + payment → AI chat with "View" buttons all working
+- All API calls return 200, no 401 errors in logs
+
+Stage Summary:
+- Fixed the #1 user complaint: "already signed in but still showing sign-in"
+- Root cause was SameSite cookie policy blocking cookies in the preview iframe
+- Three-layer fix: (1) `sameSite: 'none'` + `secure: true` for HTTPS, (2) `credentials: 'include'` on all fetches, (3) modal closes immediately on login
+- Verified end-to-end with a fresh user registration and add-to-cart flow

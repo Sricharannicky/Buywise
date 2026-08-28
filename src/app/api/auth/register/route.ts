@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { hashPassword, createSessionToken } from '@/lib/auth'
+import { getCookieOptions } from '@/lib/cookie-options'
 import { cookies } from 'next/headers'
 
 export async function POST(req: NextRequest) {
@@ -33,12 +34,7 @@ export async function POST(req: NextRequest) {
     })
     const token = createSessionToken(user.id)
     const cookieStore = await cookies()
-    cookieStore.set('session', token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    })
+    cookieStore.set('session', token, getCookieOptions(req))
     return NextResponse.json({ user })
   } catch (e) {
     return NextResponse.json({ error: 'Registration failed' }, { status: 500 })

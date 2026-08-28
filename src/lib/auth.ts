@@ -48,6 +48,8 @@ export function verifySessionToken(token: string): { userId: string; exp: number
   }
 }
 
+// Cookie options are in src/lib/cookie-options.ts (needs NextRequest for proto detection)
+
 export async function getSession() {
   const cookieStore = await cookies()
   const token = cookieStore.get('session')?.value

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { verifyPassword, createSessionToken } from '@/lib/auth'
+import { getCookieOptions } from '@/lib/cookie-options'
 import { cookies } from 'next/headers'
 
 export async function POST(req: NextRequest) {
@@ -18,12 +19,7 @@ export async function POST(req: NextRequest) {
     await db.wishlist.upsert({ where: { userId: user.id }, update: {}, create: { userId: user.id } })
     const token = createSessionToken(user.id)
     const cookieStore = await cookies()
-    cookieStore.set('session', token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    })
+    cookieStore.set('session', token, getCookieOptions(req))
     return NextResponse.json({
       user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role, phone: user.phone },
     })
