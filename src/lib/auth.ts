@@ -50,7 +50,23 @@ export function verifySessionToken(token: string): { userId: string; exp: number
 
 // Cookie options are in src/lib/cookie-options.ts (needs NextRequest for proto detection)
 
-export async function getSession() {
+export async function getSession(req?: any) {
+  // 1. Try Authorization header (Bearer token — for iframe contexts where cookies fail)
+  if (req) {
+    const authHeader = req.headers?.get('authorization') || req.headers?.get('Authorization')
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.slice(7)
+      const payload = verifySessionToken(token)
+      if (payload) {
+        const user = await db.user.findUnique({
+          where: { id: payload.userId },
+          select: { id: true, email: true, firstName: true, lastName: true, role: true, phone: true },
+        })
+        if (user) return user
+      }
+    }
+  }
+  // 2. Fall back to cookie
   const cookieStore = await cookies()
   const token = cookieStore.get('session')?.value
   if (!token) return null
@@ -63,8 +79,8 @@ export async function getSession() {
   return user
 }
 
-export async function requireUser() {
-  const user = await getSession()
+export async function requireUser(req?: any) {
+  const user = await getSession(req)
   if (!user) throw new Error('UNAUTHORIZED')
   return user
 }

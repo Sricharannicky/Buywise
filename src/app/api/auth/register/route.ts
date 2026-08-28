@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const token = createSessionToken(user.id)
     const cookieStore = await cookies()
     cookieStore.set('session', token, getCookieOptions(req))
-    return NextResponse.json({ user })
+    return NextResponse.json({ user, token }) // also return token for localStorage (iframe fallback)
   } catch (e) {
     return NextResponse.json({ error: 'Registration failed' }, { status: 500 })
   }

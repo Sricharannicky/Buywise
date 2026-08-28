@@ -1,10 +1,28 @@
 // Frontend API client — all requests use relative paths (gateway-safe)
 import { useStore } from './store'
 
+const TOKEN_KEY = 'buywise_session_token'
+
+// Store/retrieve the session token from localStorage (fallback for iframe contexts
+// where SameSite cookies may be blocked)
+export function setSessionToken(token: string) {
+  try { localStorage.setItem(TOKEN_KEY, token) } catch {}
+}
+export function getSessionToken(): string | null {
+  try { return localStorage.getItem(TOKEN_KEY) } catch { return null }
+}
+export function clearSessionToken() {
+  try { localStorage.removeItem(TOKEN_KEY) } catch {}
+}
+
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
+  const token = getSessionToken()
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
   const res = await fetch(url, {
-    credentials: 'include', // always send cookies — essential for iframe/preview contexts
-    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // try cookies too (belt and suspenders)
+    headers,
     ...options,
   })
   const data = await res.json().catch(() => ({}))
@@ -17,11 +35,27 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 export const api = {
   auth: {
     me: () => request<{ user: any }>('/api/auth/me'),
-    login: (email: string, password: string) =>
-      request<{ user: any }>('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
-    register: (data: any) =>
-      request<{ user: any }>('/api/auth/register', { method: 'POST', body: JSON.stringify(data) }),
-    logout: () => request('/api/auth/logout', { method: 'POST' }),
+    login: async (email: string, password: string) => {
+      const res = await request<{ user: any; token?: string }>('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      // The API returns a token for localStorage-based auth (iframe fallback)
+      if ((res as any).token) setSessionToken((res as any).token)
+      return { user: res.user }
+    },
+    register: async (data: any) => {
+      const res = await request<{ user: any; token?: string }>('/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+      if ((res as any).token) setSessionToken((res as any).token)
+      return { user: res.user }
+    },
+    logout: async () => {
+      clearSessionToken()
+      return request('/api/auth/logout', { method: 'POST' })
+    },
   },
   products: {
     list: (params: Record<string, string | undefined>) => {

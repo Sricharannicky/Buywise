@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
-export async function GET() {
-  const user = await getSession()
+export async function GET(req: NextRequest) {
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ items: [] })
   const wl = await db.wishlist.findUnique({
     where: { userId: user.id },
@@ -13,7 +13,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Please sign in' }, { status: 401 })
   const { productId } = await req.json()
   const wl = await db.wishlist.upsert({ where: { userId: user.id }, update: {}, create: { userId: user.id } })
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { searchParams } = new URL(req.url)
   const itemId = searchParams.get('itemId')

@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
-export async function GET() {
-  const user = await getSession()
+export async function GET(req: NextRequest) {
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ cart: null, items: [], subtotal: 0, count: 0 })
   const cart = await db.cart.findUnique({
     where: { userId: user.id },
@@ -22,7 +22,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Please sign in to add items to your cart' }, { status: 401 })
   const { productId, quantity = 1 } = await req.json()
   const product = await db.product.findUnique({ where: { id: productId } })
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { itemId, quantity, savedForLater } = await req.json()
   if (quantity !== undefined) {
@@ -56,7 +56,7 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { searchParams } = new URL(req.url)
   const itemId = searchParams.get('itemId')

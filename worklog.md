@@ -116,3 +116,32 @@ Stage Summary:
 - Root cause was SameSite cookie policy blocking cookies in the preview iframe
 - Three-layer fix: (1) `sameSite: 'none'` + `secure: true` for HTTPS, (2) `credentials: 'include'` on all fetches, (3) modal closes immediately on login
 - Verified end-to-end with a fresh user registration and add-to-cart flow
+
+---
+Task ID: 6
+Agent: main (Z.ai Code)
+Task: Fix persistent "sign in again" prompt when adding to cart — SameSite cookies fail in cross-origin iframe.
+
+Work Log:
+- Investigated dev logs: found `POST /api/cart 401` even after `POST /api/auth/login 200`. The session cookie was NOT being sent for POST requests (cross-origin fetch in the preview iframe).
+- Root cause: The Z.ai preview panel embeds the app in a cross-origin iframe. SameSite cookie policies block cookies from being sent with cross-origin POST requests, even with `sameSite:'none'` + `secure:true`. The `X-Forwarded-Proto` header was unreliable (Caddy gateway sets it to its own HTTP scheme, not the browser's HTTPS).
+- Solution: Implemented DUAL auth — token-based (localStorage) + cookie-based:
+  1. Login/register now returns the session token in the JSON response body
+  2. Frontend stores it in localStorage (`buywise_session_token`)
+  3. Every API request sends it as `Authorization: Bearer <token>` header
+  4. Backend `getSession(req)` checks the Authorization header FIRST, then falls back to the cookie
+  5. Logout clears both the localStorage token and the cookie
+- Updated `src/lib/api.ts`: added `setSessionToken`, `getSessionToken`, `clearSessionToken` helpers; all requests now send `Authorization: Bearer <token>` if available
+- Updated `src/lib/auth.ts`: `getSession(req)` and `requireUser(req)` now accept the request object and check the Authorization header
+- Updated all 12 API route files: GET/POST/PATCH/DELETE handlers now pass `req` to `getSession(req)` / `requireUser(req)`
+- Updated login & register routes to return `token` in the JSON response
+- Ran lint (clean), restarted dev server
+- Verified with curl: login returns token → add to cart with ONLY `Authorization: Bearer <token>` header (no cookies) → `{"ok":true}` ✅
+- Verified with Agent Browser: cleared all cookies + localStorage → logged in with demo account → localStorage shows "TOKEN STORED" → clicked product → clicked "Add to cart" → "Added to cart" (NO sign-in prompt!) → "Buy now" → checkout page loads
+- All API calls return 200, zero 401 errors
+
+Stage Summary:
+- DEFINITIVELY fixed the "sign in again" issue by implementing token-based auth that bypasses cookies entirely
+- localStorage tokens work in ALL contexts (iframe, cross-origin, any SameSite policy) — no more cookie issues
+- Belt-and-suspenders approach: Authorization header (primary) + cookie (fallback)
+- Verified end-to-end: login → product page → add to cart → buy now → checkout — all work without any sign-in prompts

@@ -2,15 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
-export async function GET() {
-  const user = await getSession()
+export async function GET(req: NextRequest) {
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ addresses: [] })
   const addresses = await db.address.findMany({ where: { userId: user.id }, orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }] })
   return NextResponse.json({ addresses })
 }
 
 export async function POST(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Please sign in' }, { status: 401 })
   const { fullName, phone, line1, line2, city, state, pincode, isDefault } = await req.json()
   if (!fullName || !phone || !line1 || !city || !state || !pincode) return NextResponse.json({ error: 'Required fields missing' }, { status: 400 })
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { searchParams } = new URL(req.url)
   const id = searchParams.get('id')

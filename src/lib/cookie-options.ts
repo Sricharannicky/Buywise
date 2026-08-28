@@ -1,29 +1,26 @@
 import { NextRequest } from 'next/server'
 
-// Cookie options that work in preview iframes (cross-origin).
-// sameSite:'none' + secure:true allows the cookie to be sent with
-// cross-origin fetch requests, which is essential when the app is
-// embedded in an iframe (e.g. the Z.ai preview panel).
-// We detect HTTPS via the X-Forwarded-Proto header (set by the gateway)
-// and only set secure:true when the connection is HTTPS.
-export function getCookieOptions(req: NextRequest) {
-  const forwardedProto = req.headers.get('x-forwarded-proto') || ''
-  const isHttps = forwardedProto === 'https' || req.nextUrl.protocol === 'https:'
-  return {
-    httpOnly: true,
-    sameSite: isHttps ? ('none' as const) : ('lax' as const),
-    secure: isHttps,
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/',
-  }
-}
-
-// Default options for cases where we don't have the request (e.g. logout)
-// Use the most permissive settings that work in HTTPS preview contexts.
+// Cookie options for cross-origin iframe/preview compatibility.
+//
+// The Z.ai preview panel serves the app over HTTPS but proxies through
+// a Caddy gateway on HTTP (:81). The X-Forwarded-Proto header may say
+// "http" even when the browser connection is HTTPS, so we can't rely on it.
+//
+// Solution: ALWAYS use sameSite:'none' + secure:true.
+// - In the HTTPS preview: works perfectly (secure context).
+// - On localhost HTTP: Chrome/Firefox treat localhost as a secure context,
+//   so secure cookies work. (Safari may not, but that's an edge case for dev.)
+//
+// This is the standard approach for apps embedded in cross-origin iframes.
 export const SESSION_COOKIE_OPTIONS = {
   httpOnly: true,
   sameSite: 'none' as const,
   secure: true,
   maxAge: 60 * 60 * 24 * 7, // 7 days
   path: '/',
+}
+
+// Keep the function for backward compat, but it always returns the same thing
+export function getCookieOptions(_req: NextRequest) {
+  return SESSION_COOKIE_OPTIONS
 }

@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
-export async function GET() {
-  const user = await getSession()
+export async function GET(req: NextRequest) {
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ goals: [] })
   const goals = await db.goal.findMany({
     where: { userId: user.id },
@@ -14,7 +14,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Please sign in' }, { status: 401 })
   const { title, targetAmount, currentAmount = 0, targetDate } = await req.json()
   if (!title || !targetAmount) return NextResponse.json({ error: 'Title and target amount required' }, { status: 400 })
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { goalId, currentAmount, addProduct, productId, status } = await req.json()
   if (currentAmount !== undefined) {
@@ -43,7 +43,7 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { searchParams } = new URL(req.url)
   const goalId = searchParams.get('goalId')

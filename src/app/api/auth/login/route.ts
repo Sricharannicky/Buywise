@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
     cookieStore.set('session', token, getCookieOptions(req))
     return NextResponse.json({
       user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role, phone: user.phone },
+      token, // also return token for localStorage-based auth (iframe fallback)
     })
   } catch (e) {
     return NextResponse.json({ error: 'Login failed' }, { status: 500 })

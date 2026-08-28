@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const product = await db.product.findUnique({
     where: { id },
@@ -16,7 +16,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
   // Track recently viewed if logged in
   try {
-    const user = await getSession()
+    const user = await getSession(req)
     if (user) {
       await db.recentlyViewed.create({ data: { userId: user.id, productId: product.id } })
       // keep only last 20

@@ -5,7 +5,7 @@ import { chat } from '@/lib/ai'
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getSession()
+    const user = await getSession(req)
     const { message, conversationId } = await req.json()
     if (!message || typeof message !== 'string') {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
@@ -51,8 +51,8 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
-  const user = await getSession()
+export async function GET(req: NextRequest) {
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ conversations: [] })
   const conversations = await db.aIConversation.findMany({
     where: { userId: user.id },

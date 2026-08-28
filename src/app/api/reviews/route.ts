@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const user = await getSession()
+  const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Please sign in to review' }, { status: 401 })
   const { productId, rating, title, body } = await req.json()
   if (!productId || !rating || !title || !body) return NextResponse.json({ error: 'All fields required' }, { status: 400 })
