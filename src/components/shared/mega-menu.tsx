@@ -3,6 +3,7 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ChevronRight, Home, X } from 'lucide-react'
 import { useStore } from '@/lib/store'
+import { SmartImage } from '@/components/shared/smart-image'
 
 export function MegaMenu({ categories }: { categories: any[] }) {
   const { megaMenuOpen, setMegaMenuOpen, navigate } = useStore()
@@ -39,7 +40,10 @@ export function MegaMenu({ categories }: { categories: any[] }) {
                 onClick={() => go(c.slug)}
                 className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-bold hover:bg-accent"
               >
-                <span className="flex items-center gap-2"><span>{c.imageUrl}</span>{c.name}</span>
+                <span className="flex items-center gap-2">
+                  <SmartImage src={c.imageUrl} alt={c.name} fallbackLabel={c.name} className="h-8 w-8 shrink-0 rounded-lg" />
+                  {c.name}
+                </span>
                 {c.children?.length > 0 && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
               </button>
               {c.children?.length > 0 && (
@@ -48,8 +52,9 @@ export function MegaMenu({ categories }: { categories: any[] }) {
                     <button
                       key={sub.id}
                       onClick={() => go(c.slug, sub.slug)}
-                      className="block w-full rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
                     >
+                      <SmartImage src={sub.imageUrl} alt={sub.name} fallbackLabel={sub.name} className="h-6 w-6 shrink-0 rounded-md" />
                       {sub.name}
                     </button>
                   ))}

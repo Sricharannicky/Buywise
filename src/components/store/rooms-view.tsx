@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { ProductImage } from '@/components/shared/product-image'
 import { Users, Plus, ArrowRight, Copy, Check, Sparkles, Wallet, Package } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { api } from '@/lib/api'
@@ -243,7 +244,7 @@ export function RoomView({ slug }: { slug: string }) {
               <div className="space-y-2">
                 {searchResults.map((p) => (
                   <div key={p.id} className="flex items-center gap-3 rounded-lg border border-border/50 p-2">
-                    <span className="text-2xl">{JSON.parse(p.images || '["📦"]')[1] || JSON.parse(p.images || '["📦"]')[0]}</span>
+                    <ProductImage name={p.name} images={p.images} className="h-10 w-10 shrink-0 rounded-lg" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{p.name}</p>
                       <p className="text-xs text-muted-foreground">{formatPrice(p.price)}</p>

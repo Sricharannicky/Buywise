@@ -196,7 +196,7 @@ export function Header({ categories }: { categories: any[] }) {
               onClick={() => navigate({ name: 'catalog', category: c.slug })}
               className={cn('flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors', view.name === 'catalog' && view.category === c.slug ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground')}
             >
-              <span>{c.imageUrl}</span>{c.name}
+              {c.name}
             </button>
           ))}
           <div className="ml-auto shrink-0">
