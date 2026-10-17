@@ -15,20 +15,28 @@ export async function GET(req: NextRequest) {
   const flag = searchParams.get('flag') // trending | newArrival | deal | featured
 
   const where: any = { isActive: true }
+  const andClauses: any[] = []
   if (q) {
-    where.OR = [
-      { name: { contains: q } },
-      { shortDescription: { contains: q } },
-      { description: { contains: q } },
-      { tags: { contains: q } },
-      { brand: { name: { contains: q } } },
-    ]
+    andClauses.push({
+      OR: [
+        { name: { contains: q } },
+        { shortDescription: { contains: q } },
+        { description: { contains: q } },
+        { tags: { contains: q } },
+        { brand: { name: { contains: q } } },
+      ],
+    })
   }
   if (category) {
-    where.OR = [
-      { category: { slug: category } },
-      { category: { parent: { slug: category } } },
-    ]
+    andClauses.push({
+      OR: [
+        { category: { slug: category } },
+        { category: { parent: { slug: category } } },
+      ],
+    })
+  }
+  if (andClauses.length > 0) {
+    where.AND = andClauses
   }
   if (brand) {
     const brands = brand.split(',').filter(Boolean)

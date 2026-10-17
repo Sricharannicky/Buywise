@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
   // Validate stock and recompute prices server-side (never trust frontend)
   let subtotal = 0
-  const lineItems = []
+  const lineItems: any[] = []
   for (const item of cart.items) {
     if (!item.product || !item.product.isActive || item.product.stock < item.quantity) {
       return NextResponse.json({ error: `${item.product?.name || 'An item'} is no longer available in the requested quantity` }, { status: 400 })

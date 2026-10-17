@@ -193,7 +193,7 @@ export function HomeView({ categories }: { categories: any[] }) {
                     </div>
                   </div>
 
-                  {/* Right visual: floating product collage on slide 0, otherwise a stylized card */}
+                  {/* Right visual: floating product collage on slide 0 & 1, interactive AI mockup on slide 2 */}
                   <div className="relative hidden h-[380px] md:block">
                     {i === 0 ? (
                       <>
@@ -213,32 +213,63 @@ export function HomeView({ categories }: { categories: any[] }) {
                           )}
                         </div>
                         {/* Floating AI badge */}
-                        <div className="absolute left-0 bottom-20 flex items-center gap-2 rounded-full bg-white px-3 py-2 shadow-xl">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white">
+                        <div className="absolute left-0 bottom-20 flex items-center gap-2 rounded-full bg-white px-3.5 py-2 shadow-xl">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-xs">
                             <Sparkles className="h-3.5 w-3.5" />
                           </div>
                           <div>
-                            <p className="text-[10px] font-semibold leading-none text-foreground">AI suggests</p>
-                            <p className="text-[10px] text-muted-foreground">the best value</p>
+                            <p className="text-[10px] font-bold leading-none text-foreground">AI recommends</p>
+                            <p className="text-[10px] text-muted-foreground">verified best value</p>
                           </div>
                         </div>
                       </>
+                    ) : i === 1 ? (
+                      <>
+                        <div className="absolute right-4 top-2 h-64 w-52 rotate-4 overflow-hidden rounded-2xl border-4 border-white shadow-2xl transition-transform duration-500 hover:rotate-0">
+                          {(deals[0] || featured[0]) && (
+                            <ProductImage name={(deals[0] || featured[0]).name} images={(deals[0] || featured[0]).images} className="h-full w-full" priority />
+                          )}
+                        </div>
+                        <div className="absolute left-6 top-20 h-52 w-44 -rotate-6 overflow-hidden rounded-2xl border-4 border-white shadow-2xl transition-transform duration-500 hover:rotate-0">
+                          {(deals[1] || featured[1]) && (
+                            <ProductImage name={(deals[1] || featured[1]).name} images={(deals[1] || featured[1]).images} className="h-full w-full" priority />
+                          )}
+                        </div>
+                        {/* Floating Hot Deal badge */}
+                        <div className="absolute left-2 bottom-12 flex items-center gap-2 rounded-full bg-amber-400 px-4 py-2 text-foreground shadow-2xl font-bold text-xs uppercase tracking-wider animate-bounce">
+                          <Zap className="h-4 w-4 fill-foreground" />
+                          Flash Sale · Up to 40% Off
+                        </div>
+                      </>
                     ) : (
-                      <div className="absolute right-0 top-1/2 flex w-72 -translate-y-1/2 flex-col gap-3 rounded-3xl bg-white/15 p-5 backdrop-blur-md">
-                        <div className="flex items-center gap-2 text-white">
-                          <Sparkles className="h-5 w-5" />
-                          <span className="text-sm font-semibold">Buywise AI</span>
+                      <div className="absolute right-4 top-1/2 flex w-80 -translate-y-1/2 flex-col gap-3 rounded-3xl bg-white/20 p-5 backdrop-blur-xl border border-white/30 shadow-2xl text-white">
+                        <div className="flex items-center justify-between border-b border-white/20 pb-2.5">
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-purple-700 font-bold text-xs">
+                              <Sparkles className="h-3.5 w-3.5" />
+                            </div>
+                            <span className="text-xs font-bold tracking-wide">Buywise AI Assistant</span>
+                          </div>
+                          <span className="rounded-full bg-emerald-400/30 px-2 py-0.5 text-[10px] font-medium text-emerald-200">Online</span>
                         </div>
-                        <p className="text-sm text-white/90">
-                          {i === 1
-                            ? 'Curated deals refreshed every 6 hours — verified against your budget before you check out.'
-                            : 'Ask in plain English. Get honest, grounded answers — never invented prices or stock.'}
-                        </p>
-                        <div className="flex gap-2">
-                          <div className="h-2 flex-1 rounded-full bg-white/30" />
-                          <div className="h-2 w-2/3 rounded-full bg-white/40" />
-                          <div className="h-2 w-1/2 rounded-full bg-white/20" />
+                        <div className="space-y-2 text-xs">
+                          <div className="rounded-xl bg-white/10 p-2.5 text-white/90">
+                            "I need an ultrabook under ₹75,000 for coding & battery life"
+                          </div>
+                          <div className="rounded-xl bg-white/20 p-2.5 space-y-1.5 border border-white/20">
+                            <p className="font-semibold text-emerald-200 text-[11px]">✓ Top match found within budget</p>
+                            <p className="text-[11px] leading-relaxed text-white/90">
+                              Aurora Pro 14 OLED offers 18h battery, 16GB RAM, and 512GB SSD. Perfect match!
+                            </p>
+                          </div>
                         </div>
+                        <Button
+                          size="sm"
+                          onClick={() => setAiOpen(true)}
+                          className="h-8 rounded-full bg-white text-purple-900 font-semibold hover:bg-white/90 text-xs shadow-md"
+                        >
+                          Try AI Shopping Partner
+                        </Button>
                       </div>
                     )}
                   </div>

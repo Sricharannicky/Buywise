@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Load or create conversation
-    let conversation = null
+    let conversation: any = null
     if (user) {
       if (conversationId) {
         conversation = await db.aIConversation.findUnique({ where: { id: conversationId, userId: user.id }, include: { messages: { orderBy: { createdAt: 'asc' }, take: 20 } } })

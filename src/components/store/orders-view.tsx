@@ -9,6 +9,7 @@ import { Package, ChevronRight, MapPin, ShoppingBag } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { api } from '@/lib/api'
 import { formatPrice } from '@/lib/format'
+import { ProductImage } from '@/components/shared/product-image'
 import { EmptyState } from './cart-view'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -61,7 +62,7 @@ export function OrdersView() {
             <div className="space-y-2 p-4">
               {o.items.map((it: any) => (
                 <div key={it.id} className="flex items-center gap-3 text-sm">
-                  <span className="text-xl">{JSON.parse(it.productImage || '["📦"]')[0]}</span>
+                  <ProductImage name={it.productName} images={it.productImage} className="h-10 w-10 shrink-0 rounded-lg" />
                   <button onClick={() => navigate({ name: 'product', id: it.productId })} className="flex-1 truncate text-left hover:text-primary">{it.productName}</button>
                   <span className="text-muted-foreground">×{it.quantity}</span>
                   <span className="font-medium">{formatPrice(it.total)}</span>

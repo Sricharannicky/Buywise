@@ -241,15 +241,15 @@ async function executeTool(name: string, args: any, userId: string | null): Prom
     case 'compare_products': {
       const ids: string[] = args.productIds || []
       const products = await db.product.findMany({ where: { id: { in: ids } }, include: { brand: { select: { name: true } }, category: { select: { name: true, slug: true } } } })
-      const ordered = ids.map((id) => products.find((p) => p.id === id)).filter(Boolean)
-      return { type: 'comparison', data: { products: ordered.map((p) => ({ ...serializeProduct(p)!, specs: p!.attributes ? JSON.parse(p!.attributes) : {} })) } }
+      const ordered = ids.map((id) => products.find((p) => p.id === id)).filter((p): p is typeof products[number] => Boolean(p))
+      return { type: 'comparison', data: { products: ordered.map((p) => ({ ...serializeProduct(p)!, specs: p.attributes ? JSON.parse(p.attributes) : {} })) } }
     }
     case 'get_cart': {
       if (!userId) return { type: 'error', data: { message: 'Please sign in to view your cart' } }
       const cart = await db.cart.findUnique({ where: { userId }, include: { items: { where: { savedForLater: false }, include: { product: { include: { brand: { select: { name: true } } } } } } } })
       const items = cart?.items || []
       const subtotal = items.reduce((s, i) => s + i.product.price * i.quantity, 0)
-      return { type: 'cart_summary', data: { items: items.map((i) => ({ id: i.id, productId: i.productId, name: i.product.name, price: i.product.price, quantity: i.quantity, emoji: parseImages(i.product.images)[0] || '📦' })), subtotal, count: items.reduce((s, i) => s + i.quantity, 0) } }
+      return { type: 'cart_summary', data: { items: items.map((i) => ({ id: i.id, productId: i.productId, name: i.product.name, price: i.product.price, quantity: i.quantity, images: i.product.images, emoji: parseImages(i.product.images)[0] || '📦' })), subtotal, count: items.reduce((s, i) => s + i.quantity, 0) } }
     }
     case 'check_affordability': {
       if (!userId) return { type: 'affordability', data: { price: args.price, hasProfile: false, message: 'Add a financial profile in your account to get budget insights.' } }
@@ -311,7 +311,7 @@ async function executeTool(name: string, args: any, userId: string | null): Prom
     case 'create_price_watch': {
       const p = await db.product.findUnique({ where: { id: args.productId }, select: { name: true, price: true, images: true } })
       if (!p) return { type: 'error', data: { message: 'Product not found' } }
-      return { type: 'price_watch_proposal', data: { productId: args.productId, productName: p.name, currentPrice: p.price, targetPrice: parseFloat(args.targetPrice), emoji: parseImages(p.images)[0] || '📦' } }
+      return { type: 'price_watch_proposal', data: { productId: args.productId, productName: p.name, currentPrice: p.price, targetPrice: parseFloat(args.targetPrice), images: p.images, emoji: parseImages(p.images)[0] || '📦' } }
     }
     case 'add_to_cart': {
       const p = await db.product.findUnique({ where: { id: args.productId }, select: { name: true, price: true, images: true, stock: true } })
@@ -409,37 +409,225 @@ async function executeTool(name: string, args: any, userId: string | null): Prom
 }
 
 // ----------------------------------------------------------------------------
+// Multi-provider LLM client (Groq / OpenAI compatible)
+// ----------------------------------------------------------------------------
+const DEFAULT_MODEL = process.env.GROQ_MODEL || process.env.OPENAI_MODEL || 'llama-3.3-70b-versatile'
+
+async function callLLMJson(messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>): Promise<string> {
+  const apiKey = (process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY || process.env.AI_API_KEY || '').trim()
+  if (!apiKey) throw new Error('No AI API key configured')
+
+  const isOpenAI = apiKey.startsWith('sk-') && !apiKey.startsWith('gsk_')
+  const endpoint = isOpenAI
+    ? 'https://api.openai.com/v1/chat/completions'
+    : 'https://api.groq.com/openai/v1/chat/completions'
+  const model = isOpenAI
+    ? (process.env.OPENAI_MODEL || 'gpt-4o-mini')
+    : (process.env.GROQ_MODEL || DEFAULT_MODEL)
+
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 12000)
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: 0.2,
+        max_tokens: 1200,
+        response_format: { type: 'json_object' },
+      }),
+      signal: controller.signal,
+    })
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '')
+      throw new Error(`LLM provider error ${res.status}: ${errText.slice(0, 200)}`)
+    }
+    const json = await res.json()
+    return json.choices?.[0]?.message?.content || ''
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Deterministic Semantic Intent Router
+// ----------------------------------------------------------------------------
+function parseNumericPrice(text: string): number | null {
+  const lower = text.toLowerCase()
+  const lakhMatch = lower.match(/(\d+(?:\.\d+)?)\s*(?:lakh|lac|l)\b/)
+  if (lakhMatch) return parseFloat(lakhMatch[1]) * 100000
+  const kMatch = lower.match(/(\d+(?:\.\d+)?)\s*k\b/)
+  if (kMatch) return parseFloat(kMatch[1]) * 1000
+  const numMatch = lower.match(/(?:₹|rs\.?|inr)?\s*(\d{1,3}(?:,\d{3})+|\d{3,7})\b/)
+  if (numMatch) return parseFloat(numMatch[1].replace(/,/g, ''))
+  return null
+}
+
+function extractSemanticTools(msg: string): Array<{ name: string; args: any }> {
+  const lower = msg.toLowerCase().trim()
+
+  // Greeting
+  if (/^(hi|hello|hey|greetings|hola|good morning|good evening|howdy)\b/i.test(lower) && lower.length < 25) {
+    return []
+  }
+
+  // Affordability intent
+  if (lower.includes('afford') || lower.includes('can i buy') || lower.includes('can i get') || lower.includes('budget') || lower.includes('salary')) {
+    const price = parseNumericPrice(lower) || 5000
+    return [{ name: 'check_affordability', args: { price } }]
+  }
+
+  // Cart optimization
+  if (lower.includes('optimise') || lower.includes('optimize') || lower.includes('my cart') || (lower.includes('cart') && lower.includes('save'))) {
+    return [{ name: 'get_cart', args: {} }, { name: 'optimize_cart', args: {} }]
+  }
+
+  // Price alert
+  if (lower.includes('price alert') || lower.includes('price drop') || lower.includes('track price') || lower.includes('watch price')) {
+    const clean = lower.replace(/price alert|price drop|track price|watch price/g, '').trim()
+    return [{ name: 'search_products', args: { query: clean || 'deals', limit: 3 } }]
+  }
+
+  // Comparison
+  if (lower.includes('compare')) {
+    const clean = lower.replace(/compare|vs|between|the/g, ' ').trim()
+    return [{ name: 'search_products', args: { query: clean || 'laptop', limit: 2 } }]
+  }
+
+  // Product search
+  const price = parseNumericPrice(lower)
+  const cleanQuery = lower
+    .replace(/(?:under|below|less than|within|around|upto|up to)\s*(?:₹|rs\.?|inr)?\s*(\d+(?:\.\d+)?\s*(?:lakh|lac|l|k)?|\d[\d,]*)?/gi, ' ')
+    .replace(/\b(?:i need|i want|show me|find|looking for|recommend|suggest|give me|a|an|the|best|top|for|right now|please)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (cleanQuery.length >= 2 || price !== null) {
+    return [{
+      name: 'search_products',
+      args: {
+        query: cleanQuery || undefined,
+        maxPrice: price || undefined,
+        minRating: (lower.includes('best') || lower.includes('top rated')) ? 4.0 : undefined,
+        limit: 5,
+      }
+    }]
+  }
+
+  return []
+}
+
+function generateFallbackResponse(userMessage: string, toolResults: ToolResult[]): { message: string; suggestions: string[] } {
+  const lower = userMessage.toLowerCase().trim()
+
+  // 1. Affordability
+  const affordResult = toolResults.find((t) => t.type === 'affordability')
+  if (affordResult) {
+    const { data } = affordResult
+    if (!data.hasProfile) {
+      return {
+        message: `I'd love to help evaluate affordability for ₹${data.price?.toLocaleString('en-IN') || 'this item'}. Once you add your monthly shopping budget in Account > Budget & Finance, I can give you personalized, honest guidance. In the meantime, you can explore whether it fits your current plans!`,
+        suggestions: ['Set up budget in Account', 'Create a savings goal', 'Search similar products']
+      }
+    }
+    if (data.fits) {
+      return {
+        message: `Yes, you can comfortably afford it! At ${formatPrice(data.price)}, this purchase fits within your monthly shopping budget of ${formatPrice(data.monthlyBudget)}. You will have ${formatPrice(data.remaining)} remaining for the month (${data.pctOfBudget}% of your shopping budget).`,
+        suggestions: ['Add to cart', 'View my budget', 'Compare alternatives']
+      }
+    } else {
+      return {
+        message: `Heads up: At ${formatPrice(data.price)}, this exceeds your remaining monthly shopping budget of ${formatPrice(data.remaining)} (total monthly budget: ${formatPrice(data.monthlyBudget)}). You might want to wait, set a savings goal, or check out a lower-cost alternative.`,
+        suggestions: ['Create a savings goal', 'Search lower-cost options', 'View budget details']
+      }
+    }
+  }
+
+  // 2. Product list
+  const prodResult = toolResults.find((t) => t.type === 'product_list')
+  if (prodResult) {
+    const { data } = prodResult
+    const qName = data.query === '*' || !data.query ? 'products' : data.query
+    if (data.products.length === 0) {
+      return {
+        message: `I searched our catalog for "${qName}", but couldn't find an exact match in that price range. Try broadening your criteria or browsing our categories!`,
+        suggestions: ['Browse all products', 'Browse Electronics', 'Browse Books & Stationery']
+      }
+    }
+    return {
+      message: `Here are the top ${qName} options I found for you in our catalog:`,
+      suggestions: ['Compare top 2', 'Show under ₹50,000', 'Check customer reviews']
+    }
+  }
+
+  // 3. Comparison
+  const compResult = toolResults.find((t) => t.type === 'comparison')
+  if (compResult) {
+    return {
+      message: `Here is a side-by-side comparison of the options:`,
+      suggestions: ['Add best rated to cart', 'Check affordability', 'Ask for recommendation']
+    }
+  }
+
+  // 4. Cart optimization
+  const cartOptResult = toolResults.find((t) => t.type === 'cart_optimization')
+  if (cartOptResult) {
+    return {
+      message: `I analyzed your cart items. Here are smart ways to optimize your purchase:`,
+      suggestions: ['Apply coupon SAVE10', 'Proceed to checkout', 'Keep shopping']
+    }
+  }
+
+  // 5. Greetings
+  if (/^(hi|hello|hey|greetings|hola|good morning|good evening|howdy)\b/i.test(lower)) {
+    return {
+      message: `Hi there! I'm your Buywise AI shopping partner. I can help you search our catalog (e.g. "under 1 lakh laptop"), check affordability against your budget ("Can I afford a ₹6,000 headphone?"), compare items, or optimize your cart. What are you shopping for today?`,
+      suggestions: ['Laptops under ₹70,000', 'Top headphones for travel', 'Can I afford a ₹6,000 purchase?', 'Optimise my cart']
+    }
+  }
+
+  // 6. Generic intelligent response
+  return {
+    message: `I'm here to help you shop smarter! You can ask me to search products ('under 1 lakh laptop'), check affordability ('Can I afford ₹6,000?'), compare items ('compare laptops'), or optimize your cart.`,
+    suggestions: ['Laptops under ₹70,000', 'Top deals today', 'Can I afford a ₹6,000 purchase?']
+  }
+}
+
+// ----------------------------------------------------------------------------
 // Main orchestrator entry point
 // ----------------------------------------------------------------------------
 export async function chat(userId: string | null, userMessage: string, history: AIMessage[]) {
   const context = await buildUserContext(userId)
 
-  // STEP 1 — intent + tool selection
-  const ZAI = (await import('z-ai-web-dev-sdk')).default
-  const zai = await ZAI.create()
-
   const contextBlock = `USER CONTEXT (do not reveal raw numbers unprompted; use tools):
 ${JSON.stringify(context, null, 2)}`
 
-  const step1Messages = [
-    { role: 'assistant' as const, content: SYSTEM_PROMPT + '\n\n' + TOOL_DEFINITIONS + '\n\n' + contextBlock },
-    ...history.slice(-8).map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
-    { role: 'user' as const, content: userMessage },
-  ]
-
   let toolCalls: Array<{ name: string; args: any }> = []
   let replyPlan = ''
+
+  // Attempt Step 1: LLM Tool Selection
   try {
-    const completion = await zai.chat.completions.create({
-      messages: step1Messages,
-      thinking: { type: 'disabled' },
-    })
-    const raw = completion.choices[0]?.message?.content || ''
+    const raw = await callLLMJson([
+      { role: 'system', content: SYSTEM_PROMPT + '\n\n' + TOOL_DEFINITIONS + '\n\n' + contextBlock },
+      ...history.slice(-8).map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+      { role: 'user', content: userMessage },
+    ])
     const parsed = parseJsonLoose(raw)
     toolCalls = parsed.toolCalls || []
     replyPlan = parsed.replyPlan || ''
-  } catch (e) {
-    // fall through with no tools
+  } catch (e: any) {
+    // If LLM fails or is not configured, fall through to deterministic semantic extraction
+  }
+
+  // If LLM returned no tools or wasn't configured, use semantic intent extraction
+  if (toolCalls.length === 0) {
+    toolCalls = extractSemanticTools(userMessage)
   }
 
   // STEP 2 — execute tools
@@ -454,32 +642,32 @@ ${JSON.stringify(context, null, 2)}`
   }
 
   // STEP 3 — final response grounded in tool results
-  const finalMessages = [
-    { role: 'assistant' as const, content: FINAL_PROMPT },
-    ...history.slice(-8).map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
-    { role: 'user' as const, content: userMessage },
-    {
-      role: 'assistant' as const,
-      content: `Reply plan: ${replyPlan}\n\nTool results (use these real numbers, do not invent):\n${JSON.stringify(toolResults, null, 2)}`,
-    },
-  ]
-
-  let message = "I'm here to help with your shopping. Could you tell me more about what you're looking for?"
+  let message = ''
   let suggestions: string[] = []
+
+  // Attempt LLM generation
   try {
-    const completion = await zai.chat.completions.create({
-      messages: finalMessages,
-      thinking: { type: 'disabled' },
-    })
-    const raw = completion.choices[0]?.message?.content || ''
+    const raw = await callLLMJson([
+      { role: 'system', content: FINAL_PROMPT },
+      ...history.slice(-8).map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+      { role: 'user', content: userMessage },
+      {
+        role: 'assistant',
+        content: `Reply plan: ${replyPlan}\n\nTool results (use these real numbers, do not invent):\n${JSON.stringify(toolResults, null, 2)}`,
+      },
+    ])
     const parsed = parseJsonLoose(raw)
     if (parsed.message) message = parsed.message
     if (Array.isArray(parsed.suggestions)) suggestions = parsed.suggestions
   } catch (e) {
-    // graceful fallback
-    if (toolResults.length > 0) {
-      message = "Here's what I found. Let me know if you'd like to narrow it down."
-    }
+    // LLM call failed or no key
+  }
+
+  // If no message from LLM, generate deterministic natural language response from tool results
+  if (!message) {
+    const fallback = generateFallbackResponse(userMessage, toolResults)
+    message = fallback.message
+    if (suggestions.length === 0) suggestions = fallback.suggestions
   }
 
   return { message, toolResults, suggestions }

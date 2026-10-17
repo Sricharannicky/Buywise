@@ -15,7 +15,7 @@ export function MegaMenu({ categories }: { categories: any[] }) {
 
   return (
     <Sheet open={megaMenuOpen} onOpenChange={(o) => setMegaMenuOpen(o)}>
-      <SheetContent side="left" className="w-full overflow-y-auto p-0 sm:max-w-md">
+      <SheetContent side="left" className="w-full overflow-y-auto p-0 sm:max-w-md" hideClose>
         <SheetHeader className="flex-row items-center justify-between border-b border-border/60 px-4 py-3">
           <SheetTitle className="text-base">All Categories</SheetTitle>
           <button onClick={() => setMegaMenuOpen(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>

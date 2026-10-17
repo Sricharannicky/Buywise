@@ -86,7 +86,7 @@ export function AIPartner() {
       )}
 
       <Sheet open={aiOpen} onOpenChange={(o) => setAiOpen(o)}>
-        <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-lg">
+        <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-lg" hideClose>
           {/* Header */}
           <SheetHeader className="border-b border-border/60 bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3.5 text-primary-foreground">
             <div className="flex items-center justify-between">
@@ -237,7 +237,7 @@ function ToolResultCard({ result, onNavigate }: { result: any; onNavigate: (id: 
           <div className="space-y-1.5">
             {data.items.map((i: any) => (
               <div key={i.id} className="flex items-center gap-2 text-sm">
-                <span>{i.emoji}</span>
+                <ProductImage name={i.name} images={i.images || JSON.stringify([i.emoji])} className="h-8 w-8 shrink-0 rounded-md" />
                 <span className="flex-1 truncate">{i.name}</span>
                 <span className="text-muted-foreground">×{i.quantity}</span>
                 <span className="font-medium">{formatPrice(i.price * i.quantity)}</span>
@@ -450,7 +450,7 @@ function PriceWatchProposalCard({ data }: { data: any }) {
   }
   return (
     <Card className="flex items-center gap-3 p-3">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary"><Tag className="h-5 w-5" /></div>
+      <ProductImage name={data.productName} images={data.images || JSON.stringify([data.emoji])} className="h-10 w-10 shrink-0 rounded-lg" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{data.productName}</p>
         <p className="text-xs text-muted-foreground">Alert me below {formatPrice(data.targetPrice)} (now {formatPrice(data.currentPrice)})</p>

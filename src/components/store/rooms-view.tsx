@@ -285,6 +285,11 @@ export function RoomView({ slug }: { slug: string }) {
                     </button>
                   </div>
 
+                  {/* Product thumbnail */}
+                  <button onClick={() => navigate({ name: 'product', id: item.productId })} className="shrink-0">
+                    <ProductImage name={item.product.name} images={item.product.images} className="h-20 w-20 rounded-xl" />
+                  </button>
+
                   {/* Product info */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">

@@ -45,7 +45,7 @@ export function MiniCart() {
 
   return (
     <Sheet open={miniCartOpen} onOpenChange={(o) => setMiniCartOpen(o)}>
-      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
+      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md" hideClose>
         {/* Promo header */}
         <div className="bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-center text-white">
           <p className="text-xs font-medium">🎉 Get Up To 30% OFF on your 1st order</p>

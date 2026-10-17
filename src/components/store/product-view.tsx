@@ -19,27 +19,11 @@ import {
   formatPrice, discountPercent, parseAttributes, parseTags, parseImages,
 } from '@/lib/format'
 import { ProductImage } from '@/components/shared/product-image'
+import { SmartImage } from '@/components/shared/smart-image'
 import { StarRating } from '@/components/shared/star-rating'
 import { ProductCard } from '@/components/shared/product-card'
 import { toast } from 'sonner'
-
-// Thumbnail gradient palette (mirrors ProductImage for visual consistency)
-const THUMB_GRADIENTS = [
-  'from-emerald-100 to-teal-50',
-  'from-amber-100 to-orange-50',
-  'from-rose-100 to-pink-50',
-  'from-violet-100 to-purple-50',
-  'from-cyan-100 to-sky-50',
-  'from-lime-100 to-green-50',
-  'from-fuchsia-100 to-pink-50',
-  'from-yellow-100 to-amber-50',
-]
-
-function hashString(str: string): number {
-  let h = 0
-  for (let i = 0; i < str.length; i++) h = (h << 5) - h + str.charCodeAt(i)
-  return Math.abs(h)
-}
+import { cn } from '@/lib/utils'
 
 // Mock variant value pools — used because our products don't have real
 // variants in the DB. The label is derived from the product's spec keys.
@@ -95,9 +79,12 @@ function buildVariantGroups(specs: Record<string, string>): VariantGroup[] {
   return result
 }
 
-type GalleryView =
-  | { type: 'real'; label: string }
-  | { type: 'emoji'; label: string; emoji: string; gradient: string }
+type GalleryView = {
+  id: number
+  src: string
+  label: string
+  zoomClass?: string
+}
 
 export function ProductView({ id }: { id: string }) {
   const { navigate, setAuthOpen, setAiOpen, setMiniCartOpen } = useStore()
@@ -229,21 +216,29 @@ export function ProductView({ id }: { id: string }) {
   const tags = parseTags(product.tags)
   const inStock = product.stock > 0
 
-  // Build gallery views — 1 real photo + 3 emoji-based alternate "views"
+  // Build gallery views — all REAL photographs (never emojis!)
   const parsedImages = parseImages(product.images)
-  const realUrl = parsedImages.find((p) => typeof p === 'string' && (p.startsWith('http://') || p.startsWith('https://')))
-  const emoji = parsedImages.find((p) => typeof p === 'string' && !p.startsWith('http')) || '📦'
-  const productHash = hashString(product.name)
+  const validImages = parsedImages.filter((p) => typeof p === 'string' && (p.startsWith('/') || p.startsWith('http')))
+  const primarySrc = validImages[0] || (typeof product.images === 'string' && (product.images.startsWith('/') || product.images.startsWith('http')) ? product.images : null)
+
   const views: GalleryView[] = []
-  if (realUrl) views.push({ type: 'real', label: 'View 1' })
-  for (let i = 0; i < 3; i++) {
-    views.push({
-      type: 'emoji',
-      label: `View ${views.length + 1}`,
-      emoji,
-      gradient: THUMB_GRADIENTS[(productHash + i) % THUMB_GRADIENTS.length],
+  if (validImages.length > 1) {
+    validImages.forEach((src, idx) => {
+      views.push({
+        id: idx,
+        src,
+        label: idx === 0 ? 'Front view' : idx === 1 ? 'Angle view' : idx === 2 ? 'Detail view' : `View ${idx + 1}`,
+      })
     })
+  } else if (primarySrc) {
+    views.push(
+      { id: 0, src: primarySrc, label: 'Front view' },
+      { id: 1, src: primarySrc, label: 'Close-up detail', zoomClass: 'scale-125' },
+      { id: 2, src: primarySrc, label: 'Perspective angle', zoomClass: 'scale-110 object-top' },
+      { id: 3, src: primarySrc, label: 'Product in-use', zoomClass: 'scale-105' }
+    )
   }
+
   const safeView = views[activeView] ?? views[0]
 
   // Build mock variant groups from specs
@@ -265,20 +260,18 @@ export function ProductView({ id }: { id: string }) {
         <div className="space-y-3 md:sticky md:top-32 md:self-start">
           <div className="flex flex-col gap-3 sm:flex-row">
             {/* Main image */}
-            <div className="relative flex-1 overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
-              {safeView.type === 'real' ? (
-                <ProductImage name={product.name} images={product.images} className="aspect-square w-full" priority />
-              ) : (
-                <div className={`relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gradient-to-br ${safeView.gradient}`}>
-                  <span className="select-none drop-shadow-sm" style={{ fontSize: 'clamp(5rem, 14vw, 9rem)' }} aria-hidden>
-                    {safeView.emoji}
-                  </span>
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.5),transparent_60%)]" />
-                  <Badge variant="secondary" className="absolute left-3 top-3 bg-white/80 text-foreground backdrop-blur">
-                    Concept view
-                  </Badge>
-                </div>
-              )}
+            <div className="relative flex-1 overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm group">
+              <div className="relative aspect-square w-full overflow-hidden bg-muted/10">
+                <SmartImage
+                  src={safeView?.src || primarySrc}
+                  alt={product.name}
+                  className={cn("h-full w-full object-cover transition-transform duration-500 group-hover:scale-105", safeView?.zoomClass)}
+                  priority
+                />
+                <Badge variant="secondary" className="absolute left-3 top-3 bg-background/85 text-foreground backdrop-blur border border-border/40 text-[10px] font-medium shadow-xs">
+                  {safeView?.label || 'Front view'}
+                </Badge>
+              </div>
             </div>
             {/* Thumbnails — vertical strip on desktop, horizontal row on mobile */}
             <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar sm:w-20 sm:flex-col sm:overflow-visible sm:pb-0">
@@ -292,17 +285,17 @@ export function ProductView({ id }: { id: string }) {
                     aria-pressed={active}
                     className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 bg-card transition-all sm:h-20 sm:w-20 ${
                       active
-                        ? 'border-primary ring-2 ring-primary/30'
-                        : 'border-border/50 hover:border-primary/40'
+                        ? 'border-primary ring-2 ring-primary/30 shadow-xs'
+                        : 'border-border/50 hover:border-primary/40 opacity-80 hover:opacity-100'
                     }`}
                   >
-                    {v.type === 'real' ? (
-                      <ProductImage name={product.name} images={product.images} className="h-full w-full" />
-                    ) : (
-                      <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${v.gradient}`}>
-                        <span className="text-2xl sm:text-3xl" aria-hidden>{v.emoji}</span>
-                      </div>
-                    )}
+                    <div className="h-full w-full overflow-hidden bg-muted/20">
+                      <SmartImage
+                        src={v.src}
+                        alt={`${product.name} - ${v.label}`}
+                        className={cn("h-full w-full object-cover", v.zoomClass)}
+                      />
+                    </div>
                   </button>
                 )
               })}

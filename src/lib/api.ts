@@ -52,6 +52,14 @@ export const api = {
       if ((res as any).token) setSessionToken((res as any).token)
       return { user: res.user }
     },
+    google: async (data: { credential?: string; email?: string; firstName?: string; lastName?: string }) => {
+      const res = await request<{ user: any; token?: string }>('/api/auth/google', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+      if ((res as any).token) setSessionToken((res as any).token)
+      return { user: res.user }
+    },
     logout: async () => {
       clearSessionToken()
       return request('/api/auth/logout', { method: 'POST' })

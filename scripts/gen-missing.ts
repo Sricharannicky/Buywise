@@ -3,17 +3,7 @@ import fs from 'fs'
 import path from 'path'
 
 async function generateImage(prompt: string, dest: string): Promise<boolean> {
-  try {
-    const ZAI = (await import('z-ai-web-dev-sdk')).default
-    const zai = await ZAI.create()
-    const response = await zai.images.generations.create({ prompt, size: '1024x1024' })
-    const base64 = response.data[0]?.base64
-    if (!base64) return false
-    fs.writeFileSync(dest, Buffer.from(base64, 'base64'))
-    return true
-  } catch (e) {
-    return false
-  }
+  return false
 }
 
 async function main() {
