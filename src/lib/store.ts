@@ -24,7 +24,7 @@ interface AppState {
   cartCount: number
   aiOpen: boolean
   authOpen: boolean
-  authMode: 'login' | 'register'
+  authMode: 'login' | 'register' | 'forgot'
   miniCartOpen: boolean
   megaMenuOpen: boolean
   navigate: (view: View) => void
@@ -32,7 +32,7 @@ interface AppState {
   setUser: (u: AppState['user']) => void
   setCartCount: (n: number) => void
   setAiOpen: (open: boolean) => void
-  setAuthOpen: (open: boolean, mode?: 'login' | 'register') => void
+  setAuthOpen: (open: boolean, mode?: 'login' | 'register' | 'forgot') => void
   setMiniCartOpen: (open: boolean) => void
   setMegaMenuOpen: (open: boolean) => void
 }

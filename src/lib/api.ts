@@ -64,6 +64,20 @@ export const api = {
       clearSessionToken()
       return request('/api/auth/logout', { method: 'POST' })
     },
+    forgotPassword: async (email: string) => {
+      return request<{ ok: boolean; message: string; devCode?: string }>('/api/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      })
+    },
+    resetPassword: async (data: { email: string; otp: string; newPassword: string }) => {
+      const res = await request<{ ok: boolean; user: any; token?: string }>('/api/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+      if ((res as any).token) setSessionToken((res as any).token)
+      return { user: res.user }
+    },
   },
   products: {
     list: (params: Record<string, string | undefined>) => {

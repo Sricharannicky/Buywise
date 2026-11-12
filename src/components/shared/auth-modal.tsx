@@ -4,7 +4,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Sparkles, Loader2, Check, ExternalLink, Settings, ShieldCheck, ChevronDown, ChevronUp, UserPlus } from 'lucide-react'
+import {
+  Sparkles,
+  Loader2,
+  Check,
+  ExternalLink,
+  Settings,
+  ShieldCheck,
+  ChevronDown,
+  ChevronUp,
+  UserPlus,
+  KeyRound,
+  ArrowLeft,
+  RefreshCw,
+} from 'lucide-react'
+import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from '@/components/ui/input-otp'
 import { useState, useEffect, useRef } from 'react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
@@ -49,8 +63,18 @@ export function AuthModal() {
   const [clientSecretInput, setClientSecretInput] = useState('')
   const [savingConfig, setSavingConfig] = useState(false)
 
+  // Standard login/register form
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '' })
   const gsiRendered = useRef(false)
+
+  // Forgot password OTP states
+  const [forgotStep, setForgotStep] = useState<1 | 2>(1)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotOtp, setForgotOtp] = useState('')
+  const [forgotNewPassword, setForgotNewPassword] = useState('')
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState('')
+  const [otpSentDevCode, setOtpSentDevCode] = useState<string | null>(null)
+  const [forgotLoading, setForgotLoading] = useState(false)
 
   // Fetch Google OAuth configuration status
   useEffect(() => {
@@ -134,11 +158,21 @@ export function AuthModal() {
     loadGsi()
   }, [authOpen, googleConfig])
 
-  function switchMode(mode: 'login' | 'register') {
+  function switchMode(mode: 'login' | 'register' | 'forgot') {
     useStore.getState().setAuthOpen(true, mode)
     setForm({ firstName: '', lastName: '', email: '', phone: '', password: '' })
     setShowGoogleChooser(false)
     setShowSetupGuide(false)
+    if (mode === 'forgot') {
+      setForgotStep(1)
+      setForgotOtp('')
+      setForgotNewPassword('')
+      setForgotConfirmPassword('')
+      setOtpSentDevCode(null)
+      if (form.email) {
+        setForgotEmail(form.email)
+      }
+    }
   }
 
   // Handle Google Login click
@@ -242,6 +276,65 @@ export function AuthModal() {
     setForm({ firstName: '', lastName: '', email: 'demo@ai-shop.in', phone: '', password: 'demo1234' })
   }
 
+  // Send Password Reset OTP
+  async function handleSendOtp(e?: React.FormEvent) {
+    if (e) e.preventDefault()
+    if (!forgotEmail || !forgotEmail.includes('@')) {
+      toast.error('Please enter a valid email address')
+      return
+    }
+
+    setForgotLoading(true)
+    try {
+      const res = await api.auth.forgotPassword(forgotEmail)
+      setForgotStep(2)
+      if (res.devCode) {
+        setOtpSentDevCode(res.devCode)
+        toast.success(res.message || 'OTP generated! Enter code below to reset.')
+      } else {
+        toast.success(res.message || 'Verification code sent to your email.')
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to send verification code')
+    } finally {
+      setForgotLoading(false)
+    }
+  }
+
+  // Reset Password with OTP
+  async function handleResetPassword(e: React.FormEvent) {
+    e.preventDefault()
+    if (!forgotOtp || forgotOtp.trim().length !== 6) {
+      toast.error('Please enter the full 6-digit verification code')
+      return
+    }
+    if (!forgotNewPassword || forgotNewPassword.length < 6) {
+      toast.error('New password must be at least 6 characters')
+      return
+    }
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      toast.error('Passwords do not match')
+      return
+    }
+
+    setForgotLoading(true)
+    try {
+      const res = await api.auth.resetPassword({
+        email: forgotEmail,
+        otp: forgotOtp,
+        newPassword: forgotNewPassword,
+      })
+      setUser(res.user)
+      setAuthOpen(false)
+      toast.success(`Password reset successfully! Welcome back, ${res.user.firstName}!`)
+      refreshCartCount().catch(() => {})
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to reset password')
+    } finally {
+      setForgotLoading(false)
+    }
+  }
+
   return (
     <Dialog
       open={authOpen}
@@ -251,335 +344,522 @@ export function AuthModal() {
           setShowGoogleChooser(false)
           setShowSetupGuide(false)
           setShowCustomInput(false)
+          setForgotStep(1)
+          setForgotOtp('')
+          setForgotNewPassword('')
+          setForgotConfirmPassword('')
+          setOtpSentDevCode(null)
         }
       }}
     >
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/20">
-            <Sparkles className="h-6 w-6" />
+            {authMode === 'forgot' ? <KeyRound className="h-6 w-6" /> : <Sparkles className="h-6 w-6" />}
           </div>
           <DialogTitle className="text-center text-xl font-bold">
-            {authMode === 'login' ? 'Welcome back to Buywise' : 'Create your Buywise account'}
+            {authMode === 'login'
+              ? 'Welcome back to Buywise'
+              : authMode === 'register'
+              ? 'Create your Buywise account'
+              : forgotStep === 1
+              ? 'Reset your password'
+              : 'Verify OTP & set new password'}
           </DialogTitle>
           <DialogDescription className="text-center text-xs sm:text-sm text-muted-foreground">
             {authMode === 'login'
               ? 'Sign in to access your cart, personalized recommendations & AI assistant'
-              : 'Join to unlock smart shopping, price watches and your Buywise financial assistant'}
+              : authMode === 'register'
+              ? 'Join to unlock smart shopping, price watches and your Buywise financial assistant'
+              : forgotStep === 1
+              ? 'Enter your registered email and we will generate a 6-digit verification code.'
+              : `Enter the 6-digit code sent to ${forgotEmail} and choose your new password.`}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3 pt-1">
-          {/* Native GSI Button Container if rendered */}
-          <div id="gsi-native-btn" className="flex justify-center w-full" />
+        {authMode === 'forgot' ? (
+          /* FORGOT PASSWORD & OTP VERIFICATION FLOW */
+          <div className="space-y-4 pt-1">
+            {forgotStep === 1 ? (
+              <form onSubmit={handleSendOtp} className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="forgot-email" className="text-xs">
+                    Account Email Address
+                  </Label>
+                  <Input
+                    id="forgot-email"
+                    type="email"
+                    placeholder="e.g. demo@ai-shop.in"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    required
+                    autoFocus
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Tip: Try registered demo accounts like <span className="font-mono text-foreground">demo@ai-shop.in</span> or your own account.
+                  </p>
+                </div>
 
-          {/* Primary "Continue with Google" Button */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full h-11 border-border/80 bg-background hover:bg-muted/60 font-medium text-foreground shadow-xs transition-all flex items-center justify-center gap-2.5 rounded-xl group relative overflow-hidden"
-            disabled={googleLoading}
-            onClick={onGoogleButtonClick}
-          >
-            {googleLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                <Button
+                  type="submit"
+                  className="w-full h-10 rounded-xl font-medium"
+                  disabled={forgotLoading || !forgotEmail}
+                >
+                  {forgotLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Send 6-Digit Verification Code
+                </Button>
+
+                <div className="pt-2 border-t border-border/60">
+                  <button
+                    type="button"
+                    onClick={() => switchMode('login')}
+                    className="w-full flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" /> Back to Sign In
+                  </button>
+                </div>
+              </form>
             ) : (
-              <GoogleIcon className="h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />
-            )}
-            <span>Continue with Google</span>
-            {googleConfig.configured && (
-              <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 px-1.5 py-0.5 rounded-full font-medium">
-                <ShieldCheck className="h-3 w-3" /> OAuth Active
-              </span>
-            )}
-          </Button>
-
-          {/* Authentic Google Account Chooser */}
-          {showGoogleChooser && (
-            <div className="rounded-xl border border-border/80 bg-card p-4 space-y-3 animate-in fade-in-50 slide-in-from-top-2 duration-200 shadow-sm">
-              <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <GoogleIcon className="h-4 w-4" />
-                  <span className="text-xs font-semibold text-foreground">Sign in with Google</span>
+              <form onSubmit={handleResetPassword} className="space-y-3.5">
+                <div className="rounded-lg bg-muted/40 border border-border/60 p-2.5 flex items-center justify-between text-xs">
+                  <div className="min-w-0 pr-2">
+                    <p className="text-[11px] text-muted-foreground">Code sent to:</p>
+                    <p className="font-semibold text-foreground truncate">{forgotEmail}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep(1)}
+                    className="text-xs text-primary hover:underline font-medium shrink-0"
+                  >
+                    Change
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowGoogleChooser(false)}
-                  className="text-[11px] text-muted-foreground hover:text-foreground"
-                >
-                  Cancel
-                </button>
-              </div>
 
-              <p className="text-[11px] text-muted-foreground">
-                Choose an account to continue to <span className="font-medium text-foreground">Buywise</span>:
-              </p>
-
-              {/* Account 1: Sricharan Nicky */}
-              <button
-                type="button"
-                onClick={() => handleGoogleAccountSelect('sricharan.nicky@gmail.com', 'Sricharan', 'Nicky')}
-                disabled={googleLoading}
-                className="w-full flex items-center justify-between p-2.5 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/60 text-left transition-colors group"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
-                    S
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary">
-                      Sricharan Nicky
-                    </p>
-                    <p className="text-[11px] text-muted-foreground truncate">sricharan.nicky@gmail.com</p>
-                  </div>
-                </div>
-                <Check className="h-4 w-4 text-emerald-600 shrink-0 opacity-80" />
-              </button>
-
-              {/* Account 2: Alex Morgan */}
-              <button
-                type="button"
-                onClick={() => handleGoogleAccountSelect('alex.morgan@gmail.com', 'Alex', 'Morgan')}
-                disabled={googleLoading}
-                className="w-full flex items-center justify-between p-2.5 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/60 text-left transition-colors group"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
-                    A
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary">
-                      Alex Morgan
-                    </p>
-                    <p className="text-[11px] text-muted-foreground truncate">alex.morgan@gmail.com</p>
-                  </div>
-                </div>
-                <Check className="h-4 w-4 text-emerald-600 shrink-0 opacity-80" />
-              </button>
-
-              {/* Custom Google Email Option */}
-              {!showCustomInput ? (
-                <button
-                  type="button"
-                  onClick={() => setShowCustomInput(true)}
-                  className="w-full flex items-center gap-3 p-2.5 rounded-lg border border-dashed border-border/70 hover:bg-muted/40 text-left transition-colors text-xs text-muted-foreground hover:text-foreground"
-                >
-                  <UserPlus className="h-4 w-4 shrink-0 text-primary" />
-                  <span>Use another Google account</span>
-                </button>
-              ) : (
-                <div className="space-y-2 pt-1 border-t border-border/50">
-                  <p className="text-[11px] text-muted-foreground">Enter your Google email:</p>
-                  <div className="flex gap-1.5">
-                    <Input
-                      placeholder="your.email@gmail.com"
-                      value={customGoogleEmail}
-                      onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                      className="h-8 text-xs bg-background"
-                      autoFocus
-                    />
+                {otpSentDevCode && (
+                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-2.5 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600" />
+                      <span className="truncate">
+                        Dev OTP: <strong className="font-mono text-sm tracking-wider font-bold">{otpSentDevCode}</strong>
+                      </span>
+                    </div>
                     <Button
                       type="button"
                       size="sm"
-                      className="h-8 px-3 text-xs bg-primary text-primary-foreground shrink-0"
-                      disabled={!customGoogleEmail || !customGoogleEmail.includes('@') || googleLoading}
-                      onClick={() =>
-                        handleGoogleAccountSelect(
-                          customGoogleEmail,
-                          customGoogleEmail.split('@')[0],
-                          'User'
-                        )
-                      }
+                      variant="outline"
+                      className="h-7 text-xs px-2.5 bg-emerald-500/15 border-emerald-500/30 hover:bg-emerald-500/25 shrink-0"
+                      onClick={() => setForgotOtp(otpSentDevCode)}
                     >
-                      {googleLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Continue'}
+                      Auto-fill
                     </Button>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label className="text-xs text-center block font-medium">
+                    Enter 6-Digit OTP Code
+                  </Label>
+                  <div className="flex justify-center">
+                    <InputOTP maxLength={6} value={forgotOtp} onChange={setForgotOtp}>
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="forgot-new-pass" className="text-xs">
+                    New Password (min 6 characters)
+                  </Label>
+                  <Input
+                    id="forgot-new-pass"
+                    type="password"
+                    placeholder="Enter new password"
+                    value={forgotNewPassword}
+                    onChange={(e) => setForgotNewPassword(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="forgot-confirm-pass" className="text-xs">
+                    Confirm New Password
+                  </Label>
+                  <Input
+                    id="forgot-confirm-pass"
+                    type="password"
+                    placeholder="Re-enter new password"
+                    value={forgotConfirmPassword}
+                    onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full h-10 rounded-xl font-medium"
+                  disabled={forgotLoading || forgotOtp.trim().length !== 6 || !forgotNewPassword || !forgotConfirmPassword}
+                >
+                  {forgotLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Reset Password & Sign In
+                </Button>
+
+                <div className="flex items-center justify-between pt-1 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => handleSendOtp()}
+                    disabled={forgotLoading}
+                    className="text-primary hover:underline flex items-center gap-1 font-medium"
+                  >
+                    <RefreshCw className="h-3 w-3" /> Resend Code
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => switchMode('login')}
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-1"
+                  >
+                    <ArrowLeft className="h-3 w-3" /> Back to Sign In
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        ) : (
+          /* LOGIN & REGISTER FLOW */
+          <>
+            <div className="space-y-3 pt-1">
+              {/* Native GSI Button Container if rendered */}
+              <div id="gsi-native-btn" className="flex justify-center w-full" />
+
+              {/* Primary "Continue with Google" Button */}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-11 border-border/80 bg-background hover:bg-muted/60 font-medium text-foreground shadow-xs transition-all flex items-center justify-center gap-2.5 rounded-xl group relative overflow-hidden"
+                disabled={googleLoading}
+                onClick={onGoogleButtonClick}
+              >
+                {googleLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                ) : (
+                  <GoogleIcon className="h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />
+                )}
+                <span>Continue with Google</span>
+                {googleConfig.configured && (
+                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 px-1.5 py-0.5 rounded-full font-medium">
+                    <ShieldCheck className="h-3 w-3" /> OAuth Active
+                  </span>
+                )}
+              </Button>
+
+              {/* Authentic Google Account Chooser */}
+              {showGoogleChooser && (
+                <div className="rounded-xl border border-border/80 bg-card p-4 space-y-3 animate-in fade-in-50 slide-in-from-top-2 duration-200 shadow-sm">
+                  <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <GoogleIcon className="h-4 w-4" />
+                      <span className="text-xs font-semibold text-foreground">Sign in with Google</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowGoogleChooser(false)}
+                      className="text-[11px] text-muted-foreground hover:text-foreground"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-muted-foreground">
+                    Choose an account to continue to <span className="font-medium text-foreground">Buywise</span>:
+                  </p>
+
+                  {/* Account 1: Sricharan Nicky */}
+                  <button
+                    type="button"
+                    onClick={() => handleGoogleAccountSelect('sricharan.nicky@gmail.com', 'Sricharan', 'Nicky')}
+                    disabled={googleLoading}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/60 text-left transition-colors group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                        S
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary">
+                          Sricharan Nicky
+                        </p>
+                        <p className="text-[11px] text-muted-foreground truncate">sricharan.nicky@gmail.com</p>
+                      </div>
+                    </div>
+                    <Check className="h-4 w-4 text-emerald-600 shrink-0 opacity-80" />
+                  </button>
+
+                  {/* Account 2: Alex Morgan */}
+                  <button
+                    type="button"
+                    onClick={() => handleGoogleAccountSelect('alex.morgan@gmail.com', 'Alex', 'Morgan')}
+                    disabled={googleLoading}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/60 text-left transition-colors group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                        A
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary">
+                          Alex Morgan
+                        </p>
+                        <p className="text-[11px] text-muted-foreground truncate">alex.morgan@gmail.com</p>
+                      </div>
+                    </div>
+                    <Check className="h-4 w-4 text-emerald-600 shrink-0 opacity-80" />
+                  </button>
+
+                  {/* Custom Google Email Option */}
+                  {!showCustomInput ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowCustomInput(true)}
+                      className="w-full flex items-center gap-3 p-2.5 rounded-lg border border-dashed border-border/70 hover:bg-muted/40 text-left transition-colors text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      <UserPlus className="h-4 w-4 shrink-0 text-primary" />
+                      <span>Use another Google account</span>
+                    </button>
+                  ) : (
+                    <div className="space-y-2 pt-1 border-t border-border/50">
+                      <p className="text-[11px] text-muted-foreground">Enter your Google email:</p>
+                      <div className="flex gap-1.5">
+                        <Input
+                          placeholder="your.email@gmail.com"
+                          value={customGoogleEmail}
+                          onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                          className="h-8 text-xs bg-background"
+                          autoFocus
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          className="h-8 px-3 text-xs bg-primary text-primary-foreground shrink-0"
+                          disabled={!customGoogleEmail || !customGoogleEmail.includes('@') || googleLoading}
+                          onClick={() =>
+                            handleGoogleAccountSelect(
+                              customGoogleEmail,
+                              customGoogleEmail.split('@')[0],
+                              'User'
+                            )
+                          }
+                        >
+                          {googleLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Continue'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Google Cloud API Key Configuration (Optional) */}
+                  <div className="border-t border-border/60 pt-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setShowSetupGuide(!showSetupGuide)}
+                      className="w-full flex items-center justify-between text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Settings className="h-3 w-3" />
+                        Enter Google Cloud Client ID (For Live OAuth)
+                      </span>
+                      {showSetupGuide ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                    </button>
+
+                    {showSetupGuide && (
+                      <form onSubmit={saveGoogleConfig} className="mt-2.5 space-y-2.5 text-xs text-muted-foreground">
+                        <div className="rounded-lg bg-muted/40 border border-border/60 p-2.5 space-y-1 text-[11px]">
+                          <p className="font-semibold text-foreground">3 Quick Steps in Google Cloud:</p>
+                          <ol className="list-decimal pl-4 space-y-0.5">
+                            <li>
+                              Visit{' '}
+                              <a
+                                href="https://console.cloud.google.com/apis/credentials"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary underline inline-flex items-center gap-0.5"
+                              >
+                                Google Cloud Console <ExternalLink className="h-2.5 w-2.5" />
+                              </a>
+                            </li>
+                            <li>Create OAuth 2.0 Client ID (Web Application).</li>
+                            <li>
+                              Set Redirect URI:{' '}
+                              <code className="bg-muted px-1 py-0.5 rounded text-[10px] text-foreground">
+                                http://localhost:3000/api/auth/google/callback
+                              </code>
+                            </li>
+                          </ol>
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label htmlFor="googleClientId" className="text-[11px]">
+                            Google Client ID:
+                          </Label>
+                          <Input
+                            id="googleClientId"
+                            placeholder="...apps.googleusercontent.com"
+                            value={clientIdInput}
+                            onChange={(e) => setClientIdInput(e.target.value)}
+                            className="h-8 text-xs bg-background"
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label htmlFor="googleClientSecret" className="text-[11px]">
+                            Google Client Secret:
+                          </Label>
+                          <Input
+                            id="googleClientSecret"
+                            type="password"
+                            placeholder="GOCSPX-..."
+                            value={clientSecretInput}
+                            onChange={(e) => setClientSecretInput(e.target.value)}
+                            className="h-8 text-xs bg-background"
+                          />
+                        </div>
+
+                        <Button type="submit" size="sm" className="w-full h-8 text-xs" disabled={savingConfig}>
+                          {savingConfig && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                          Save & Activate Live Google OAuth
+                        </Button>
+                      </form>
+                    )}
                   </div>
                 </div>
               )}
 
-              {/* Google Cloud API Key Configuration (Optional) */}
-              <div className="border-t border-border/60 pt-2.5">
-                <button
-                  type="button"
-                  onClick={() => setShowSetupGuide(!showSetupGuide)}
-                  className="w-full flex items-center justify-between text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <Settings className="h-3 w-3" />
-                    Enter Google Cloud Client ID (For Live OAuth)
-                  </span>
-                  {showSetupGuide ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                </button>
-
-                {showSetupGuide && (
-                  <form onSubmit={saveGoogleConfig} className="mt-2.5 space-y-2.5 text-xs text-muted-foreground">
-                    <div className="rounded-lg bg-muted/40 border border-border/60 p-2.5 space-y-1 text-[11px]">
-                      <p className="font-semibold text-foreground">3 Quick Steps in Google Cloud:</p>
-                      <ol className="list-decimal pl-4 space-y-0.5">
-                        <li>
-                          Visit{' '}
-                          <a
-                            href="https://console.cloud.google.com/apis/credentials"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary underline inline-flex items-center gap-0.5"
-                          >
-                            Google Cloud Console <ExternalLink className="h-2.5 w-2.5" />
-                          </a>
-                        </li>
-                        <li>Create OAuth 2.0 Client ID (Web Application).</li>
-                        <li>
-                          Set Redirect URI:{' '}
-                          <code className="bg-muted px-1 py-0.5 rounded text-[10px] text-foreground">
-                            http://localhost:3000/api/auth/google/callback
-                          </code>
-                        </li>
-                      </ol>
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label htmlFor="googleClientId" className="text-[11px]">
-                        Google Client ID:
-                      </Label>
-                      <Input
-                        id="googleClientId"
-                        placeholder="...apps.googleusercontent.com"
-                        value={clientIdInput}
-                        onChange={(e) => setClientIdInput(e.target.value)}
-                        className="h-8 text-xs bg-background"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label htmlFor="googleClientSecret" className="text-[11px]">
-                        Google Client Secret:
-                      </Label>
-                      <Input
-                        id="googleClientSecret"
-                        type="password"
-                        placeholder="GOCSPX-..."
-                        value={clientSecretInput}
-                        onChange={(e) => setClientSecretInput(e.target.value)}
-                        className="h-8 text-xs bg-background"
-                      />
-                    </div>
-
-                    <Button type="submit" size="sm" className="w-full h-8 text-xs" disabled={savingConfig}>
-                      {savingConfig && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
-                      Save & Activate Live Google OAuth
-                    </Button>
-                  </form>
-                )}
+              {/* Divider */}
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border/60" />
+                </div>
+                <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+                  <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+                </div>
               </div>
             </div>
-          )}
 
-          {/* Divider */}
-          <div className="relative my-2">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border/60" />
-            </div>
-            <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Email & Password Form */}
-        <form onSubmit={submit} className="space-y-3">
-          {authMode === 'register' && (
-            <div className="grid grid-cols-2 gap-3">
+            {/* Email & Password Form */}
+            <form onSubmit={submit} className="space-y-3">
+              {authMode === 'register' && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="firstName" className="text-xs">
+                      First name
+                    </Label>
+                    <Input
+                      id="firstName"
+                      value={form.firstName}
+                      onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="lastName" className="text-xs">
+                      Last name
+                    </Label>
+                    <Input
+                      id="lastName"
+                      value={form.lastName}
+                      onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+              )}
               <div className="space-y-1.5">
-                <Label htmlFor="firstName" className="text-xs">
-                  First name
+                <Label htmlFor="email" className="text-xs">
+                  Email
                 </Label>
                 <Input
-                  id="firstName"
-                  value={form.firstName}
-                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  id="email"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
                   required
                 />
               </div>
+              {authMode === 'register' && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="phone" className="text-xs">
+                    Phone (optional)
+                  </Label>
+                  <Input
+                    id="phone"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  />
+                </div>
+              )}
               <div className="space-y-1.5">
-                <Label htmlFor="lastName" className="text-xs">
-                  Last name
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-xs">
+                    Password
+                  </Label>
+                  {authMode === 'login' && (
+                    <button
+                      type="button"
+                      onClick={() => switchMode('forgot')}
+                      className="text-xs text-primary hover:underline font-medium"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
                 <Input
-                  id="lastName"
-                  value={form.lastName}
-                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  id="password"
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
                   required
                 />
               </div>
-            </div>
-          )}
-          <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs">
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              required
-            />
-          </div>
-          {authMode === 'register' && (
-            <div className="space-y-1.5">
-              <Label htmlFor="phone" className="text-xs">
-                Phone (optional)
-              </Label>
-              <Input
-                id="phone"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              />
-            </div>
-          )}
-          <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-xs">
-              Password
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            className="w-full h-10 rounded-xl"
-            disabled={loading || googleLoading}
-          >
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {authMode === 'login' ? 'Sign in with Email' : 'Create account'}
-          </Button>
-        </form>
+              <Button
+                type="submit"
+                className="w-full h-10 rounded-xl"
+                disabled={loading || googleLoading}
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {authMode === 'login' ? 'Sign in with Email' : 'Create account'}
+              </Button>
+            </form>
 
-        {authMode === 'login' && (
-          <button
-            type="button"
-            onClick={fillDemo}
-            className="w-full rounded-lg border border-dashed border-border/80 bg-muted/40 px-3 py-2 text-xs text-muted-foreground hover:bg-muted transition-colors"
-          >
-            Use demo account → <span className="font-medium text-foreground">demo@ai-shop.in</span> / demo1234
-          </button>
+            {authMode === 'login' && (
+              <button
+                type="button"
+                onClick={fillDemo}
+                className="w-full rounded-lg border border-dashed border-border/80 bg-muted/40 px-3 py-2 text-xs text-muted-foreground hover:bg-muted transition-colors"
+              >
+                Use demo account → <span className="font-medium text-foreground">demo@ai-shop.in</span> / demo1234
+              </button>
+            )}
+
+            <p className="text-center text-xs text-muted-foreground pt-1">
+              {authMode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+              <button
+                type="button"
+                onClick={() => switchMode(authMode === 'login' ? 'register' : 'login')}
+                className="font-semibold text-primary hover:underline"
+              >
+                {authMode === 'login' ? 'Sign up' : 'Sign in'}
+              </button>
+            </p>
+          </>
         )}
-
-        <p className="text-center text-xs text-muted-foreground pt-1">
-          {authMode === 'login' ? "Don't have an account? " : 'Already have an account? '}
-          <button
-            type="button"
-            onClick={() => switchMode(authMode === 'login' ? 'register' : 'login')}
-            className="font-semibold text-primary hover:underline"
-          >
-            {authMode === 'login' ? 'Sign up' : 'Sign in'}
-          </button>
-        </p>
       </DialogContent>
     </Dialog>
   )
