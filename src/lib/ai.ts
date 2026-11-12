@@ -22,6 +22,7 @@ export interface ToolResult {
 export interface AIMessage {
   role: 'user' | 'assistant'
   content: string
+  toolResults?: ToolResult[]
 }
 
 // ----------------------------------------------------------------------------
@@ -561,7 +562,7 @@ function parseNumericPrice(text: string): number | null {
   return null
 }
 
-function extractSemanticTools(msg: string): Array<{ name: string; args: any }> {
+function extractSemanticTools(msg: string, recentProducts: any[] = []): Array<{ name: string; args: any }> {
   const lower = msg.toLowerCase().trim()
 
   // Greeting
@@ -586,10 +587,59 @@ function extractSemanticTools(msg: string): Array<{ name: string; args: any }> {
     return [{ name: 'search_products', args: { query: clean || 'deals', limit: 3 } }]
   }
 
-  // Comparison
-  if (lower.includes('compare')) {
+  // Comparison intent: "compare top 2", "compare these", "compare top 3", "compare", etc.
+  if (
+    lower.startsWith('compare') ||
+    lower.includes('compare top') ||
+    lower.includes('compare these') ||
+    lower.includes('compare them') ||
+    lower.includes('comparison') ||
+    lower === 'compare' ||
+    lower.includes('vs') ||
+    lower.includes('difference between')
+  ) {
+    let count = 2
+    if (lower.includes('top 3') || lower.includes('3 items') || lower.includes('three')) {
+      count = 3
+    }
+
+    // 1. If we have recent products from the previous conversation turn, compare THEM!
+    if (recentProducts.length >= 2) {
+      const targetIds = recentProducts.slice(0, count).map((p) => p.id)
+      return [{ name: 'compare_products', args: { productIds: targetIds } }]
+    }
+
+    if (recentProducts.length === 1) {
+      return [{ name: 'compare_products', args: { productIds: [recentProducts[0].id] } }]
+    }
+
     const clean = lower.replace(/compare|vs|between|the/g, ' ').trim()
-    return [{ name: 'search_products', args: { query: clean || 'laptop', limit: 2 } }]
+    return [{ name: 'search_products', args: { query: clean || 'laptops', limit: 2 } }]
+  }
+
+  // Add to cart intent
+  if (
+    lower === 'add to cart' ||
+    lower.includes('add to cart') ||
+    lower.includes('add top') ||
+    lower.includes('add first') ||
+    lower === 'add'
+  ) {
+    if (recentProducts.length >= 1) {
+      return [{ name: 'add_to_cart', args: { productId: recentProducts[0].id, quantity: 1 } }]
+    }
+  }
+
+  // Check customer reviews intent
+  if (
+    lower.includes('customer review') ||
+    lower.includes('check review') ||
+    lower === 'check customer reviews' ||
+    lower === 'reviews'
+  ) {
+    if (recentProducts.length >= 1) {
+      return [{ name: 'get_product', args: { productId: recentProducts[0].id } }]
+    }
   }
 
   // Category & occasion intent detection
@@ -752,9 +802,32 @@ function generateFallbackResponse(userMessage: string, toolResults: ToolResult[]
   // 3. Comparison
   const compResult = toolResults.find((t) => t.type === 'comparison')
   if (compResult) {
+    const prods = compResult.data.products || []
     return {
-      message: `Here is a side-by-side comparison of the options:`,
-      suggestions: ['Add best rated to cart', 'Check affordability', 'Ask for recommendation']
+      message: prods.length >= 2
+        ? `Here is a side-by-side comparison of ${prods[0].name} and ${prods[1].name}:`
+        : `Here is a side-by-side comparison of the options:`,
+      suggestions: ['Add best rated to cart', 'Check affordability', 'Search similar products']
+    }
+  }
+
+  // Product detail (e.g. from "check customer reviews" or "get_product")
+  const detailResult = toolResults.find((t) => t.type === 'product_detail')
+  if (detailResult) {
+    const p = detailResult.data
+    return {
+      message: `Here are the details and customer reviews for ${p.name}: Rated ⭐ ${p.rating.toFixed(1)}/5 (${p.ratingCount?.toLocaleString('en-IN') || 0} reviews). Price: ${formatPrice(p.price)}.`,
+      suggestions: ['Add to cart', 'Compare with alternative', 'Set price alert']
+    }
+  }
+
+  // Add to cart proposal
+  const cartPropResult = toolResults.find((t) => t.type === 'add_to_cart_proposal')
+  if (cartPropResult) {
+    const p = cartPropResult.data
+    return {
+      message: `Would you like me to add ${p.productName} (${formatPrice(p.price)}) to your cart? Please confirm below.`,
+      suggestions: ['View cart', 'Keep shopping', 'Check affordability']
     }
   }
 
@@ -785,8 +858,31 @@ function generateFallbackResponse(userMessage: string, toolResults: ToolResult[]
 // ----------------------------------------------------------------------------
 // Main orchestrator entry point
 // ----------------------------------------------------------------------------
-export async function chat(userId: string | null, userMessage: string, history: AIMessage[]) {
+export async function chat(
+  userId: string | null,
+  userMessage: string,
+  history: AIMessage[],
+  contextProductIds?: string[]
+) {
   const context = await buildUserContext(userId)
+
+  // Extract recent products from history or explicit context
+  let recentProductList: any[] = []
+  if (Array.isArray(contextProductIds) && contextProductIds.length > 0) {
+    recentProductList = contextProductIds.map((id) => ({ id }))
+  }
+  if (recentProductList.length === 0) {
+    for (let i = history.length - 1; i >= 0; i--) {
+      const msg = history[i]
+      if (msg.role === 'assistant' && msg.toolResults) {
+        const pList = msg.toolResults.find((t) => t.type === 'product_list' || t.type === 'comparison')
+        if (pList?.data?.products?.length) {
+          recentProductList = pList.data.products
+          break
+        }
+      }
+    }
+  }
 
   const contextBlock = `USER CONTEXT (do not reveal raw numbers unprompted; use tools):
 ${JSON.stringify(context, null, 2)}`
@@ -810,7 +906,7 @@ ${JSON.stringify(context, null, 2)}`
 
   // If LLM returned no tools or wasn't configured, use semantic intent extraction
   if (toolCalls.length === 0) {
-    toolCalls = extractSemanticTools(userMessage)
+    toolCalls = extractSemanticTools(userMessage, recentProductList)
   }
 
   // STEP 2 — execute tools

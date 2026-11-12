@@ -6,7 +6,7 @@ import { chat } from '@/lib/ai'
 export async function POST(req: NextRequest) {
   try {
     const user = await getSession(req)
-    const { message, conversationId } = await req.json()
+    const { message, conversationId, recentProductIds } = await req.json()
     if (!message || typeof message !== 'string') {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
     }
@@ -22,10 +22,23 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const history = (conversation?.messages || []).map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }))
+    const history = (conversation?.messages || []).map((m: any) => {
+      let toolResults: any[] | undefined
+      if (m.attachments) {
+        try {
+          const parsed = JSON.parse(m.attachments)
+          toolResults = parsed.toolResults
+        } catch {}
+      }
+      return {
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+        toolResults,
+      }
+    })
 
     // Run the orchestrator
-    const result = await chat(user?.id || null, message, history)
+    const result = await chat(user?.id || null, message, history, recentProductIds)
 
     // Persist messages if logged in
     if (user && conversation) {

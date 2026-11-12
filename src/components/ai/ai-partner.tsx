@@ -56,7 +56,14 @@ export function AIPartner() {
     setInput('')
     setLoading(true)
     try {
-      const res = await api.ai.chat(message, conversationId || undefined)
+      // Find recent products from the last assistant message with products/comparison
+      const lastAssistantWithProds = [...messages].reverse().find(
+        (m) => m.role === 'assistant' && m.toolResults?.some((t) => t.type === 'product_list' || t.type === 'comparison')
+      )
+      const prodListTool = lastAssistantWithProds?.toolResults?.find((t) => t.type === 'product_list' || t.type === 'comparison')
+      const recentProductIds = prodListTool?.data?.products?.map((p: any) => p.id) || []
+
+      const res = await api.ai.chat(message, conversationId || undefined, recentProductIds)
       if (res.conversationId) setConversationId(res.conversationId)
       setMessages((m) => [...m, { role: 'assistant', content: res.message, toolResults: res.toolResults, suggestions: res.suggestions }])
     } catch (e: any) {

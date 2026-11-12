@@ -136,10 +136,10 @@ export const api = {
     markAllRead: () => request('/api/notifications', { method: 'PATCH', body: JSON.stringify({ markAllRead: true }) }),
   },
   ai: {
-    chat: (message: string, conversationId?: string) =>
+    chat: (message: string, conversationId?: string, recentProductIds?: string[]) =>
       request<{ message: string; toolResults: any[]; suggestions: string[]; conversationId: string | null }>('/api/ai/chat', {
         method: 'POST',
-        body: JSON.stringify({ message, conversationId }),
+        body: JSON.stringify({ message, conversationId, recentProductIds }),
       }),
     conversations: () => request<{ conversations: any[] }>('/api/ai/chat'),
     conversation: (id: string) => request<{ conversation: any }>(`/api/ai/conversations/${id}`),
