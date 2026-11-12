@@ -4,8 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Sparkles, Loader2, Check } from 'lucide-react'
-import { useState } from 'react'
+import { Sparkles, Loader2, Check, ExternalLink, Settings, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
 import { toast } from 'sonner'
@@ -37,18 +37,124 @@ export function AuthModal() {
   const { authOpen, authMode, setAuthOpen, setUser } = useStore()
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [googleSelectorOpen, setGoogleSelectorOpen] = useState(false)
+  const [googleConfig, setGoogleConfig] = useState<{ configured: boolean; clientId: string | null }>({
+    configured: false,
+    clientId: null,
+  })
+  const [showGoogleDetails, setShowGoogleDetails] = useState(false)
+  const [showSetupGuide, setShowSetupGuide] = useState(false)
   const [customGoogleEmail, setCustomGoogleEmail] = useState('')
   const [customGoogleName, setCustomGoogleName] = useState('')
+  const [clientIdInput, setClientIdInput] = useState('')
+  const [clientSecretInput, setClientSecretInput] = useState('')
+  const [savingConfig, setSavingConfig] = useState(false)
+
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '' })
+  const gsiRendered = useRef(false)
+
+  // Fetch Google OAuth configuration status
+  useEffect(() => {
+    if (authOpen) {
+      fetch('/api/auth/google/config')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && typeof data.configured === 'boolean') {
+            setGoogleConfig(data)
+            if (data.clientId) {
+              setClientIdInput(data.clientId)
+            }
+          }
+        })
+        .catch(() => {})
+    }
+  }, [authOpen])
+
+  // Initialize Google Identity Services (GSI) if a valid client ID exists
+  useEffect(() => {
+    if (!authOpen || !googleConfig.configured || !googleConfig.clientId || gsiRendered.current) return
+
+    const loadGsi = () => {
+      if (typeof window === 'undefined') return
+      const clientId = googleConfig.clientId!
+
+      const handleCredential = async (response: any) => {
+        if (!response?.credential) return
+        setGoogleLoading(true)
+        try {
+          const res = await api.auth.google({ credential: response.credential })
+          setUser(res.user)
+          setAuthOpen(false)
+          toast.success(`Welcome to Buywise, ${res.user.firstName}! Signed in with Google.`)
+          refreshCartCount().catch(() => {})
+        } catch (e: any) {
+          toast.error(e?.message || 'Google authentication failed')
+        } finally {
+          setGoogleLoading(false)
+        }
+      }
+
+      const initScript = () => {
+        if ((window as any).google?.accounts?.id) {
+          try {
+            ;(window as any).google.accounts.id.initialize({
+              client_id: clientId,
+              callback: handleCredential,
+            })
+            const btnEl = document.getElementById('gsi-native-btn')
+            if (btnEl) {
+              ;(window as any).google.accounts.id.renderButton(btnEl, {
+                type: 'standard',
+                theme: 'outline',
+                size: 'large',
+                text: 'continue_with',
+                shape: 'rectangular',
+                width: 380,
+              })
+              gsiRendered.current = true
+            }
+          } catch (err) {
+            console.error('Google GSI render error:', err)
+          }
+        }
+      }
+
+      if (!document.getElementById('google-gsi-client')) {
+        const script = document.createElement('script')
+        script.id = 'google-gsi-client'
+        script.src = 'https://accounts.google.com/gsi/client'
+        script.async = true
+        script.defer = true
+        script.onload = initScript
+        document.body.appendChild(script)
+      } else {
+        initScript()
+      }
+    }
+
+    loadGsi()
+  }, [authOpen, googleConfig])
 
   function switchMode(mode: 'login' | 'register') {
     useStore.getState().setAuthOpen(true, mode)
     setForm({ firstName: '', lastName: '', email: '', phone: '', password: '' })
-    setGoogleSelectorOpen(false)
+    setShowGoogleDetails(false)
+    setShowSetupGuide(false)
   }
 
-  async function handleGoogleLogin(email?: string, name?: string) {
+  // Handle Google Login button click
+  function onGoogleButtonClick() {
+    if (googleConfig.configured) {
+      // Live Google OAuth 2.0 flow: Redirect to /api/auth/google
+      setGoogleLoading(true)
+      window.location.href = '/api/auth/google'
+    } else {
+      // Open the interactive Google Sign-In helper
+      setShowGoogleDetails(true)
+    }
+  }
+
+  // Direct login with Google profile (Dev Mode / Immediate Test)
+  async function handleDirectGoogleLogin(email?: string, name?: string) {
     setGoogleLoading(true)
     try {
       const chosenEmail = email || 'alex.morgan@gmail.com'
@@ -66,16 +172,55 @@ export function AuthModal() {
       const user = res.user
       setUser(user)
       setAuthOpen(false)
-      setGoogleSelectorOpen(false)
+      setShowGoogleDetails(false)
       toast.success(`Welcome to Buywise, ${user.firstName}! Signed in with Google.`)
       refreshCartCount().catch(() => {})
     } catch (e: any) {
-      toast.error(e.message || 'Google Sign-In failed')
+      toast.error(e?.message || 'Google Sign-In failed')
     } finally {
       setGoogleLoading(false)
     }
   }
 
+  // Save Google Cloud Client ID & Secret directly to .env
+  async function saveGoogleConfig(e: React.FormEvent) {
+    e.preventDefault()
+    if (!clientIdInput.trim()) {
+      toast.error('Please enter your Google Client ID')
+      return
+    }
+
+    setSavingConfig(true)
+    try {
+      const res = await fetch('/api/auth/google/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId: clientIdInput.trim(),
+          clientSecret: clientSecretInput.trim() || undefined,
+        }),
+      })
+
+      const data = await res.json()
+      if (res.ok) {
+        setGoogleConfig({
+          configured: true,
+          clientId: clientIdInput.trim(),
+        })
+        setShowSetupGuide(false)
+        setShowGoogleDetails(false)
+        toast.success('Google OAuth configured! You can now sign in with Google.')
+      } else {
+        toast.error(data.error || 'Failed to save configuration')
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Error saving configuration')
+    } finally {
+      setSavingConfig(false)
+    }
+  }
+
+  // Standard Email/Password Submission
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -88,14 +233,12 @@ export function AuthModal() {
         const res = await api.auth.register(form)
         user = res.user
       }
-      // Close modal immediately and set user in store
       setUser(user)
       setAuthOpen(false)
       toast.success(authMode === 'login' ? `Welcome back, ${user.firstName}!` : `Welcome to Buywise, ${user.firstName}!`)
-      // Refresh cart count in background
       refreshCartCount().catch(() => {})
     } catch (e: any) {
-      toast.error(e.message || 'Authentication failed')
+      toast.error(e?.message || 'Authentication failed')
     } finally {
       setLoading(false)
     }
@@ -106,8 +249,17 @@ export function AuthModal() {
   }
 
   return (
-    <Dialog open={authOpen} onOpenChange={(o) => { setAuthOpen(o); if (!o) setGoogleSelectorOpen(false) }}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog
+      open={authOpen}
+      onOpenChange={(o) => {
+        setAuthOpen(o)
+        if (!o) {
+          setShowGoogleDetails(false)
+          setShowSetupGuide(false)
+        }
+      }}
+    >
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/20">
             <Sparkles className="h-6 w-6" />
@@ -118,59 +270,60 @@ export function AuthModal() {
           <DialogDescription className="text-center text-xs sm:text-sm text-muted-foreground">
             {authMode === 'login'
               ? 'Sign in to access your cart, personalized recommendations & AI assistant'
-              : 'Join to unlock smart shopping, price watches and your Buywise AI'}
+              : 'Join to unlock smart shopping, price watches and your Buywise financial assistant'}
           </DialogDescription>
         </DialogHeader>
 
-        {/* Google Sign-In Main Action */}
         <div className="space-y-3 pt-1">
+          {/* Native GSI Button Container if rendered */}
+          <div id="gsi-native-btn" className="flex justify-center w-full" />
+
+          {/* Primary "Continue with Google" Button */}
           <Button
             type="button"
             variant="outline"
-            disabled={googleLoading || loading}
-            onClick={() => setGoogleSelectorOpen((prev) => !prev)}
-            className="relative flex h-11 w-full items-center justify-center gap-2.5 rounded-xl border-border/80 bg-background font-medium shadow-xs hover:bg-muted/60 hover:text-foreground transition-all"
+            className="w-full h-11 border-border/80 bg-background hover:bg-muted/60 font-medium text-foreground shadow-sm transition-all flex items-center justify-center gap-2.5 rounded-xl group relative overflow-hidden"
+            disabled={googleLoading}
+            onClick={onGoogleButtonClick}
           >
             {googleLoading ? (
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             ) : (
-              <GoogleIcon className="h-4 w-4" />
+              <GoogleIcon className="h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />
             )}
             <span>Continue with Google</span>
+            {googleConfig.configured && (
+              <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 px-1.5 py-0.5 rounded-full font-medium">
+                <ShieldCheck className="h-3 w-3" /> OAuth Active
+              </span>
+            )}
           </Button>
 
-          {/* Interactive Google Account Selector Tray */}
-          {googleSelectorOpen && (
-            <div className="rounded-xl border border-primary/20 bg-primary/5 p-3.5 text-xs animate-fade-in space-y-2.5">
-              <p className="font-semibold text-foreground flex items-center justify-between">
-                <span>Select Google Account</span>
-                <span className="text-[10px] font-normal text-muted-foreground">1-click sign-in</span>
-              </p>
-
-              {/* Pre-configured Google User */}
-              <button
-                type="button"
-                onClick={() => handleGoogleLogin('alex.morgan@gmail.com', 'Alex Morgan')}
-                className="w-full flex items-center justify-between gap-2.5 rounded-lg border border-border bg-card p-2 text-left hover:border-primary/50 hover:bg-accent transition-colors"
-              >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 font-bold text-white text-[11px]">
-                    A
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-medium text-foreground truncate">Alex Morgan</p>
-                    <p className="text-[11px] text-muted-foreground truncate">alex.morgan@gmail.com</p>
-                  </div>
+          {/* Google Details / Setup Drawer */}
+          {showGoogleDetails && (
+            <div className="rounded-xl border border-border/80 bg-muted/30 p-3.5 space-y-3 animate-in fade-in-50 slide-in-from-top-2 duration-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <GoogleIcon className="h-3.5 w-3.5" />
+                  <span>Google Authentication</span>
                 </div>
-                <Check className="h-4 w-4 text-primary shrink-0 opacity-80" />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setShowGoogleDetails(false)}
+                  className="text-[11px] text-muted-foreground hover:text-foreground"
+                >
+                  Close
+                </button>
+              </div>
 
-              {/* Enter custom Google email */}
-              <div className="pt-1 space-y-1.5">
-                <p className="text-[11px] text-muted-foreground">Or sign in with your Google email:</p>
-                <div className="flex gap-1.5">
+              {/* Instant Dev Mode Test Login */}
+              <div className="space-y-2">
+                <p className="text-[11px] text-muted-foreground">
+                  Sign in immediately with any Google account (test mode):
+                </p>
+                <div className="flex gap-2">
                   <Input
-                    placeholder="name@gmail.com"
+                    placeholder="your-name@gmail.com"
                     value={customGoogleEmail}
                     onChange={(e) => setCustomGoogleEmail(e.target.value)}
                     className="h-8 text-xs bg-background"
@@ -178,13 +331,113 @@ export function AuthModal() {
                   <Button
                     type="button"
                     size="sm"
-                    className="h-8 px-3 text-xs"
-                    disabled={!customGoogleEmail || !customGoogleEmail.includes('@')}
-                    onClick={() => handleGoogleLogin(customGoogleEmail, customGoogleName || customGoogleEmail.split('@')[0])}
+                    className="h-8 px-3 text-xs bg-primary text-primary-foreground shrink-0"
+                    disabled={!customGoogleEmail || !customGoogleEmail.includes('@') || googleLoading}
+                    onClick={() =>
+                      handleDirectGoogleLogin(
+                        customGoogleEmail,
+                        customGoogleName || customGoogleEmail.split('@')[0]
+                      )
+                    }
                   >
-                    Continue
+                    {googleLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Sign In'}
                   </Button>
                 </div>
+
+                {/* Preset Quick Account */}
+                <button
+                  type="button"
+                  onClick={() => handleDirectGoogleLogin('alex.morgan@gmail.com', 'Alex Morgan')}
+                  disabled={googleLoading}
+                  className="w-full flex items-center justify-between p-2 rounded-lg border border-border/60 bg-background/80 hover:bg-background text-left transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="h-6 w-6 rounded-full bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center">
+                      A
+                    </div>
+                    <div className="text-[11px]">
+                      <p className="font-medium text-foreground">Alex Morgan</p>
+                      <p className="text-muted-foreground">alex.morgan@gmail.com</p>
+                    </div>
+                  </div>
+                  <Check className="h-3.5 w-3.5 text-emerald-600" />
+                </button>
+              </div>
+
+              {/* Connect Real Google Cloud Credentials */}
+              <div className="border-t border-border/60 pt-2.5">
+                <button
+                  type="button"
+                  onClick={() => setShowSetupGuide(!showSetupGuide)}
+                  className="w-full flex items-center justify-between text-xs text-primary font-medium hover:underline"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Settings className="h-3.5 w-3.5" />
+                    Connect Your Own Google Cloud Client ID
+                  </span>
+                  {showSetupGuide ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                </button>
+
+                {showSetupGuide && (
+                  <form onSubmit={saveGoogleConfig} className="mt-2.5 space-y-2.5 text-xs text-muted-foreground">
+                    <div className="rounded-lg bg-background/80 border border-border/60 p-2.5 space-y-1.5 text-[11px]">
+                      <p className="font-semibold text-foreground">Quick Setup (2 minutes):</p>
+                      <ol className="list-decimal pl-4 space-y-1">
+                        <li>
+                          Open{' '}
+                          <a
+                            href="https://console.cloud.google.com/apis/credentials"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary underline inline-flex items-center gap-0.5"
+                          >
+                            Google Cloud Console <ExternalLink className="h-2.5 w-2.5" />
+                          </a>
+                        </li>
+                        <li>Create an <strong>OAuth 2.0 Client ID</strong> (Web Application).</li>
+                        <li>
+                          Set Authorized redirect URI:{' '}
+                          <code className="bg-muted px-1 py-0.5 rounded text-[10px] text-foreground">
+                            http://localhost:3000/api/auth/google/callback
+                          </code>
+                        </li>
+                      </ol>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="googleClientId" className="text-[11px]">
+                        Google Client ID:
+                      </Label>
+                      <Input
+                        id="googleClientId"
+                        placeholder="123456...apps.googleusercontent.com"
+                        value={clientIdInput}
+                        onChange={(e) => setClientIdInput(e.target.value)}
+                        className="h-8 text-xs bg-background"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="googleClientSecret" className="text-[11px]">
+                        Google Client Secret (optional for frontend, needed for OAuth redirect):
+                      </Label>
+                      <Input
+                        id="googleClientSecret"
+                        type="password"
+                        placeholder="GOCSPX-..."
+                        value={clientSecretInput}
+                        onChange={(e) => setClientSecretInput(e.target.value)}
+                        className="h-8 text-xs bg-background"
+                      />
+                    </div>
+
+                    <Button type="submit" size="sm" className="w-full h-8 text-xs" disabled={savingConfig}>
+                      {savingConfig && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                      Save & Activate Google OAuth
+                    </Button>
+                  </form>
+                )}
               </div>
             </div>
           )}
@@ -205,30 +458,70 @@ export function AuthModal() {
           {authMode === 'register' && (
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="firstName" className="text-xs">First name</Label>
-                <Input id="firstName" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} required />
+                <Label htmlFor="firstName" className="text-xs">
+                  First name
+                </Label>
+                <Input
+                  id="firstName"
+                  value={form.firstName}
+                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  required
+                />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="lastName" className="text-xs">Last name</Label>
-                <Input id="lastName" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} required />
+                <Label htmlFor="lastName" className="text-xs">
+                  Last name
+                </Label>
+                <Input
+                  id="lastName"
+                  value={form.lastName}
+                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  required
+                />
               </div>
             </div>
           )}
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs">Email</Label>
-            <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+            <Label htmlFor="email" className="text-xs">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              required
+            />
           </div>
           {authMode === 'register' && (
             <div className="space-y-1.5">
-              <Label htmlFor="phone" className="text-xs">Phone (optional)</Label>
-              <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <Label htmlFor="phone" className="text-xs">
+                Phone (optional)
+              </Label>
+              <Input
+                id="phone"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              />
             </div>
           )}
           <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-xs">Password</Label>
-            <Input id="password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
+            <Label htmlFor="password" className="text-xs">
+              Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              required
+            />
           </div>
-          <Button type="submit" className="w-full h-10 rounded-xl" disabled={loading || googleLoading}>
+          <Button
+            type="submit"
+            className="w-full h-10 rounded-xl"
+            disabled={loading || googleLoading}
+          >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {authMode === 'login' ? 'Sign in with Email' : 'Create account'}
           </Button>

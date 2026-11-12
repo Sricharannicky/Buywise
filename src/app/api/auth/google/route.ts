@@ -5,6 +5,28 @@ import { getCookieOptions } from '@/lib/cookie-options'
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
 
+export async function GET(req: NextRequest) {
+  const origin = req.nextUrl.origin
+  const clientId = process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+
+  // If clientId is missing or is the default demo placeholder
+  if (!clientId || clientId === 'demo-google-client-id') {
+    return NextResponse.redirect(`${origin}/?auth_modal=true&google_setup=needed`)
+  }
+
+  const redirectUri = `${origin}/api/auth/google/callback`
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: 'code',
+    scope: 'openid email profile',
+    access_type: 'offline',
+    prompt: 'select_account',
+  })
+
+  return NextResponse.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`)
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
@@ -14,7 +36,7 @@ export async function POST(req: NextRequest) {
     let firstName = inputFirstName
     let lastName = inputLastName
 
-    // If a Google ID Token (credential) is passed, verify or decode it
+    // If a Google ID Token (credential) is passed from Google Identity Services
     if (credential) {
       try {
         // Try verifying with Google's public tokeninfo endpoint
@@ -30,7 +52,7 @@ export async function POST(req: NextRequest) {
           }
         }
       } catch {
-        // Fallback: parse JWT payload directly if network request times out or is offline
+        // Fallback: parse JWT payload directly if network request times out
         try {
           const payloadBase64 = credential.split('.')[1]
           if (payloadBase64) {

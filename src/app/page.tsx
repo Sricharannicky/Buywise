@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useStore } from '@/lib/store'
 import { api } from '@/lib/api'
+import { toast } from 'sonner'
 import { Header } from '@/components/shared/header'
 import { Footer } from '@/components/shared/footer'
 import { AuthModal } from '@/components/shared/auth-modal'
@@ -42,8 +43,29 @@ export default function Page() {
         // Clean the URL
         window.history.replaceState({}, '', window.location.pathname)
       }
+
+      // Handle Google OAuth callback feedback
+      const googleSuccess = params.get('google_auth_success')
+      const authError = params.get('auth_error')
+      const googleSetup = params.get('google_setup')
+
+      if (googleSuccess) {
+        api.auth.me().then((r) => {
+          if (r.user) {
+            setUser(r.user)
+            toast.success(`Welcome to Buywise, ${r.user.firstName}! Successfully signed in with Google.`)
+          }
+        })
+        window.history.replaceState({}, '', window.location.pathname)
+      } else if (authError) {
+        toast.error(`Google authentication note: ${decodeURIComponent(authError)}`)
+        window.history.replaceState({}, '', window.location.pathname)
+      } else if (googleSetup === 'needed') {
+        useStore.getState().setAuthOpen(true, 'login')
+        window.history.replaceState({}, '', window.location.pathname)
+      }
     }
-  }, [ready, navigate])
+  }, [ready, navigate, setUser])
 
   function renderView() {
     switch (view.name) {
