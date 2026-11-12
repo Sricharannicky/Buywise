@@ -42,3 +42,11 @@ export async function POST(req: NextRequest) {
   })
   return NextResponse.json({ profile })
 }
+
+export async function PUT(req: NextRequest) {
+  return POST(req)
+}
+
+export async function PATCH(req: NextRequest) {
+  return POST(req)
+}
