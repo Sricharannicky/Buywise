@@ -75,7 +75,7 @@ export const api = {
   },
   categories: () => request<{ categories: any[]; brands: any[] }>('/api/categories'),
   cart: {
-    get: () => request<{ items: any[]; subtotal: number; count: number }>('/api/cart'),
+    get: () => request<{ items: any[]; savedItems?: any[]; subtotal: number; count: number }>('/api/cart'),
     add: (productId: string, quantity = 1) =>
       request('/api/cart', { method: 'POST', body: JSON.stringify({ productId, quantity }) }),
     update: (itemId: string, updates: any) =>

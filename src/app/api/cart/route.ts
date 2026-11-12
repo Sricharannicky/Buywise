@@ -4,21 +4,22 @@ import { getSession } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const user = await getSession(req)
-  if (!user) return NextResponse.json({ cart: null, items: [], subtotal: 0, count: 0 })
+  if (!user) return NextResponse.json({ cart: null, items: [], savedItems: [], subtotal: 0, count: 0 })
   const cart = await db.cart.findUnique({
     where: { userId: user.id },
     include: {
       items: {
-        where: { savedForLater: false },
         include: { product: { include: { brand: { select: { name: true } } } } },
         orderBy: { createdAt: 'desc' },
       },
     },
   })
-  const items = cart?.items || []
+  const allItems = cart?.items || []
+  const items = allItems.filter((i) => !i.savedForLater)
+  const savedItems = allItems.filter((i) => i.savedForLater)
   const subtotal = items.reduce((s, i) => s + i.product.price * i.quantity, 0)
   const count = items.reduce((s, i) => s + i.quantity, 0)
-  return NextResponse.json({ cart, items, subtotal, count })
+  return NextResponse.json({ cart, items, savedItems, subtotal, count })
 }
 
 export async function POST(req: NextRequest) {

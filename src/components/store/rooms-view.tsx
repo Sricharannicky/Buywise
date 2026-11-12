@@ -342,8 +342,8 @@ export function RoomView({ slug }: { slug: string }) {
         <div className="flex flex-wrap gap-2">
           {room.members.map((m: any) => (
             <div key={m.id} className="flex items-center gap-2 rounded-full border border-border/50 px-3 py-1.5">
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">{m.user.firstName[0]}{m.user.lastName[0]}</div>
-              <span className="text-xs font-medium">{m.user.firstName} {m.user.lastName}</span>
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">{(m.user?.firstName?.[0] || 'U') + (m.user?.lastName?.[0] || '')}</div>
+              <span className="text-xs font-medium">{m.user?.firstName || 'User'} {m.user?.lastName || ''}</span>
               {m.role === 'CREATOR' && <span className="text-[9px] text-primary">★</span>}
             </div>
           ))}

@@ -37,7 +37,7 @@ export function AccountView() {
         <div className="bg-gradient-to-r from-violet-600 to-fuchsia-600 p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 text-2xl font-bold text-white backdrop-blur">
-              {user.firstName[0]}{user.lastName[0]}
+              {(user.firstName?.[0] || 'U') + (user.lastName?.[0] || '')}
             </div>
             <div className="text-white">
               <h1 className="text-2xl font-bold">{user.firstName} {user.lastName}</h1>

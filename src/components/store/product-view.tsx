@@ -105,6 +105,7 @@ export function ProductView({ id }: { id: string }) {
     setSelectedVariants({})
     api.products.get(id).then((d) => {
       setData(d)
+      if (typeof (d as any).inWishlist === 'boolean') setWished((d as any).inWishlist)
       // Pre-select the first option of each variant group for a smoother UX
       const specs = parseAttributes(d.product.attributes)
       const groups = buildVariantGroups(specs)

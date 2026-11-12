@@ -149,7 +149,7 @@ export function Header({ categories }: { categories: any[] }) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="ml-1 gap-1.5 px-1.5">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-xs font-bold text-white">
-                    {user.firstName[0]}{user.lastName[0]}
+                    {(user.firstName?.[0] || 'U') + (user.lastName?.[0] || '')}
                   </div>
                   <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                 </Button>

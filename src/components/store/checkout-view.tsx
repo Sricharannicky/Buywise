@@ -367,7 +367,12 @@ export function CheckoutView() {
     }
     setPlacing(true)
     try {
-      const r = await api.orders.create({ addressId: selectedAddress, paymentMethod })
+      const r = await api.orders.create({
+        addressId: selectedAddress,
+        paymentMethod,
+        couponCode: couponApplied?.code,
+        shippingMethodId: shippingMethod,
+      })
       await refreshCartCount()
       setPlaced(r.order)
       toast.success('Order placed successfully!')

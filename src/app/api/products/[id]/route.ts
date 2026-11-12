@@ -14,10 +14,16 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   })
   if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
 
-  // Track recently viewed if logged in
+  let inWishlist = false
+  // Track recently viewed and check wishlist if logged in
   try {
     const user = await getSession(req)
     if (user) {
+      const wishItem = await db.wishlistItem.findFirst({
+        where: { wishlist: { userId: user.id }, productId: product.id },
+      })
+      inWishlist = Boolean(wishItem)
+
       await db.recentlyViewed.create({ data: { userId: user.id, productId: product.id } })
       // keep only last 20
       const rv = await db.recentlyViewed.findMany({ where: { userId: user.id }, orderBy: { viewedAt: 'desc' }, take: 30 })
@@ -37,5 +43,5 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     include: { brand: { select: { name: true } } },
   })
 
-  return NextResponse.json({ product, related })
+  return NextResponse.json({ product, related, inWishlist })
 }

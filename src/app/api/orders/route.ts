@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const user = await getSession(req)
   if (!user) return NextResponse.json({ error: 'Please sign in to checkout' }, { status: 401 })
   const body = await req.json()
-  const { addressId, paymentMethod = 'COD' } = body
+  const { addressId, paymentMethod = 'COD', couponCode, shippingMethodId } = body
 
   const address = await db.address.findFirst({ where: { id: addressId, userId: user.id } })
   if (!address) return NextResponse.json({ error: 'Please select a shipping address' }, { status: 400 })
@@ -28,12 +28,15 @@ export async function POST(req: NextRequest) {
   })
   if (!cart || cart.items.length === 0) return NextResponse.json({ error: 'Your cart is empty' }, { status: 400 })
 
-  // Validate stock and recompute prices server-side (never trust frontend)
+  // Validate stock and compute prices server-side
   let subtotal = 0
   const lineItems: any[] = []
   for (const item of cart.items) {
     if (!item.product || !item.product.isActive || item.product.stock < item.quantity) {
-      return NextResponse.json({ error: `${item.product?.name || 'An item'} is no longer available in the requested quantity` }, { status: 400 })
+      return NextResponse.json(
+        { error: `${item.product?.name || 'An item'} is no longer available in the requested quantity` },
+        { status: 400 }
+      )
     }
     subtotal += item.product.price * item.quantity
     lineItems.push({
@@ -46,11 +49,30 @@ export async function POST(req: NextRequest) {
       total: item.product.price * item.quantity,
     })
   }
-  const tax = Math.round(subtotal * 0.05) // 5% GST estimate
-  const shipping = subtotal > 999 ? 0 : 99
-  const total = subtotal + tax + shipping
 
-  const orderNumber = 'AIS' + Date.now().toString().slice(-8) + Math.random().toString(36).slice(2, 5).toUpperCase()
+  // Coupon Discount
+  let discount = 0
+  if (couponCode === 'SAVE10') {
+    discount = Math.round(subtotal * 0.1)
+  } else if (couponCode === 'FLAT500') {
+    discount = Math.min(500, subtotal)
+  }
+
+  // Shipping cost
+  let shipping = 0
+  if (shippingMethodId === 'sameday') {
+    shipping = 199
+  } else if (shippingMethodId === 'express') {
+    shipping = 99
+  } else {
+    shipping = subtotal > 999 ? 0 : 99
+  }
+
+  const tax = Math.round(Math.max(0, subtotal - discount) * 0.05)
+  const total = Math.max(0, subtotal - discount) + tax + shipping
+
+  // Buywise order number
+  const orderNumber = 'BW' + Date.now().toString().slice(-8) + Math.random().toString(36).slice(2, 5).toUpperCase()
 
   const order = await db.$transaction(async (tx) => {
     // Decrement stock
@@ -67,7 +89,7 @@ export async function POST(req: NextRequest) {
         subtotal,
         tax,
         shipping,
-        discount: 0,
+        discount,
         total,
         shipFullName: address.fullName,
         shipPhone: address.phone,
@@ -87,7 +109,12 @@ export async function POST(req: NextRequest) {
 
   // Notification
   await db.notification.create({
-    data: { userId: user.id, type: 'ORDER', title: 'Order confirmed', body: `Your order ${order.orderNumber} has been confirmed.` },
+    data: {
+      userId: user.id,
+      type: 'ORDER',
+      title: 'Order confirmed',
+      body: `Your Buywise order ${order.orderNumber} for ₹${total} has been placed.`,
+    },
   })
 
   return NextResponse.json({ order })

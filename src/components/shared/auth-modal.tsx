@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Sparkles, Loader2, Check, ExternalLink, Settings, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react'
+import { Sparkles, Loader2, Check, ExternalLink, Settings, ShieldCheck, ChevronDown, ChevronUp, UserPlus } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
@@ -41,10 +41,10 @@ export function AuthModal() {
     configured: false,
     clientId: null,
   })
-  const [showGoogleDetails, setShowGoogleDetails] = useState(false)
+  const [showGoogleChooser, setShowGoogleChooser] = useState(false)
+  const [showCustomInput, setShowCustomInput] = useState(false)
   const [showSetupGuide, setShowSetupGuide] = useState(false)
   const [customGoogleEmail, setCustomGoogleEmail] = useState('')
-  const [customGoogleName, setCustomGoogleName] = useState('')
   const [clientIdInput, setClientIdInput] = useState('')
   const [clientSecretInput, setClientSecretInput] = useState('')
   const [savingConfig, setSavingConfig] = useState(false)
@@ -137,34 +137,28 @@ export function AuthModal() {
   function switchMode(mode: 'login' | 'register') {
     useStore.getState().setAuthOpen(true, mode)
     setForm({ firstName: '', lastName: '', email: '', phone: '', password: '' })
-    setShowGoogleDetails(false)
+    setShowGoogleChooser(false)
     setShowSetupGuide(false)
   }
 
-  // Handle Google Login button click
+  // Handle Google Login click
   function onGoogleButtonClick() {
     if (googleConfig.configured) {
-      // Live Google OAuth 2.0 flow: Redirect to /api/auth/google
+      // Live Google OAuth 2.0 flow
       setGoogleLoading(true)
       window.location.href = '/api/auth/google'
     } else {
-      // Open the interactive Google Sign-In helper
-      setShowGoogleDetails(true)
+      // Open the Google Account Chooser
+      setShowGoogleChooser(true)
     }
   }
 
-  // Direct login with Google profile (Dev Mode / Immediate Test)
-  async function handleDirectGoogleLogin(email?: string, name?: string) {
+  // Instant login with Google user
+  async function handleGoogleAccountSelect(email: string, firstName: string, lastName: string) {
     setGoogleLoading(true)
     try {
-      const chosenEmail = email || 'alex.morgan@gmail.com'
-      const fullName = (name || 'Alex Morgan').trim()
-      const parts = fullName.split(' ')
-      const firstName = parts[0] || 'Google'
-      const lastName = parts.slice(1).join(' ') || 'User'
-
       const res = await api.auth.google({
-        email: chosenEmail,
+        email,
         firstName,
         lastName,
       })
@@ -172,7 +166,7 @@ export function AuthModal() {
       const user = res.user
       setUser(user)
       setAuthOpen(false)
-      setShowGoogleDetails(false)
+      setShowGoogleChooser(false)
       toast.success(`Welcome to Buywise, ${user.firstName}! Signed in with Google.`)
       refreshCartCount().catch(() => {})
     } catch (e: any) {
@@ -208,7 +202,7 @@ export function AuthModal() {
           clientId: clientIdInput.trim(),
         })
         setShowSetupGuide(false)
-        setShowGoogleDetails(false)
+        setShowGoogleChooser(false)
         toast.success('Google OAuth configured! You can now sign in with Google.')
       } else {
         toast.error(data.error || 'Failed to save configuration')
@@ -220,7 +214,7 @@ export function AuthModal() {
     }
   }
 
-  // Standard Email/Password Submission
+  // Email/Password form submit
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -254,8 +248,9 @@ export function AuthModal() {
       onOpenChange={(o) => {
         setAuthOpen(o)
         if (!o) {
-          setShowGoogleDetails(false)
+          setShowGoogleChooser(false)
           setShowSetupGuide(false)
+          setShowCustomInput(false)
         }
       }}
     >
@@ -282,7 +277,7 @@ export function AuthModal() {
           <Button
             type="button"
             variant="outline"
-            className="w-full h-11 border-border/80 bg-background hover:bg-muted/60 font-medium text-foreground shadow-sm transition-all flex items-center justify-center gap-2.5 rounded-xl group relative overflow-hidden"
+            className="w-full h-11 border-border/80 bg-background hover:bg-muted/60 font-medium text-foreground shadow-xs transition-all flex items-center justify-center gap-2.5 rounded-xl group relative overflow-hidden"
             disabled={googleLoading}
             onClick={onGoogleButtonClick}
           >
@@ -299,92 +294,130 @@ export function AuthModal() {
             )}
           </Button>
 
-          {/* Google Details / Setup Drawer */}
-          {showGoogleDetails && (
-            <div className="rounded-xl border border-border/80 bg-muted/30 p-3.5 space-y-3 animate-in fade-in-50 slide-in-from-top-2 duration-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                  <GoogleIcon className="h-3.5 w-3.5" />
-                  <span>Google Authentication</span>
+          {/* Authentic Google Account Chooser */}
+          {showGoogleChooser && (
+            <div className="rounded-xl border border-border/80 bg-card p-4 space-y-3 animate-in fade-in-50 slide-in-from-top-2 duration-200 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <GoogleIcon className="h-4 w-4" />
+                  <span className="text-xs font-semibold text-foreground">Sign in with Google</span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setShowGoogleDetails(false)}
+                  onClick={() => setShowGoogleChooser(false)}
                   className="text-[11px] text-muted-foreground hover:text-foreground"
                 >
-                  Close
+                  Cancel
                 </button>
               </div>
 
-              {/* Instant Dev Mode Test Login */}
-              <div className="space-y-2">
-                <p className="text-[11px] text-muted-foreground">
-                  Sign in immediately with any Google account (test mode):
-                </p>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="your-name@gmail.com"
-                    value={customGoogleEmail}
-                    onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                    className="h-8 text-xs bg-background"
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="h-8 px-3 text-xs bg-primary text-primary-foreground shrink-0"
-                    disabled={!customGoogleEmail || !customGoogleEmail.includes('@') || googleLoading}
-                    onClick={() =>
-                      handleDirectGoogleLogin(
-                        customGoogleEmail,
-                        customGoogleName || customGoogleEmail.split('@')[0]
-                      )
-                    }
-                  >
-                    {googleLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Sign In'}
-                  </Button>
-                </div>
+              <p className="text-[11px] text-muted-foreground">
+                Choose an account to continue to <span className="font-medium text-foreground">Buywise</span>:
+              </p>
 
-                {/* Preset Quick Account */}
+              {/* Account 1: Sricharan Nicky */}
+              <button
+                type="button"
+                onClick={() => handleGoogleAccountSelect('sricharan.nicky@gmail.com', 'Sricharan', 'Nicky')}
+                disabled={googleLoading}
+                className="w-full flex items-center justify-between p-2.5 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/60 text-left transition-colors group"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                    S
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary">
+                      Sricharan Nicky
+                    </p>
+                    <p className="text-[11px] text-muted-foreground truncate">sricharan.nicky@gmail.com</p>
+                  </div>
+                </div>
+                <Check className="h-4 w-4 text-emerald-600 shrink-0 opacity-80" />
+              </button>
+
+              {/* Account 2: Alex Morgan */}
+              <button
+                type="button"
+                onClick={() => handleGoogleAccountSelect('alex.morgan@gmail.com', 'Alex', 'Morgan')}
+                disabled={googleLoading}
+                className="w-full flex items-center justify-between p-2.5 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/60 text-left transition-colors group"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                    A
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary">
+                      Alex Morgan
+                    </p>
+                    <p className="text-[11px] text-muted-foreground truncate">alex.morgan@gmail.com</p>
+                  </div>
+                </div>
+                <Check className="h-4 w-4 text-emerald-600 shrink-0 opacity-80" />
+              </button>
+
+              {/* Custom Google Email Option */}
+              {!showCustomInput ? (
                 <button
                   type="button"
-                  onClick={() => handleDirectGoogleLogin('alex.morgan@gmail.com', 'Alex Morgan')}
-                  disabled={googleLoading}
-                  className="w-full flex items-center justify-between p-2 rounded-lg border border-border/60 bg-background/80 hover:bg-background text-left transition-colors"
+                  onClick={() => setShowCustomInput(true)}
+                  className="w-full flex items-center gap-3 p-2.5 rounded-lg border border-dashed border-border/70 hover:bg-muted/40 text-left transition-colors text-xs text-muted-foreground hover:text-foreground"
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center">
-                      A
-                    </div>
-                    <div className="text-[11px]">
-                      <p className="font-medium text-foreground">Alex Morgan</p>
-                      <p className="text-muted-foreground">alex.morgan@gmail.com</p>
-                    </div>
-                  </div>
-                  <Check className="h-3.5 w-3.5 text-emerald-600" />
+                  <UserPlus className="h-4 w-4 shrink-0 text-primary" />
+                  <span>Use another Google account</span>
                 </button>
-              </div>
+              ) : (
+                <div className="space-y-2 pt-1 border-t border-border/50">
+                  <p className="text-[11px] text-muted-foreground">Enter your Google email:</p>
+                  <div className="flex gap-1.5">
+                    <Input
+                      placeholder="your.email@gmail.com"
+                      value={customGoogleEmail}
+                      onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                      className="h-8 text-xs bg-background"
+                      autoFocus
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="h-8 px-3 text-xs bg-primary text-primary-foreground shrink-0"
+                      disabled={!customGoogleEmail || !customGoogleEmail.includes('@') || googleLoading}
+                      onClick={() =>
+                        handleGoogleAccountSelect(
+                          customGoogleEmail,
+                          customGoogleEmail.split('@')[0],
+                          'User'
+                        )
+                      }
+                    >
+                      {googleLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Continue'}
+                    </Button>
+                  </div>
+                </div>
+              )}
 
-              {/* Connect Real Google Cloud Credentials */}
+              {/* Google Cloud API Key Configuration (Optional) */}
               <div className="border-t border-border/60 pt-2.5">
                 <button
                   type="button"
                   onClick={() => setShowSetupGuide(!showSetupGuide)}
-                  className="w-full flex items-center justify-between text-xs text-primary font-medium hover:underline"
+                  className="w-full flex items-center justify-between text-[11px] text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
-                    <Settings className="h-3.5 w-3.5" />
-                    Connect Your Own Google Cloud Client ID
+                    <Settings className="h-3 w-3" />
+                    Enter Google Cloud Client ID (For Live OAuth)
                   </span>
-                  {showSetupGuide ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                  {showSetupGuide ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                 </button>
 
                 {showSetupGuide && (
                   <form onSubmit={saveGoogleConfig} className="mt-2.5 space-y-2.5 text-xs text-muted-foreground">
-                    <div className="rounded-lg bg-background/80 border border-border/60 p-2.5 space-y-1.5 text-[11px]">
-                      <p className="font-semibold text-foreground">Quick Setup (2 minutes):</p>
-                      <ol className="list-decimal pl-4 space-y-1">
+                    <div className="rounded-lg bg-muted/40 border border-border/60 p-2.5 space-y-1 text-[11px]">
+                      <p className="font-semibold text-foreground">3 Quick Steps in Google Cloud:</p>
+                      <ol className="list-decimal pl-4 space-y-0.5">
                         <li>
-                          Open{' '}
+                          Visit{' '}
                           <a
                             href="https://console.cloud.google.com/apis/credentials"
                             target="_blank"
@@ -394,9 +427,9 @@ export function AuthModal() {
                             Google Cloud Console <ExternalLink className="h-2.5 w-2.5" />
                           </a>
                         </li>
-                        <li>Create an <strong>OAuth 2.0 Client ID</strong> (Web Application).</li>
+                        <li>Create OAuth 2.0 Client ID (Web Application).</li>
                         <li>
-                          Set Authorized redirect URI:{' '}
+                          Set Redirect URI:{' '}
                           <code className="bg-muted px-1 py-0.5 rounded text-[10px] text-foreground">
                             http://localhost:3000/api/auth/google/callback
                           </code>
@@ -410,7 +443,7 @@ export function AuthModal() {
                       </Label>
                       <Input
                         id="googleClientId"
-                        placeholder="123456...apps.googleusercontent.com"
+                        placeholder="...apps.googleusercontent.com"
                         value={clientIdInput}
                         onChange={(e) => setClientIdInput(e.target.value)}
                         className="h-8 text-xs bg-background"
@@ -420,7 +453,7 @@ export function AuthModal() {
 
                     <div className="space-y-1">
                       <Label htmlFor="googleClientSecret" className="text-[11px]">
-                        Google Client Secret (optional for frontend, needed for OAuth redirect):
+                        Google Client Secret:
                       </Label>
                       <Input
                         id="googleClientSecret"
@@ -434,7 +467,7 @@ export function AuthModal() {
 
                     <Button type="submit" size="sm" className="w-full h-8 text-xs" disabled={savingConfig}>
                       {savingConfig && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
-                      Save & Activate Google OAuth
+                      Save & Activate Live Google OAuth
                     </Button>
                   </form>
                 )}
