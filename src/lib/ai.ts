@@ -203,27 +203,48 @@ async function executeTool(name: string, args: any, userId: string | null): Prom
   switch (name) {
     case 'search_products': {
       const where: any = { isActive: true }
-      if (args.query) {
-        // Split into words and match any — more forgiving than a single substring
-        const words = String(args.query).split(/\s+/).filter((w) => w.length > 2)
-        if (words.length) {
-          const wordConditions: any[] = []
-          for (const w of words) {
-            wordConditions.push({ name: { contains: w } }, { description: { contains: w } }, { tags: { contains: w } }, { shortDescription: { contains: w } }, { brand: { name: { contains: w } } })
-          }
-          where.OR = wordConditions
-        }
-      }
+      const andClauses: any[] = []
+
       if (args.category) {
-        where.AND = [{ OR: [{ category: { slug: args.category } }, { category: { parent: { slug: args.category } } }] }]
+        andClauses.push({
+          OR: [
+            { category: { slug: args.category } },
+            { category: { parent: { slug: args.category } } },
+          ],
+        })
       }
+
       if (args.maxPrice) where.price = { ...where.price, lte: args.maxPrice }
       if (args.minPrice) where.price = { ...where.price, gte: args.minPrice }
       if (args.minRating) where.rating = { gte: args.minRating }
+
+      if (args.query) {
+        const rawTokens = String(args.query).toLowerCase().split(/[\s,+-]+/).filter((w) => w.length >= 2)
+        const filterWords = ['and', 'for', 'with', 'under', 'from', 'the', 'good', 'need']
+        const tokens = rawTokens.filter((w) => !filterWords.includes(w))
+
+        if (tokens.length) {
+          const tokenClauses = tokens.map((token) => ({
+            OR: [
+              { name: { contains: token } },
+              { tags: { contains: token } },
+              { shortDescription: { contains: token } },
+              { brand: { name: { contains: token } } },
+            ],
+          }))
+          andClauses.push({ OR: tokenClauses })
+        }
+      }
+
+      if (andClauses.length > 0) {
+        where.AND = andClauses
+      }
+
       let orderBy: any = [{ rating: 'desc' }, { ratingCount: 'desc' }]
       if (args.sort === 'price-asc') orderBy = { price: 'asc' }
       else if (args.sort === 'price-desc') orderBy = { price: 'desc' }
       else if (args.sort === 'rating') orderBy = { rating: 'desc' }
+
       const limit = Math.min(args.limit || 5, 8)
       const products = await db.product.findMany({
         where,
@@ -231,7 +252,16 @@ async function executeTool(name: string, args: any, userId: string | null): Prom
         take: limit,
         include: { brand: { select: { name: true } }, category: { select: { name: true, slug: true } } },
       })
-      return { type: 'product_list', data: { query: args.query || args.category || '*', count: products.length, products: products.map(serializeProduct) } }
+      return {
+        type: 'product_list',
+        data: {
+          query: args.query || args.category || '*',
+          maxPrice: args.maxPrice || null,
+          category: args.category || null,
+          count: products.length,
+          products: products.map(serializeProduct),
+        },
+      }
     }
     case 'get_product': {
       const p = await db.product.findUnique({ where: { id: args.productId }, include: { brand: { select: { name: true } }, category: { select: { name: true, slug: true } } } })
@@ -464,7 +494,8 @@ function parseNumericPrice(text: string): number | null {
   if (lakhMatch) return parseFloat(lakhMatch[1]) * 100000
   const kMatch = lower.match(/(\d+(?:\.\d+)?)\s*k\b/)
   if (kMatch) return parseFloat(kMatch[1]) * 1000
-  const numMatch = lower.match(/(?:₹|rs\.?|inr)?\s*(\d{1,3}(?:,\d{3})+|\d{3,7})\b/)
+  // Matches ₹70,000, 70,000, 70000, Rs 70000
+  const numMatch = lower.match(/(?:under|below|less than|around|upto|up to|₹|rs\.?|inr)?\s*(\d{1,3}(?:,\d{3})+|\d{3,7})\b/)
   if (numMatch) return parseFloat(numMatch[1].replace(/,/g, ''))
   return null
 }
@@ -500,19 +531,48 @@ function extractSemanticTools(msg: string): Array<{ name: string; args: any }> {
     return [{ name: 'search_products', args: { query: clean || 'laptop', limit: 2 } }]
   }
 
-  // Product search
+  // Category intent detection
+  let targetCategory: string | undefined = undefined
+  if (lower.includes('laptop') || lower.includes('notebook') || lower.includes('macbook')) {
+    targetCategory = 'laptops-tablets'
+  } else if (lower.includes('phone') || lower.includes('mobile') || lower.includes('smartphone')) {
+    targetCategory = 'mobile-phones'
+  } else if (lower.includes('headphone') || lower.includes('earbud') || lower.includes('earphone')) {
+    targetCategory = 'headphones-earbuds'
+  } else if (lower.includes('smartwatch') || lower.includes('smart watch')) {
+    targetCategory = 'smartwatches-wearables'
+  } else if (lower.includes('shoe') || lower.includes('sneaker') || lower.includes('footwear')) {
+    targetCategory = 'footwear'
+  } else if (lower.includes('eyeliner') || lower.includes('eye liner') || lower.includes('lipstick') || lower.includes('makeup') || lower.includes('kajal')) {
+    targetCategory = 'makeup'
+  } else if (lower.includes('sunscreen') || lower.includes('serum') || lower.includes('moisturizer') || lower.includes('skincare')) {
+    targetCategory = 'skincare'
+  } else if (lower.includes('air fryer') || lower.includes('airfryer') || lower.includes('blender') || lower.includes('coffee')) {
+    targetCategory = 'kitchen-dining'
+  } else if (lower.includes('chair') || lower.includes('sofa') || lower.includes('desk') || lower.includes('furniture')) {
+    targetCategory = 'furniture'
+  } else if (lower.includes('dumbbell') || lower.includes('gym') || lower.includes('weights')) {
+    targetCategory = 'gym-equipment'
+  } else if (lower.includes('protein') || lower.includes('supplement')) {
+    targetCategory = 'vitamins-supplements'
+  }
+
+  // Product search with clean price extraction
   const price = parseNumericPrice(lower)
   const cleanQuery = lower
-    .replace(/(?:under|below|less than|within|around|upto|up to)\s*(?:₹|rs\.?|inr)?\s*(\d+(?:\.\d+)?\s*(?:lakh|lac|l|k)?|\d[\d,]*)?/gi, ' ')
+    .replace(/(?:under|below|less than|within|around|upto|up to)\s*(?:₹|rs\.?|inr)?\s*[\d,k\.]+(?:\s*(?:lakh|lac|l|k|thousand))?/gi, ' ')
+    .replace(/(?:₹|rs\.?|inr)\s*[\d,k\.]+/gi, ' ')
     .replace(/\b(?:i need|i want|show me|find|looking for|recommend|suggest|give me|a|an|the|best|top|for|right now|please)\b/gi, ' ')
+    .replace(/[^\w\s-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
 
-  if (cleanQuery.length >= 2 || price !== null) {
+  if (cleanQuery.length >= 2 || price !== null || targetCategory) {
     return [{
       name: 'search_products',
       args: {
         query: cleanQuery || undefined,
+        category: targetCategory,
         maxPrice: price || undefined,
         minRating: (lower.includes('best') || lower.includes('top rated')) ? 4.0 : undefined,
         limit: 5,
@@ -553,16 +613,19 @@ function generateFallbackResponse(userMessage: string, toolResults: ToolResult[]
   const prodResult = toolResults.find((t) => t.type === 'product_list')
   if (prodResult) {
     const { data } = prodResult
-    const qName = data.query === '*' || !data.query ? 'products' : data.query
+    let qName = data.query === '*' || !data.query ? 'products' : data.query
+    qName = qName.replace(/,\d+/g, '').replace(/\b(?:and|for|with)\b/g, '').replace(/\s+/g, ' ').trim()
+    const priceText = data.maxPrice ? ` under ₹${data.maxPrice.toLocaleString('en-IN')}` : ''
+
     if (data.products.length === 0) {
       return {
-        message: `I searched our catalog for "${qName}", but couldn't find an exact match in that price range. Try broadening your criteria or browsing our categories!`,
-        suggestions: ['Browse all products', 'Browse Electronics', 'Browse Books & Stationery']
+        message: `I searched our catalog for ${qName}${priceText}, but couldn't find an exact match in that price range. Try broadening your criteria or browsing our categories!`,
+        suggestions: ['Browse all products', 'Browse Laptops', 'Show top deals']
       }
     }
     return {
-      message: `Here are the top ${qName} options I found for you in our catalog:`,
-      suggestions: ['Compare top 2', 'Show under ₹50,000', 'Check customer reviews']
+      message: `Here are the top ${qName}${priceText} options I found for you in our catalog:`,
+      suggestions: ['Compare top 2', 'Check customer reviews', 'Add to cart']
     }
   }
 

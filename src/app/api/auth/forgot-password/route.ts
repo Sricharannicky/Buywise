@@ -8,7 +8,7 @@ const g = globalThis as unknown as {
 if (!g.__buywise_otpStore) {
   g.__buywise_otpStore = new Map()
 }
-export const otpStore = g.__buywise_otpStore
+const otpStore = g.__buywise_otpStore!
 
 export async function POST(req: NextRequest) {
   try {
