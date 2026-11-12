@@ -562,7 +562,12 @@ function parseNumericPrice(text: string): number | null {
   return null
 }
 
-function extractSemanticTools(msg: string, recentProducts: any[] = []): Array<{ name: string; args: any }> {
+function extractSemanticTools(
+  msg: string,
+  recentProducts: any[] = [],
+  contextPrice: number | null = null,
+  contextTitle: string | null = null
+): Array<{ name: string; args: any }> {
   const lower = msg.toLowerCase().trim()
 
   // Greeting
@@ -570,9 +575,24 @@ function extractSemanticTools(msg: string, recentProducts: any[] = []): Array<{ 
     return []
   }
 
+  // Savings Goal intent: "create a savings goal", "create goal", "save for this", "set savings goal"
+  if (
+    lower.includes('savings goal') ||
+    lower.includes('saving goal') ||
+    lower.includes('create goal') ||
+    lower.includes('set a goal') ||
+    lower.includes('set savings goal') ||
+    lower.includes('save for this') ||
+    lower === 'create a savings goal'
+  ) {
+    const price = parseNumericPrice(lower) || contextPrice || 5000
+    const title = contextTitle ? `Savings for ${contextTitle.slice(0, 35)}` : 'Shopping Savings Goal'
+    return [{ name: 'create_goal', args: { title, targetAmount: price } }]
+  }
+
   // Affordability intent
   if (lower.includes('afford') || lower.includes('can i buy') || lower.includes('can i get') || lower.includes('budget') || lower.includes('salary')) {
-    const price = parseNumericPrice(lower) || 5000
+    const price = parseNumericPrice(lower) || contextPrice || 5000
     return [{ name: 'check_affordability', args: { price } }]
   }
 
@@ -831,6 +851,26 @@ function generateFallbackResponse(userMessage: string, toolResults: ToolResult[]
     }
   }
 
+  // Goal proposal
+  const goalResult = toolResults.find((t) => t.type === 'goal_proposal')
+  if (goalResult) {
+    const { data } = goalResult
+    return {
+      message: `I've prepared a savings goal proposal for "${data.title}" targeting ${formatPrice(data.targetAmount)}. Click "Create" below to save it to your active goals!`,
+      suggestions: ['View my budget', 'Search similar products', 'Keep shopping']
+    }
+  }
+
+  // Price watch proposal
+  const pwResult = toolResults.find((t) => t.type === 'price_watch_proposal')
+  if (pwResult) {
+    const { data } = pwResult
+    return {
+      message: `I've prepared a price alert proposal for ${data.productName} at ${formatPrice(data.targetPrice)}. Click "Set alert" below to activate it!`,
+      suggestions: ['View my price watches', 'Compare alternatives', 'Keep shopping']
+    }
+  }
+
   // 4. Cart optimization
   const cartOptResult = toolResults.find((t) => t.type === 'cart_optimization')
   if (cartOptResult) {
@@ -884,6 +924,33 @@ export async function chat(
     }
   }
 
+  // Extract context price and title from history or recent products
+  let contextPrice: number | null = null
+  let contextTitle: string | null = null
+
+  if (recentProductList.length > 0 && recentProductList[0].price) {
+    contextPrice = recentProductList[0].price
+    contextTitle = recentProductList[0].name || null
+  }
+
+  for (let i = history.length - 1; i >= 0; i--) {
+    const msg = history[i]
+    if (msg.toolResults) {
+      const afford = msg.toolResults.find((t) => t.type === 'affordability')
+      if (afford?.data?.price && !contextPrice) {
+        contextPrice = afford.data.price
+      }
+      const pList = msg.toolResults.find((t) => t.type === 'product_list')
+      if (pList?.data?.maxPrice && !contextPrice) {
+        contextPrice = pList.data.maxPrice
+      }
+      if (pList?.data?.products?.length && !contextTitle) {
+        contextTitle = pList.data.products[0].name || null
+        if (!contextPrice) contextPrice = pList.data.products[0].price || null
+      }
+    }
+  }
+
   const contextBlock = `USER CONTEXT (do not reveal raw numbers unprompted; use tools):
 ${JSON.stringify(context, null, 2)}`
 
@@ -906,7 +973,7 @@ ${JSON.stringify(context, null, 2)}`
 
   // If LLM returned no tools or wasn't configured, use semantic intent extraction
   if (toolCalls.length === 0) {
-    toolCalls = extractSemanticTools(userMessage, recentProductList)
+    toolCalls = extractSemanticTools(userMessage, recentProductList, contextPrice, contextTitle)
   }
 
   // STEP 2 — execute tools

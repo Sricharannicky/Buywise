@@ -51,6 +51,25 @@ export function AIPartner() {
       setAuthOpen(true, 'login')
       return
     }
+
+    // Direct client navigation shortcuts
+    const lower = message.toLowerCase()
+    if (lower === 'set up budget in account' || lower === 'view my budget' || lower === 'view budget details' || lower === 'set up budget') {
+      navigate({ name: 'budget' })
+      setAiOpen(false)
+      return
+    }
+    if (lower === 'view my goals' || lower === 'view goals') {
+      navigate({ name: 'goals' })
+      setAiOpen(false)
+      return
+    }
+    if (lower === 'view cart' || lower === 'proceed to checkout') {
+      navigate({ name: 'cart' })
+      setAiOpen(false)
+      return
+    }
+
     const userMsg: ChatMessage = { role: 'user', content: message }
     setMessages((m) => [...m, userMsg])
     setInput('')
@@ -401,11 +420,17 @@ function ComparisonCard({ products, onNavigate }: { products: any[]; onNavigate:
 }
 
 function AffordabilityCard({ data }: { data: any }) {
+  const { navigate, setAiOpen } = useStore()
   if (!data.hasProfile) {
     return (
-      <Card className="flex items-center gap-3 p-3">
-        <Wallet className="h-5 w-5 shrink-0 text-amber-500" />
-        <p className="text-sm text-muted-foreground">{data.message}</p>
+      <Card className="flex items-center justify-between gap-3 p-3">
+        <div className="flex items-center gap-3">
+          <Wallet className="h-5 w-5 shrink-0 text-amber-500" />
+          <p className="text-sm text-muted-foreground">{data.message}</p>
+        </div>
+        <Button size="sm" variant="outline" className="shrink-0" onClick={() => { navigate({ name: 'budget' }); setAiOpen(false) }}>
+          Go to Budget
+        </Button>
       </Card>
     )
   }
