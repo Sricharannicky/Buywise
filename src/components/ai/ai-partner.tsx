@@ -44,7 +44,7 @@ export function AIPartner() {
     }
   }, [messages, loading])
 
-  async function send(text: string) {
+  async function send(text: string, contextProductIds?: string[]) {
     const message = text.trim()
     if (!message || loading) return
     if (!user) {
@@ -56,14 +56,21 @@ export function AIPartner() {
     setInput('')
     setLoading(true)
     try {
-      // Find recent products from the last assistant message with products/comparison
-      const lastAssistantWithProds = [...messages].reverse().find(
-        (m) => m.role === 'assistant' && m.toolResults?.some((t) => t.type === 'product_list' || t.type === 'comparison')
-      )
-      const prodListTool = lastAssistantWithProds?.toolResults?.find((t) => t.type === 'product_list' || t.type === 'comparison')
-      const recentProductIds = prodListTool?.data?.products?.map((p: any) => p.id) || []
+      // Determine the target product IDs:
+      // Priority 1: Specifically passed from the response card whose button was clicked.
+      // Priority 2: Fallback to the most recent assistant message with products.
+      let targetProductIds: string[] = []
+      if (Array.isArray(contextProductIds) && contextProductIds.length > 0) {
+        targetProductIds = contextProductIds
+      } else {
+        const lastAssistantWithProds = [...messages].reverse().find(
+          (m) => m.role === 'assistant' && m.toolResults?.some((t) => t.type === 'product_list' || t.type === 'comparison')
+        )
+        const prodListTool = lastAssistantWithProds?.toolResults?.find((t) => t.type === 'product_list' || t.type === 'comparison')
+        targetProductIds = prodListTool?.data?.products?.map((p: any) => p.id) || []
+      }
 
-      const res = await api.ai.chat(message, conversationId || undefined, recentProductIds)
+      const res = await api.ai.chat(message, conversationId || undefined, targetProductIds)
       if (res.conversationId) setConversationId(res.conversationId)
       setMessages((m) => [...m, { role: 'assistant', content: res.message, toolResults: res.toolResults, suggestions: res.suggestions }])
     } catch (e: any) {
@@ -157,15 +164,30 @@ export function AIPartner() {
                     <p className="whitespace-pre-wrap">{msg.content}</p>
                   </div>
                   {msg.toolResults?.map((tr, j) => (
-                    <ToolResultCard key={j} result={tr} onNavigate={(id) => { navigate({ name: 'product', id }); setAiOpen(false) }} />
+                    <ToolResultCard
+                      key={j}
+                      result={tr}
+                      onNavigate={(id) => { navigate({ name: 'product', id }); setAiOpen(false) }}
+                      onCompare={(ids) => send('Compare top 2', ids)}
+                    />
                   ))}
                   {msg.suggestions && msg.suggestions.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
-                      {msg.suggestions.map((s, k) => (
-                        <button key={k} onClick={() => send(s)} className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 transition-colors hover:bg-violet-100 dark:border-violet-900 dark:bg-violet-950 dark:text-violet-300">
-                          {s}
-                        </button>
-                      ))}
+                      {msg.suggestions.map((s, k) => {
+                        // Extract product IDs specifically tied to THIS message response
+                        const thisResponseProductIds = msg.toolResults
+                          ?.find((t) => t.type === 'product_list' || t.type === 'comparison')
+                          ?.data?.products?.map((p: any) => p.id) || []
+                        return (
+                          <button
+                            key={k}
+                            onClick={() => send(s, thisResponseProductIds)}
+                            className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 transition-colors hover:bg-violet-100 dark:border-violet-900 dark:bg-violet-950 dark:text-violet-300"
+                          >
+                            {s}
+                          </button>
+                        )
+                      })}
                     </div>
                   )}
                 </div>
@@ -211,15 +233,35 @@ export function AIPartner() {
 // ----------------------------------------------------------------------------
 // Structured tool-result cards
 // ----------------------------------------------------------------------------
-function ToolResultCard({ result, onNavigate }: { result: any; onNavigate: (id: string) => void }) {
+function ToolResultCard({
+  result,
+  onNavigate,
+  onCompare,
+}: {
+  result: any
+  onNavigate: (id: string) => void
+  onCompare?: (productIds: string[]) => void
+}) {
   const { type, data } = result
   switch (type) {
-    case 'product_list':
+    case 'product_list': {
+      const top2Ids = data.products?.slice(0, 2).map((p: any) => p.id) || []
       return (
         <Card className="overflow-hidden p-0">
           <div className="flex items-center justify-between border-b border-border/60 bg-muted/40 px-3 py-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{data.reason || 'Results'}</span>
-            <Badge variant="secondary" className="text-[10px]">{data.count} found</Badge>
+            <div className="flex items-center gap-2">
+              {top2Ids.length >= 2 && onCompare && (
+                <button
+                  type="button"
+                  onClick={() => onCompare(top2Ids)}
+                  className="rounded px-2 py-0.5 text-[11px] font-semibold text-violet-600 transition-colors hover:bg-violet-100 hover:text-violet-800 dark:text-violet-400 dark:hover:bg-violet-950/80"
+                >
+                  ⚡ Compare top 2
+                </button>
+              )}
+              <Badge variant="secondary" className="text-[10px]">{data.count} found</Badge>
+            </div>
           </div>
           <div className="max-h-80 overflow-y-auto scrollbar-thin">
             {data.products.map((p: any) => (
@@ -229,6 +271,7 @@ function ToolResultCard({ result, onNavigate }: { result: any; onNavigate: (id: 
           </div>
         </Card>
       )
+    }
     case 'product_detail':
       return <Card className="overflow-hidden p-0"><ProductRow product={data} onClick={() => onNavigate(data.id)} showDesc /></Card>
     case 'comparison':
