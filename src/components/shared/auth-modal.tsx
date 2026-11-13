@@ -23,6 +23,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useStore } from '@/lib/store'
 import { api, refreshCartCount } from '@/lib/api'
 import { toast } from 'sonner'
+import { signInWithGoogleFirebase } from '@/lib/firebase'
 
 function GoogleIcon({ className = 'h-4 w-4' }: { className?: string }) {
   return (
@@ -175,15 +176,49 @@ export function AuthModal() {
     }
   }
 
-  // Handle Google Login click
-  function onGoogleButtonClick() {
-    if (googleConfig.configured) {
-      // Live Google OAuth 2.0 flow
-      setGoogleLoading(true)
-      window.location.href = '/api/auth/google'
-    } else {
-      // Open the Google Account Chooser
-      setShowGoogleChooser(true)
+  // Handle Google Login click via Firebase Auth
+  async function onGoogleButtonClick() {
+    setGoogleLoading(true)
+    try {
+      // 1. Trigger Firebase Google Sign-In Popup
+      const fbResult = await signInWithGoogleFirebase()
+      if (!fbResult?.email) {
+        throw new Error('Google Sign-In did not return an email address.')
+      }
+
+      // 2. Authenticate session with Buywise backend
+      const res = await api.auth.google({
+        credential: fbResult.idToken,
+        email: fbResult.email,
+        firstName: fbResult.firstName,
+        lastName: fbResult.lastName,
+      })
+
+      const user = res.user
+      setUser(user)
+      setAuthOpen(false)
+      setShowGoogleChooser(false)
+      toast.success(`Welcome to Buywise, ${user.firstName || 'there'}! Signed in with Google.`)
+      refreshCartCount().catch(() => {})
+    } catch (err: any) {
+      console.warn('Firebase Google Sign-In notice:', err?.code || err?.message)
+      if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
+        toast.info('Google Sign-In was cancelled')
+      } else if (err?.code === 'auth/unauthorized-domain') {
+        const domain = typeof window !== 'undefined' ? window.location.hostname : 'domain'
+        toast.error(`Domain "${domain}" is not yet added in Firebase Console. Please authorize it in Firebase > Auth > Settings. Opening account picker for instant access.`)
+        setShowGoogleChooser(true)
+      } else if (err?.code === 'auth/popup-blocked') {
+        toast.error('Popup was blocked by your browser. Please allow popups or choose an account below.')
+        setShowGoogleChooser(true)
+      } else if (googleConfig.configured) {
+        // Fallback to configured OAuth redirect if available
+        window.location.href = '/api/auth/google'
+      } else {
+        setShowGoogleChooser(true)
+      }
+    } finally {
+      setGoogleLoading(false)
     }
   }
 
@@ -554,11 +589,9 @@ export function AuthModal() {
                   <GoogleIcon className="h-4 w-4 shrink-0 transition-transform group-hover:scale-110" />
                 )}
                 <span>Continue with Google</span>
-                {googleConfig.configured && (
-                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 px-1.5 py-0.5 rounded-full font-medium">
-                    <ShieldCheck className="h-3 w-3" /> OAuth Active
-                  </span>
-                )}
+                <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 px-1.5 py-0.5 rounded-full font-medium">
+                  <ShieldCheck className="h-3 w-3" /> Firebase Auth
+                </span>
               </Button>
 
               {/* Authentic Google Account Chooser */}

@@ -633,8 +633,8 @@ function extractSemanticTools(
       return [{ name: 'compare_products', args: { productIds: [recentProducts[0].id] } }]
     }
 
-    const clean = lower.replace(/compare|vs|between|the/g, ' ').trim()
-    return [{ name: 'search_products', args: { query: clean || 'laptops', limit: 2 } }]
+    const clean = lower.replace(/compare|top|2|3|items|vs|between|the|this|these|them/g, ' ').trim()
+    return [{ name: 'search_products', args: { query: clean || 'deals', limit: 2 } }]
   }
 
   // Add to cart intent
