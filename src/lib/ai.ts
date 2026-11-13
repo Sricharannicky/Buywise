@@ -200,6 +200,28 @@ function serializeProduct(p: Product & { brand?: { name: string } | null, catego
   }
 }
 
+function matchesSearchToken(text: string, token: string): 'exact' | 'prefix' | 'none' {
+  if (!text) return 'none'
+  const clean = text.toLowerCase()
+  const words = clean.split(/[^a-z0-9]+/).filter(Boolean)
+  for (const w of words) {
+    if (w === token) return 'exact'
+    if (
+      w === token + 's' ||
+      w === token + 'es' ||
+      (token.endsWith('s') && w === token.slice(0, -1)) ||
+      (token.endsWith('es') && w === token.slice(0, -2))
+    ) {
+      return 'exact'
+    }
+    // Prefix match for tokens >= 4 characters if token is >= 70% of the word
+    if (token.length >= 4 && w.startsWith(token) && token.length / w.length >= 0.7) {
+      return 'prefix'
+    }
+  }
+  return 'none'
+}
+
 async function executeTool(name: string, args: any, userId: string | null): Promise<ToolResult> {
   switch (name) {
     case 'search_products': {
@@ -268,42 +290,79 @@ async function executeTool(name: string, args: any, userId: string | null): Prom
       else if (args.sort === 'rating') orderBy = { rating: 'desc' }
 
       const limit = Math.min(args.limit || 5, 8)
-      // Fetch up to 15 candidates so relevance scoring can pick the best
+      // Fetch up to 40 candidates so relevance scoring can pick the genuine matches
       const candidates = await db.product.findMany({
         where,
         orderBy,
-        take: searchTokens.length > 0 ? 15 : limit,
+        take: searchTokens.length > 0 ? 40 : limit,
         include: { brand: { select: { name: true } }, category: { select: { name: true, slug: true } } },
       })
 
-      // In-memory relevance scoring when search tokens are present
+      // In-memory precision relevance scoring & false-positive elimination
+      let products = candidates
       if (searchTokens.length > 0 && !args.sort) {
-        candidates.sort((a, b) => {
-          const score = (p: typeof a) => {
-            let s = (p.rating || 4.0) * 0.5
-            const nameL = p.name.toLowerCase()
-            const tagsL = (p.tags || '').toLowerCase()
-            const brandL = (p.brand?.name || '').toLowerCase()
-            for (const t of searchTokens) {
-              if (nameL.includes(t)) s += 10
-              if (tagsL.includes(t)) s += 8
-              if (brandL.includes(t)) s += 5
+        const scoredCandidates: Array<{ product: typeof candidates[0]; score: number }> = []
+
+        for (const p of candidates) {
+          let score = (p.rating || 4.0) * 0.5
+          let hasWordMatch = false
+
+          for (const t of searchTokens) {
+            const nameMatch = matchesSearchToken(p.name, t)
+            const tagsMatch = matchesSearchToken(p.tags || '', t)
+            const brandMatch = matchesSearchToken(p.brand?.name || '', t)
+            const catMatch = matchesSearchToken(p.category?.name || '', t)
+
+            if (nameMatch === 'exact') {
+              score += 60
+              hasWordMatch = true
+            } else if (nameMatch === 'prefix') {
+              score += 25
+              hasWordMatch = true
             }
-            return s
+
+            if (tagsMatch === 'exact') {
+              score += 35
+              hasWordMatch = true
+            } else if (tagsMatch === 'prefix') {
+              score += 15
+              hasWordMatch = true
+            }
+
+            if (brandMatch === 'exact') {
+              score += 20
+              hasWordMatch = true
+            }
+
+            if (catMatch === 'exact') {
+              score += 15
+              if (p.category?.slug?.includes(t) || p.category?.name?.toLowerCase().includes(t)) {
+                hasWordMatch = true
+              }
+            }
           }
-          return score(b) - score(a)
-        })
+
+          // Strict validation: disqualify false-positive substring matches
+          // (e.g. "pen" inside "dispenser", "open-ear", or "pendant")
+          if (hasWordMatch) {
+            scoredCandidates.push({ product: p, score })
+          }
+        }
+
+        // Sort descending by score
+        scoredCandidates.sort((a, b) => b.score - a.score)
+        products = scoredCandidates.map((s) => s.product)
       }
 
-      const products = candidates.slice(0, limit)
+      const finalProducts = products.slice(0, limit)
       return {
         type: 'product_list',
         data: {
           query: args.query || args.category || '*',
           maxPrice: args.maxPrice || null,
           category: args.category || null,
-          count: products.length,
-          products: products.map(serializeProduct),
+          count: finalProducts.length,
+          products: finalProducts.map(serializeProduct),
         },
       }
     }
@@ -662,25 +721,16 @@ function extractSemanticTools(
     }
   }
 
-  // Category & occasion intent detection
+  // Category & occasion intent detection with strict word boundaries
   let targetCategory: string | undefined = undefined
   let intentTopic: string | undefined = undefined
 
-  // Goa / Party / Vacation / Clothing
   if (
-    lower.includes('goa') ||
-    lower.includes('partywear') ||
-    lower.includes('party wear') ||
-    lower.includes('beachwear') ||
-    lower.includes('beach wear') ||
-    lower.includes('resort wear') ||
-    lower.includes('party dress') ||
-    lower.includes('party shirt') ||
-    lower.includes('clubwear')
+    /\b(goa|partywear|party wear|beachwear|beach wear|resort wear|party dress|party shirt|clubwear)\b/i.test(lower)
   ) {
     targetCategory = 'fashion'
     intentTopic = lower.includes('goa') ? 'Goa partywear' : 'partywear'
-  } else if (lower.includes('laptop') || lower.includes('notebook') || lower.includes('macbook')) {
+  } else if (/\b(laptop|laptops|macbook|macbooks|chromebook|ultrabook)\b/i.test(lower)) {
     targetCategory = 'laptops-tablets'
     if (lower.includes('gaming') && lower.includes('programming')) {
       intentTopic = 'gaming and programming laptops'
@@ -691,39 +741,47 @@ function extractSemanticTools(
     } else {
       intentTopic = 'laptops'
     }
-  } else if (lower.includes('phone') || lower.includes('mobile') || lower.includes('smartphone') || lower.includes('iphone')) {
-    targetCategory = 'mobile-phones'
-    intentTopic = 'smartphones'
-  } else if (lower.includes('headphone') || lower.includes('earbud') || lower.includes('earphone') || lower.includes('airpod')) {
+  } else if (/\b(headphone|headphones|earbud|earbuds|earphone|earphones|airpod|airpods|headset|headsets)\b/i.test(lower)) {
     targetCategory = 'headphones-earbuds'
     intentTopic = 'headphones'
-  } else if (lower.includes('smartwatch') || lower.includes('smart watch')) {
+  } else if (/\b(phone|phones|smartphone|smartphones|mobile|mobiles|iphone|iphones|android)\b/i.test(lower)) {
+    targetCategory = 'mobile-phones'
+    intentTopic = 'smartphones'
+  } else if (/\b(smartwatch|smartwatches|smart watch|smart watches|fitness band|fitness tracker|wearable|wearables)\b/i.test(lower)) {
     targetCategory = 'smartwatches-wearables'
     intentTopic = 'smartwatches'
-  } else if (lower.includes('shoe') || lower.includes('sneaker') || lower.includes('footwear')) {
+  } else if (/\b(shoe|shoes|sneaker|sneakers|footwear|sandal|sandals|boots|heels|loafers)\b/i.test(lower)) {
     targetCategory = 'footwear'
     intentTopic = 'shoes'
-  } else if (lower.includes('eyeliner') || lower.includes('eye liner')) {
+  } else if (/\b(eyeliner|eye liner|kajal|mascara)\b/i.test(lower)) {
     targetCategory = 'makeup'
     intentTopic = 'eyeliner'
-  } else if (lower.includes('lipstick') || lower.includes('kajal') || lower.includes('makeup') || lower.includes('foundation')) {
+  } else if (/\b(lipstick|lipsticks|lip gloss|makeup|foundation|blush|concealer)\b/i.test(lower)) {
     targetCategory = 'makeup'
     intentTopic = 'makeup'
-  } else if (lower.includes('sunscreen') || lower.includes('serum') || lower.includes('moisturizer') || lower.includes('skincare')) {
+  } else if (/\b(sunscreen|serum|moisturizer|skincare|face wash|cleanser|toner)\b/i.test(lower)) {
     targetCategory = 'skincare'
     intentTopic = 'skincare'
-  } else if (lower.includes('air fryer') || lower.includes('airfryer') || lower.includes('blender') || lower.includes('coffee') || lower.includes('kettle')) {
+  } else if (/\b(air fryer|airfryer|blender|coffee|kettle|toaster|mixer|grinder)\b/i.test(lower)) {
     targetCategory = 'kitchen-dining'
     intentTopic = 'kitchen appliances'
-  } else if (lower.includes('chair') || lower.includes('sofa') || lower.includes('desk') || lower.includes('furniture')) {
+  } else if (/\b(chair|chairs|sofa|sofas|desk|desks|furniture|table|dining table|wardrobe)\b/i.test(lower)) {
     targetCategory = 'furniture'
     intentTopic = 'furniture'
-  } else if (lower.includes('dumbbell') || lower.includes('gym') || lower.includes('weights')) {
+  } else if (/\b(dumbbell|dumbbells|gym|weights|barbell|kettlebell|treadmill)\b/i.test(lower)) {
     targetCategory = 'gym-equipment'
     intentTopic = 'fitness equipment'
-  } else if (lower.includes('protein') || lower.includes('supplement')) {
+  } else if (/\b(protein|whey|supplement|supplements|creatine|multivitamin|vitamins)\b/i.test(lower)) {
     targetCategory = 'vitamins-supplements'
     intentTopic = 'supplements'
+  } else if (
+    /\b(pen|pens|ballpoint|rollerball|fountain pen|gel pen|stationery|pencil|pencils|marker|markers|highlighter)\b/i.test(lower)
+  ) {
+    targetCategory = 'pens-office-supplies'
+    intentTopic = lower.includes('fountain') ? 'fountain pens' : lower.includes('roller') ? 'rollerball pens' : 'pens'
+  } else if (/\b(notebook|notebooks|diary|diaries|journal|notepad)\b/i.test(lower)) {
+    targetCategory = 'notebooks-diaries'
+    intentTopic = 'notebooks'
   }
 
   // Product search with clean price extraction
