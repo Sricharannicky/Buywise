@@ -204,6 +204,9 @@ export function AuthModal() {
       console.warn('Firebase Google Sign-In notice:', err?.code || err?.message)
       if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
         toast.info('Google Sign-In was cancelled')
+      } else if (err?.message?.includes('Pending promise was never set') || err?.message?.includes('INTERNAL ASSERTION')) {
+        toast.info('Google Sign-In popup closed. You can try again or choose an account below.')
+        setShowGoogleChooser(true)
       } else if (err?.code === 'auth/unauthorized-domain') {
         const domain = typeof window !== 'undefined' ? window.location.hostname : 'domain'
         toast.error(`Domain "${domain}" is not yet added in Firebase Console. Please authorize it in Firebase > Auth > Settings. Opening account picker for instant access.`)
